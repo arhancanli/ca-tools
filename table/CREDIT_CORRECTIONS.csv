@@ -1,1 +1,2 @@
 date,row_key,t,v,k,N,tier,source_id,array_sha256,family_sha256,field,old,new,reason,requested_by
+2026-11-02,d4024d9eb497973e,3,14,19,5568,VERIFIED,S7,0f59e49733562fcf8b2c94e0d4e9cebf1e8dd0f879d373441cfc3bb2cd4f1809,,builds_on,fuse-ckrs2010;proj-c2008,fuse-ckrs2010;proj-c2008;new doi:10.5281/zenodo.23787055,"Bai XunDi's deposit records list it as his own construction (hyperoval-poly2), and his three other hyperoval-poly2 rows cite the deposit; found by the credit check",C. Smolen
