@@ -1085,6 +1085,42 @@ def route_light(module, sub, a, out, name):
         return False, "## %s\n\n**Result: FAIL.** the check stopped without a report\n" % name
 
 
+def credit_section(sub, slug, ctx, online=True):
+    """The "Credit check" section of the report (tools/credit_check.py): flags for the
+    maintainer's review of credit, over every row of claims.csv, certificates.csv,
+    external.csv and constructions.csv. Flags never change the result; a failure of the
+    credit check itself is reported and never fails the submission."""
+    try:
+        import credit_check
+        refs = ctx["references"]
+        ck = credit_check.Checker(refs, ctx["table_rows"], repo=REPO, slug=slug, online=online)
+        per, credits = [], []
+        for name in ("claims.csv", "certificates.csv", "external.csv", "constructions.csv"):
+            path = os.path.join(sub, name)
+            if not os.path.isfile(path) or os.path.islink(path):
+                continue
+            with open(path, newline="", encoding="utf-8-sig") as f:
+                recs = list(csv.DictReader(f))
+            for i, r in enumerate(recs, 1):
+                r = {k: (v or "") for k, v in r.items() if k is not None}
+                credits.append(r.get("credit", ""))
+                ids, links = [], []
+                if r.get("builds_on"):
+                    ids, links, _ = builds_on.parse(r["builds_on"], refs)
+                flags = ck.claim_flags(r, ids, links)
+                if flags:
+                    what = r.get("file") or r.get("location") or ""
+                    per.append(("%s row %d, CA(%s; %s, %s, %s)%s"
+                                % (name, i, r.get("N", "?"), r.get("t", "?"), r.get("k", "?"),
+                                   r.get("v", "?"), (" `%s`" % md_cell(what)) if what else ""),
+                                [(k, md_cell(t)) for k, t in flags]))
+        md, _ = credit_check.render(ck.submission_flags(credits), per)
+        return md
+    except Exception as e:                     # never let the credit check break the check
+        return ("### Credit check\n\nThe credit check could not run (%s: %s); the maintainer "
+                "reviews the credit by hand.\n\n" % (type(e).__name__, md_cell(str(e))))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("submission", nargs="?", help="submissions/<slug> directory")
@@ -1113,6 +1149,8 @@ def main(argv=None):
                     help="append the rows and copy the arrays into the table")
     ap.add_argument("--selftest", action="store_true",
                     help="re-hash table/arrays against MANIFEST.csv and exit")
+    ap.add_argument("--credit-offline", action="store_true",
+                    help="credit check without looking up DOI records online")
     a = ap.parse_args(argv)
 
     if a.selftest:
@@ -1196,6 +1234,7 @@ def main(argv=None):
             lines.append("")
         if cert_text:
             lines.append(cert_text)
+        lines.append(credit_section(sub, slug, ctx, online=not a.credit_offline))
         with open(os.path.join(out, "report.md"), "w", encoding="utf-8") as f:
             f.write("\n".join(lines) + "\n")
         with open(os.path.join(out, "summary.json"), "w", encoding="utf-8") as f:
@@ -1251,6 +1290,9 @@ def main(argv=None):
         rows = build_rows(claims, ctx)
     elapsed = time.monotonic() - start
     report = render_report(claims, ctx, all_pass, elapsed)
+    if claims:
+        report = report.replace("### Details", credit_section(sub, slug, ctx,
+                                online=not a.credit_offline) + "### Details", 1)
     if problems:
         # the list goes once, ahead of the per-claim details
         report = report.replace("### Details", "### Submission problems\n\n" +
