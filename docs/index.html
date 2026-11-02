@@ -32,11 +32,11 @@ a { color: inherit; }
 @media (max-width: 480px) { body { font-size:15px; } table { font-size:.82rem; } th, td { padding:.25rem .2rem; } }
 </style></head><body><main>
 <h1>Best known covering arrays, with evidence</h1>
-<p>A covering array CA(N; t, k, v) is an N by k array over v symbols in which every choice of t columns shows every one of the v<sup>t</sup> value combinations in some row. This table records, for each strength t and alphabet size v, the smallest known N for each number of columns k, and says where every entry comes from. The baseline is the November 2024 status of Charles J. Colbourn's covering array tables as preserved by Ulrike Groemping in the CAs R package (tier CITED). Sizes published in papers and not in the snapshot are also tier CITED, each naming its paper (source S7, marked published), until an array is in hand. Entries with an explicit array in hand were checked exhaustively by a verifier and carry the array's SHA-256 and a stamp (tier VERIFIED). Arrays too large to check in full on the public runner were screened on random column windows (tier SCREENED); they are listed but do not count as best known. Where Colbourn's construction for an entry, as checked here, did not give a covering array at the recorded size, the entry stays as recorded and its rung is marked disputed (tier DISPUTED). No entry here is a computed size. Sizes that follow from these entries by published constructions (fusing symbols, deriving a strength, Power CT and others) are recomputed on every change and listed separately, each with its arithmetic, on <a href="derived.html">the derived sizes page</a> (172 points); they are not counted as best known here.</p>
+<p>A covering array CA(N; t, k, v) is an N by k array over v symbols in which every choice of t columns shows every one of the v<sup>t</sup> value combinations in some row. This table records, for each strength t and alphabet size v, the smallest known N for each number of columns k, and says where every entry comes from. The baseline is the November 2024 status of Charles J. Colbourn's covering array tables as preserved by Ulrike Groemping in the CAs R package (tier CITED). Sizes published in papers and not in the snapshot are also tier CITED, each naming its paper (source S7, marked published), until an array is in hand. Entries with an explicit array in hand were checked exhaustively by a verifier and carry the array's SHA-256 and a stamp (tier VERIFIED). Arrays too large to check in full on the public runner were screened on random column windows (tier SCREENED); they are listed but do not count as best known. Where Colbourn's construction for an entry, as checked here, did not give a covering array at the recorded size, the entry stays as recorded and its rung is marked disputed (tier DISPUTED). No entry here is a computed size. Sizes that follow from these entries by published constructions (fusing symbols, deriving a strength, Power CT and others) are recomputed on every change and listed separately, each with its arithmetic, on <a href="derived.html">the derived sizes page</a> (179 points); they are not counted as best known here.</p>
 <p>Rows are stair-steps: an entry (t, v, k, N) means N runs suffice for up to k columns, so the best known N at k is the smallest N among entries with at least k columns. The construction column names the construction or search that produced each entry, where it is known. For every array on file, constant rows is the largest number of its rows that can be made constant by permuting symbols within columns, a property that matters when the array is an ingredient of another construction. Anyone can add an array by pull request; see <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/submissions/README.md">how to submit</a>. The data is <a href="https://github.com/chrispbsmolen/ca-tools/tree/main/table">table/ in the repository</a>; the raw file <a href="https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/ca_table.csv">table/ca_table.csv</a> is the machine-readable form (see the README for the stair-step rule and an R snippet).</p>
 <ul class="stats">
-<li>table rows <b>14,778</b></li>
-<li>verified rows <b>934</b></li>
+<li>table rows <b>14,779</b></li>
+<li>verified rows <b>935</b></li>
 <li>rows cited from papers <b>152</b></li>
 <li>screened rows, not yet verified in full <b>10</b></li>
 <li>disputed entries <b>3</b></li>
@@ -12511,7 +12511,7 @@ a { color: inherit; }
 <tr><td class=n>9411 to 9604</td><td class=n>1308445849</td><td class=ev>Power N-CT101^2T3T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
 <tr><td class=n>9605 to 10000</td><td class=n>1308507289</td><td class=ev>perfect hash family13,10609,103T5</td></tr>
 </tbody></table></details>
-<details><summary>t = 6, v = 16: 172 rungs, 0 verified</summary>
+<details><summary>t = 6, v = 16: 66 rungs, 1 verified</summary>
 <table><thead><tr><th class=n>k</th><th class=n>N</th><th>evidence</th></tr></thead><tbody>
 <tr><td class=n>6 to 17</td><td class=n>16777216</td><td class=ev>orthogonal array<span class=bo>builds on <a href=#r43>Bush 1952</a>, <a href=#r44>Bose 1938</a></span></td></tr>
 <tr><td class=n>18</td><td class=n>24137567</td><td class=ev>orthogonal array fuse<span class=bo>builds on <a href=#r11>Colbourn et al. 2010</a></span></td></tr>
@@ -12549,114 +12549,8 @@ a { color: inherit; }
 <tr><td class=n>165 to 236</td><td class=n>134217616</td><td class=ev>SCPHF Random Extension (CLS)<span class=bo>builds on <a href=#r3>Sherwood et al. 2006</a>, <a href=#r9>Colbourn et al. 2018</a></span></td></tr>
 <tr><td class=n>237 to 268</td><td class=n>193100431</td><td class=ev>SCPHF Random Extension (CLS) fuse<span class=bo>builds on <a href=#r3>Sherwood et al. 2006</a>, <a href=#r9>Colbourn et al. 2018</a>, <a href=#r11>Colbourn et al. 2010</a></span></td></tr>
 <tr><td class=n>269 to 289</td><td class=n>268435440</td><td class=ev>Power CT17^2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>290</td><td class=n>346026480</td><td class=ev>Add 1 factors</td></tr>
-<tr><td class=n>291</td><td class=n>383746800</td><td class=ev>Add 2 factors</td></tr>
-<tr><td class=n>292</td><td class=n>414221040</td><td class=ev>Add 3 factors</td></tr>
-<tr><td class=n>293</td><td class=n>429949680</td><td class=ev>Add 4 factors</td></tr>
-<tr><td class=n>294 to 305</td><td class=n>445678320</td><td class=ev>Add 16 factors</td></tr>
-<tr><td class=n>306</td><td class=n>484882160</td><td class=ev>Add 17 factors</td></tr>
-<tr><td class=n>307 to 312</td><td class=n>536211424</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>313</td><td class=n>536334304</td><td class=ev>Martirosyan-TVT variant<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>314 to 316</td><td class=n>536453344</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>317</td><td class=n>536594704</td><td class=ev>Martirosyan-TVT variant<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>318</td><td class=n>536736064</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>319 to 326</td><td class=n>536736304</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>327 to 328</td><td class=n>536736394</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>329 to 512</td><td class=n>536870416</td><td class=ev>perfect hash family32,512,16,c</td></tr>
-<tr><td class=n>513</td><td class=n>536870880</td><td class=ev>perfect hash family32,513,17</td></tr>
-<tr><td class=n>514</td><td class=n>629265120</td><td class=ev>Add 1 factors</td></tr>
-<tr><td class=n>515 to 530</td><td class=n>671088075</td><td class=ev>perfect hash family5,530,236</td></tr>
-<tr><td class=n>531 to 536</td><td class=n>688559824</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>537 to 544</td><td class=n>763894833</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>545</td><td class=n>764132913</td><td class=ev>Martirosyan-TVT variant<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>546</td><td class=n>764370993</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>547</td><td class=n>777607649</td><td class=ev>Martirosyan-TVT variant<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>548 to 550</td><td class=n>793455761</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>551</td><td class=n>793612673</td><td class=ev>Martirosyan-TVT variant<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>552 to 568</td><td class=n>793769841</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>569 to 577</td><td class=n>794752641</td><td class=ev>Martirosyan-TVT variant<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>578</td><td class=n>803804929</td><td class=ev>Martirosyan-TVT<span class=bo>builds on <a href=#r14>Martirosyan and Tran Van Trung 2004</a></span></td></tr>
-<tr><td class=n>579 to 625</td><td class=n>804257520</td><td class=ev>Power CT25^2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>626</td><td class=n>805240710</td><td class=ev>Power CT27^2Arc(2)T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>627 to 650</td><td class=n>805240740</td><td class=ev>Power CT27^2T2T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>651 to 675</td><td class=n>805240770</td><td class=ev>Power CT27^2T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>676</td><td class=n>805306260</td><td class=ev>Power CT27^2T1T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>677 to 702</td><td class=n>805306290</td><td class=ev>Power CT27^2T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>703 to 730</td><td class=n>805306320</td><td class=ev>Power CT27^2+1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>731</td><td class=n>889192395</td><td class=ev>Power N-CT43^2T26<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>732 to 774</td><td class=n>896552746</td><td class=ev>Power N-CT43^2T25<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>775 to 784</td><td class=n>905969610</td><td class=ev>Power N-CT41^2T13T13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>785 to 817</td><td class=n>912281386</td><td class=ev>Power N-CT43^2T24<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>818 to 860</td><td class=n>919461054</td><td class=ev>Power N-CT43^2T23<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>861 to 884</td><td class=n>920584095</td><td class=ev>Power N-CT41^2Trin2,8,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>885 to 904</td><td class=n>920649615</td><td class=ev>Power N-CT41^2Trin1,8,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>905 to 924</td><td class=n>920649660</td><td class=ev>Power N-CT41^2T13T8<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>925 to 936</td><td class=n>921632655</td><td class=ev>Power N-CT41^2Trin2,6,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>937 to 958</td><td class=n>921698175</td><td class=ev>Power N-CT41^2Trin1,6,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>959 to 980</td><td class=n>921698220</td><td class=ev>Power N-CT41^2T13T6<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>981 to 1040</td><td class=n>922615695</td><td class=ev>Power N-CT41^2Trin2,2,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1041 to 1066</td><td class=n>922681215</td><td class=ev>Power N-CT41^2Trin1,2,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1067 to 1092</td><td class=n>922681260</td><td class=ev>Power N-CT41^2T13T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1093</td><td class=n>922746735</td><td class=ev>Power N-CT41^2Arc(2)T13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1094 to 1120</td><td class=n>922746780</td><td class=ev>Power N-CT41^2T13T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1121 to 1204</td><td class=n>922746825</td><td class=ev>Power N-CT43^2T15<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1205 to 1225</td><td class=n>937295745</td><td class=ev>Power N-CT41^2Trin2,2,8<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1226 to 1256</td><td class=n>937361265</td><td class=ev>Power N-CT41^2Trin1,2,8<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1257 to 1287</td><td class=n>937361310</td><td class=ev>Power N-CT41^2T8T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1288</td><td class=n>937426785</td><td class=ev>Power N-CT41^2Arc(2)T8<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1289 to 1320</td><td class=n>937426830</td><td class=ev>Power N-CT41^2T8T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1321 to 1419</td><td class=n>937426875</td><td class=ev>Power N-CT43^2T10<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1420 to 1505</td><td class=n>938475435</td><td class=ev>Power N-CT43^2T8<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1506 to 1521</td><td class=n>939392910</td><td class=ev>Power N-CT41^2T2T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1522</td><td class=n>939458385</td><td class=ev>Power N-CT41^2Arc(2)T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1523 to 1560</td><td class=n>939458430</td><td class=ev>Power N-CT41^2T2T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1561 to 1677</td><td class=n>939458475</td><td class=ev>Power N-CT43^2T4<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1678 to 1720</td><td class=n>939523995</td><td class=ev>Power N-CT43^2T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1721 to 1852</td><td class=n>939524040</td><td class=ev>Power N-CT43^2+3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1853 to 1861</td><td class=n>1027604250</td><td class=ev>Power N-CT47^2Arc(8)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1862 to 1901</td><td class=n>1042284285</td><td class=ev>Power N-CT47^2Arc(7)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1902 to 1942</td><td class=n>1056964320</td><td class=ev>Power N-CT47^2Arc(6)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1943 to 1984</td><td class=n>1071644355</td><td class=ev>Power N-CT47^2Arc(5)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>1985 to 2027</td><td class=n>1086324390</td><td class=ev>Power N-CT47^2Arc(4)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2028 to 2071</td><td class=n>1101004425</td><td class=ev>Power N-CT47^2Arc(3)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2072 to 2116</td><td class=n>1115684460</td><td class=ev>Power N-CT47^2T1T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2117 to 2162</td><td class=n>1130364495</td><td class=ev>Power N-CT47^2T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2163 to 2258</td><td class=n>1141898655</td><td class=ev>Power N-CT53^2Trin2,2,7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2259 to 2346</td><td class=n>1142947215</td><td class=ev>Power N-CT53^2T7T2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2347 to 2438</td><td class=n>1143995775</td><td class=ev>Power N-CT53^2T7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2439 to 2447</td><td class=n>1155485055</td><td class=ev>Power N-CT59^2Trin3,3,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2448 to 2533</td><td class=n>1156468095</td><td class=ev>Power N-CT59^2Trin1,3,13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2534 to 2576</td><td class=n>1156529535</td><td class=ev>Power N-CT59^2T13T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2577 to 2579</td><td class=n>1157389695</td><td class=ev>Power N-CT59^2Arc(3)T13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2580 to 2623</td><td class=n>1157451135</td><td class=ev>Power N-CT59^2Arc(2)T13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2624 to 2668</td><td class=n>1157512575</td><td class=ev>Power N-CT59^2T13T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2669 to 2806</td><td class=n>1157574015</td><td class=ev>Power N-CT61^2T15<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2807 to 2812</td><td class=n>1159724370</td><td class=ev>Power N-CT53^2+3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2813 to 2856</td><td class=n>1171209570</td><td class=ev>Power N-CT59^2T8T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2857 to 2977</td><td class=n>1171213650</td><td class=ev>Power N-CT59^2Trin3,3,3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>2978 to 3083</td><td class=n>1172196690</td><td class=ev>Power N-CT59^2Trin1,3,3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3084 to 3111</td><td class=n>1172254050</td><td class=ev>Power N-CT61^2T10<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3112 to 3136</td><td class=n>1172258130</td><td class=ev>Power N-CT59^2T3T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3137 to 3139</td><td class=n>1173118290</td><td class=ev>Power N-CT59^2Arc(3)T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3140 to 3193</td><td class=n>1173179730</td><td class=ev>Power N-CT59^2Arc(2)T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3194 to 3248</td><td class=n>1173241170</td><td class=ev>Power N-CT59^2T3T1<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3249 to 3416</td><td class=n>1173302610</td><td class=ev>Power N-CT61^2T5<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3417 to 3538</td><td class=n>1174285650</td><td class=ev>Power N-CT61^2T3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3539 to 3723</td><td class=n>1174347090</td><td class=ev>Power N-CT61^2+2<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3724</td><td class=n>1174400850</td><td class=ev>Power N-CT61^2+3<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3725 to 3726</td><td class=n>1174404210</td><td class=ev>perfect hash family14,3726,66</td></tr>
-<tr><td class=n>3727 to 3751</td><td class=n>1201667250</td><td class=ev>Power N-CT67^2Arc(12)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3752 to 3807</td><td class=n>1215298770</td><td class=ev>Power N-CT67^2Arc(11)<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3808 to 3825</td><td class=n>1226833155</td><td class=ev>Power N-CT73^2Trin7,7,9<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3826 to 3943</td><td class=n>1226833395</td><td class=ev>Power N-CT73^2Trin7,7,7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3944 to 3969</td><td class=n>1240456755</td><td class=ev>Power N-CT73^2T10T10<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>3970 to 4032</td><td class=n>1240460595</td><td class=ev>Power N-CT73^2T10T9<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>4033 to 4158</td><td class=n>1240460835</td><td class=ev>Power N-CT73^2T10T7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>4159 to 4224</td><td class=n>1240464675</td><td class=ev>Power N-CT73^2T9T7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>4225 to 4356</td><td class=n>1240464915</td><td class=ev>Power N-CT73^2T7T7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>4357 to 4599</td><td class=n>1254092355</td><td class=ev>Power N-CT73^2T10<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>4600 to 4672</td><td class=n>1254096195</td><td class=ev>Power N-CT73^2T9<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
-<tr><td class=n>4673 to 4818</td><td class=n>1254096435</td><td class=ev>Power N-CT73^2T7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
+<tr><td class=n>290 to 4800</td><td class=n>285212416</td><td class=ev><span class="tag ver">verified</span>Arhan Canli (Quantavane); <i>Sherwood covering perfect hash family (affine), partly cyclic</i>; Canli 2026, New upper bounds for covering array numbers from partly cyclic covering perfect hash families, doi:10.5281/zenodo.23839216; families and checks at github.com/arhancanli/quantavane-covering-arrays<span class="stamp">builds on <a href=#r3>Sherwood et al. 2006</a>, <a href="https://doi.org/10.5281/zenodo.23839216">new method</a>; <b class=method>certificate</b>: <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/cphf/cphfcheck.c">cphfcheck 25349e3acdf3</a> 2026-11-02 github-actions (CPHF certificate, exact; array not hashed) (<a href="https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/certificates/CPHF_17_4800_16_6.txt">certificate</a>, <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/table/VERIFICATION_LOG.md">verification log</a>), identity: family 84556fe9f1d7 (array not hashed)</span></td></tr>
+<tr><td class=n>4801 to 4818</td><td class=n>1254096435</td><td class=ev>Power N-CT73^2T7<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
 <tr><td class=n>4819 to 4977</td><td class=n>1266675075</td><td class=ev>Power N-CT79^2T16<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
 <tr><td class=n>4978 to 5056</td><td class=n>1266678915</td><td class=ev>Power N-CT79^2T15<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
 <tr><td class=n>5057 to 5214</td><td class=n>1266679155</td><td class=ev>Power N-CT79^2T13<span class=bo>builds on <a href=#r12>Colbourn and Torres-Jimenez 2010</a></span></td></tr>
