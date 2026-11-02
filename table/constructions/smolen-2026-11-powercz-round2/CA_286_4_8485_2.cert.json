@@ -1,0 +1,161 @@
+{
+ "format": "construction-cert-1",
+ "construction": "powercz-1",
+ "notes": [
+  "Colbourn and Zhou 2012, Theorem 2.2 with Lemma 2.3; the table's label Power CZ4-13.0-12.12-10.1 lists k = 8466, this family keeps 8485 columns",
+  "GF(13), e = 4: 12 rows of width 12 (S03_12, S14_12, 10 x S13_12) and one row of width 10 (3 forbidden values, S22_10 = Roux-type doubling of the 10 weight-2 vectors of length 5 with a CA(10;3,5,2))"
+ ],
+ "t": 4,
+ "v": 2,
+ "e": 4,
+ "field": {
+  "q": 13,
+  "p": 13,
+  "m": 1
+ },
+ "family": {
+  "type": "reed-solomon",
+  "rows": [
+   {
+    "point": 0,
+    "forbidden": [
+     9
+    ],
+    "ingredient": "S03_12"
+   },
+   {
+    "point": 1,
+    "forbidden": [
+     2
+    ],
+    "ingredient": "S14_12"
+   },
+   {
+    "point": 2,
+    "forbidden": [
+     12
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 3,
+    "forbidden": [
+     7
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 4,
+    "forbidden": [
+     4
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 5,
+    "forbidden": [
+     2
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 7,
+    "forbidden": [
+     5
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 8,
+    "forbidden": [
+     4
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 9,
+    "forbidden": [
+     7
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 10,
+    "forbidden": [
+     0
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 11,
+    "forbidden": [
+     0
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": "inf",
+    "forbidden": [
+     9
+    ],
+    "ingredient": "S13_12"
+   },
+   {
+    "point": 12,
+    "forbidden": [
+     1,
+     2,
+     10
+    ],
+    "ingredient": "S22_10"
+   }
+  ]
+ },
+ "ingredients": {
+  "S03_12": {
+   "file": "S03_12.txt",
+   "sha256": "dcc9534a935043a520b2772de294ff5b80972524cd746ebd51eaa2e668c421a6",
+   "covers": {
+    "weights": [
+     0,
+     3
+    ]
+   }
+  },
+  "S13_12": {
+   "file": "S13_12.txt",
+   "sha256": "6ca24612b29f58403dbb203a31a76bc3b50ec431e1aaf339ca46aed387dbd200",
+   "covers": {
+    "weights": [
+     1,
+     3
+    ]
+   }
+  },
+  "S14_12": {
+   "file": "S14_12.txt",
+   "sha256": "aba69757f4ae2077ae719aa82399b410891beddc5358dbce784edfa4bb60291a",
+   "covers": {
+    "weights": [
+     1,
+     4
+    ]
+   }
+  },
+  "S22_10": {
+   "file": "S22_10.txt",
+   "sha256": "f40c5f45d48a05d8758aa4d2d077577baa5cc3580c1bf1cff1e753a28c32feb3",
+   "covers": {
+    "weights": [
+     2,
+     2
+    ]
+   }
+  }
+ },
+ "expected": {
+  "N": 286,
+  "k": 8485,
+  "array_sha256": "ff4fe84c9ee1559f4e574eba4dab21186c42a43ef73fef9735ea9efaa9058bfb"
+ }
+}

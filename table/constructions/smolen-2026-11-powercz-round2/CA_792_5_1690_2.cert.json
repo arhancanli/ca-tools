@@ -1,0 +1,128 @@
+{
+ "format": "construction-cert-1",
+ "construction": "powercz-1",
+ "notes": [
+  "Colbourn and Zhou 2012, Theorem 2.2 with Lemma 2.3; the table's label Power CZ3-13.12-10.1",
+  "GF(13), e = 3, t = 5: 12 rows of width 13 (6 x S04_13, 6 x S15_13: CA(64;5,14,2) of Colbourn, Keri, Rivas Soriano and Schlage-Puchta with column 13 deleted and its constant row removed, and its complement) and one row of width 10 (3 forbidden values, S23_10: 36 rows, the orbits of 4 base rows under Z3 x Z3 acting on 9 of the 10 columns, found by SAT)",
+  "Lemma 2.3 at t = 5, e = 3: weights 2 and 3 in all 13 rows, weights 1 and 4 in at least 9 (here 12), weights 0 and 5 in at least 1 (here 6 each)"
+ ],
+ "t": 5,
+ "v": 2,
+ "e": 3,
+ "field": {
+  "q": 13,
+  "p": 13,
+  "m": 1
+ },
+ "family": {
+  "type": "reed-solomon",
+  "rows": [
+   {
+    "point": 0,
+    "forbidden": [],
+    "ingredient": "S04_13"
+   },
+   {
+    "point": 1,
+    "forbidden": [],
+    "ingredient": "S15_13"
+   },
+   {
+    "point": 2,
+    "forbidden": [],
+    "ingredient": "S04_13"
+   },
+   {
+    "point": 3,
+    "forbidden": [],
+    "ingredient": "S15_13"
+   },
+   {
+    "point": 4,
+    "forbidden": [],
+    "ingredient": "S04_13"
+   },
+   {
+    "point": 5,
+    "forbidden": [],
+    "ingredient": "S15_13"
+   },
+   {
+    "point": 6,
+    "forbidden": [],
+    "ingredient": "S04_13"
+   },
+   {
+    "point": 7,
+    "forbidden": [],
+    "ingredient": "S15_13"
+   },
+   {
+    "point": 8,
+    "forbidden": [],
+    "ingredient": "S04_13"
+   },
+   {
+    "point": 9,
+    "forbidden": [],
+    "ingredient": "S15_13"
+   },
+   {
+    "point": 10,
+    "forbidden": [],
+    "ingredient": "S04_13"
+   },
+   {
+    "point": 11,
+    "forbidden": [],
+    "ingredient": "S15_13"
+   },
+   {
+    "point": 12,
+    "forbidden": [
+     0,
+     1,
+     2
+    ],
+    "ingredient": "S23_10"
+   }
+  ]
+ },
+ "ingredients": {
+  "S04_13": {
+   "file": "S04_13.txt",
+   "sha256": "1d8fc48cce0df8ff9b2f5e36ff8eb757ed222ef0f1518f508482bf19937f841f",
+   "covers": {
+    "weights": [
+     0,
+     4
+    ]
+   }
+  },
+  "S15_13": {
+   "file": "S15_13.txt",
+   "sha256": "195edb2b283eec815384f11b63e6ab2827b67bb3eda202176cbabd99f629fc8a",
+   "covers": {
+    "weights": [
+     1,
+     5
+    ]
+   }
+  },
+  "S23_10": {
+   "file": "S23_10.txt",
+   "sha256": "333c6b857d39e2acad79bc5371211c789817f7919b2ddf3a5dc1ad00a1db6c30",
+   "covers": {
+    "weights": [
+     2,
+     3
+    ]
+   }
+  }
+ },
+ "expected": {
+  "N": 792,
+  "k": 1690,
+  "array_sha256": "2653c79d13ea749503943a3fc41297fe15b54667b155f23beee5276e0c232100"
+ }
+}
