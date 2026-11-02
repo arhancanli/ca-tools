@@ -1,0 +1,132 @@
+{
+ "format": "construction-cert-1",
+ "construction": "powercz-1",
+ "notes": [
+  "Colbourn and Zhou 2012, Theorem 2.2 with Lemma 2.3; the table's label Power CZ3-16.7-12.1-12.1",
+  "GF(16) with modulus x^4+x+1; 7 rows of width 16 (5 x S13_16, 2 x S22_16), 2 rows of width 12 (S03_12, S14_12)",
+  "S13_16 (33 rows): S13_16 (33 rows) found here by SAT under a Z8 x 2 column symmetry, independent of any Torres-Jimenez array",
+  "S22_16 (26 rows) is the Roux-type doubling of S22_8 (itself the doubling of the 6 weight-2 vectors of length 4 with a CA(8;3,4,2)) with a CA(12;3,8,2); S03_12 is CA(24;4,12,2) with its constant row removed and S14_12 its complement"
+ ],
+ "t": 4,
+ "v": 2,
+ "e": 3,
+ "field": {
+  "q": 16,
+  "p": 2,
+  "m": 4,
+  "modulus": [
+   1,
+   1,
+   0,
+   0,
+   1
+  ]
+ },
+ "family": {
+  "type": "reed-solomon",
+  "rows": [
+   {
+    "point": 0,
+    "forbidden": [],
+    "ingredient": "S13_16"
+   },
+   {
+    "point": 1,
+    "forbidden": [],
+    "ingredient": "S13_16"
+   },
+   {
+    "point": 2,
+    "forbidden": [],
+    "ingredient": "S13_16"
+   },
+   {
+    "point": 3,
+    "forbidden": [],
+    "ingredient": "S13_16"
+   },
+   {
+    "point": 4,
+    "forbidden": [],
+    "ingredient": "S13_16"
+   },
+   {
+    "point": 5,
+    "forbidden": [],
+    "ingredient": "S22_16"
+   },
+   {
+    "point": 6,
+    "forbidden": [],
+    "ingredient": "S22_16"
+   },
+   {
+    "point": 7,
+    "forbidden": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "ingredient": "S03_12"
+   },
+   {
+    "point": 8,
+    "forbidden": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "ingredient": "S14_12"
+   }
+  ]
+ },
+ "ingredients": {
+  "S03_12": {
+   "file": "S03_12.txt",
+   "sha256": "dcc9534a935043a520b2772de294ff5b80972524cd746ebd51eaa2e668c421a6",
+   "covers": {
+    "weights": [
+     0,
+     3
+    ]
+   }
+  },
+  "S13_16": {
+   "file": "S13_16.txt",
+   "sha256": "afcfac7b2c9ffed672f08c62eb1543ac365676ad01fa070253825f60de6e346b",
+   "covers": {
+    "weights": [
+     1,
+     3
+    ]
+   }
+  },
+  "S14_12": {
+   "file": "S14_12.txt",
+   "sha256": "aba69757f4ae2077ae719aa82399b410891beddc5358dbce784edfa4bb60291a",
+   "covers": {
+    "weights": [
+     1,
+     4
+    ]
+   }
+  },
+  "S22_16": {
+   "file": "S22_16.txt",
+   "sha256": "44dbf2f263c719691dad16e766b67f53af7e9a5629b354c26a4e3e0c9931e44b",
+   "covers": {
+    "weights": [
+     2,
+     2
+    ]
+   }
+  }
+ },
+ "expected": {
+  "N": 263,
+  "k": 2304,
+  "array_sha256": "de9cfc5a598f0f6f9c100acda3a910ae836b29c0f3a3aaed9e4276148a05aa81"
+ }
+}
