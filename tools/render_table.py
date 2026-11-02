@@ -54,6 +54,7 @@ summary { cursor:pointer; }
 .subhead { font-size:.9rem; margin:.4rem 0; overflow-wrap:anywhere; }
 .lbl { color:var(--mute); font-size:.8rem; margin-right:.3rem; }
 .bo { display:block; color:var(--mute); font-size:.8rem; }
+.corr { display:block; font-size:.8rem; }
 details.sub > summary { padding:.15rem 0; }
 a { color: inherit; }
 @media (max-width: 480px) { body { font-size:15px; } table { font-size:.82rem; } th, td { padding:.25rem .2rem; } }
@@ -65,7 +66,12 @@ def load(table_dir):
         rows = list(csv.DictReader(f))
     with open(os.path.join(table_dir, "MANIFEST.csv"), newline="", encoding="utf-8") as f:
         manifest = list(csv.DictReader(f))
+    import correct_credit
+    corrected = {}
+    for e in correct_credit.read_log(table_dir):
+        corrected.setdefault(e["row_key"], []).append(e["date"])
     for r in rows:
+        r["_corrected"] = sorted(set(corrected.get(correct_credit.row_key(r), [])))
         r["t"], r["v"], r["k"] = int(r["t"]), int(r["v"]), int(r["k"])
         r["N"] = int(float(r["N"]))
     return rows, manifest
@@ -189,6 +195,17 @@ def short_ref(rid):
     who = sur[0] if len(sur) == 1 else ("%s and %s" % tuple(sur) if len(sur) == 2
                                         else sur[0] + " et al.")
     return (who + " " + year).strip()
+
+
+CORRECTIONS_URL = "https://github.com/chrispbsmolen/ca-tools/blob/main/table/CREDIT_CORRECTIONS.csv"
+
+
+def corrected_html(r):
+    """A mark on a row whose credit was corrected (tools/correct_credit.py), linking the log."""
+    d = r.get("_corrected") or []
+    if not d:
+        return ""
+    return ' <a class=corr href="%s">credit corrected %s</a>' % (CORRECTIONS_URL, html.escape(", ".join(d)))
 
 
 def builds_on_html(r):
@@ -398,38 +415,38 @@ def evidence_html(rs):
     parts = []
     if cited and (ver or lit):
         bo = builds_on_html(cited[0])
-        parts.append('<span class=lbl>Colbourn\'s table</span> %s%s<br>' %
+        parts.append('<span class=lbl>Colbourn\'s table</span> %s%s%s<br>' %
                      (html.escape(construction_of(cited[0]) or cited[0]["source_detail"]),
-                      '<span class=bo>builds on %s</span>' % bo if bo else ""))
+                      '<span class=bo>builds on %s</span>' % bo if bo else "", corrected_html(cited[0])))
     for r in lit:
         # a size published in a paper, no array in hand (tier CITED, source S7)
         cr = credit_of(r)
         con = construction_of(r)
         bo = builds_on_html(r)
-        parts.append('<span class="tag lit">published</span>%s%s%s%s<br>' % (
+        parts.append('<span class="tag lit">published</span>%s%s%s%s%s<br>' % (
             html.escape(cr + "; ") if cr else "",
             ("<i>%s</i>; " % html.escape(con)) if con else "",
             html.escape(r["source_detail"]),
-            '<span class=bo>builds on %s</span>' % bo if bo else ""))
+            '<span class=bo>builds on %s</span>' % bo if bo else "", corrected_html(r)))
     vparts = []
     for r in ver:
         cr = credit_of(r)
         con = page_text(construction_of(r))
         crs = constant_rows_of(r)
         vparts.append('<span class="tag ver">verified</span>%s%s%s'
-                     '<span class="stamp">%s%s, %s%s</span>' % (
+                     '<span class="stamp">%s%s, %s%s</span>%s' % (
                          html.escape(cr + "; ") if cr else "",
                          ("<i>%s</i>; " % html.escape(con)) if con else "",
                          html.escape(r["source_detail"]),
                          ("builds on %s; " % builds_on_html(r)) if builds_on_html(r) else "",
                          stamp_html(r), identity_html(r),
-                         (", " + crs) if crs else ""))
+                         (", " + crs) if crs else "", corrected_html(r)))
     parts.append("".join(vparts))
     if not ver and not lit:
         r = rs[0]
         bo = builds_on_html(r)
         parts.append(html.escape(construction_of(r) or r["source_detail"] or r["source_id"]) +
-                     ('<span class=bo>builds on %s</span>' % bo if bo else ""))
+                     ('<span class=bo>builds on %s</span>' % bo if bo else "") + corrected_html(r))
     return "".join(parts)
 
 

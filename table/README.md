@@ -638,6 +638,24 @@ Not admissible: forums, unversioned personal pages, private
 communications, anything that cannot be dated and fetched or derived
 again. A new source class is added by a dated change to this list.
 
+## Correcting credit
+
+The claim of a row (t, v, k, N, tier, source, hash, stamp, dates) never changes; a
+wrong result is withdrawn by a RETRACTED row. Credit can be wrong too: a missing
+reference in builds_on, a starting array whose author is not named, a 'new'
+method that is someone else's. The three credit fields of a row (notes,
+construction, builds_on) are corrected in place with `../tools/correct_credit.py`,
+which edits the one line of the row and appends a line to `CREDIT_CORRECTIONS.csv`:
+the date, the row, the field, the old and new value, the reason, and who asked.
+`../tools/consistency.py --check` requires every logged correction to match the
+table, and with `--base` it refuses a change to a credit field of an existing row
+that has no line in the log, so no credit changes silently. On the page a
+corrected row is marked "credit corrected <date>", linked to the log.
+
+    python3 tools/correct_credit.py --row 3,12,196,6228 --field builds_on \
+        --add postop-nck2013 --reason "..." --requested-by "..."        # dry run
+    ... --apply                                                          # write
+
 ## Attribution
 
 The baseline is the work of Charles J. Colbourn (the covering array

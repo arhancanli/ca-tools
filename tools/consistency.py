@@ -33,6 +33,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(
 from ca_table import counted, check_method, METHODS  # noqa: E402  (the one definition of the counted rows)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cphf_cert  # noqa: E402  (family identity, expansion rules, ARRAY_HASH_MAX_ENTRIES)
+import correct_credit  # noqa: E402  (the log of credit corrections, table/CREDIT_CORRECTIONS.csv)
 
 TABLE = "table/ca_table.csv"
 MANIFEST = "table/MANIFEST.csv"
@@ -484,6 +485,13 @@ def check_append_only(base):
                         % (TABLE, i, ", ".join(diff), base))
     if changed > 20:
         problem("%s: %d existing rows changed since %s in all" % (TABLE, changed, base))
+    # the credit fields (notes, construction, builds_on) of an existing row change only with
+    # a line in table/CREDIT_CORRECTIONS.csv (tools/correct_credit.py)
+    try:
+        for p in correct_credit.unlogged_changes(old_rows, new_rows, os.path.dirname(TABLE)):
+            problem(p)
+    except SystemExit as e:
+        problem(str(e))
     return len(new_rows) - len(old_rows)
 
 
@@ -897,6 +905,8 @@ def main():
     check_disputed(rows, man)
     check_retracted(rows)
     check_upgrades(rows)
+    for p in correct_credit.check_log(rows, os.path.dirname(TABLE)):
+        problem(p)
     store = check_sizes()
     check_links()
     if "--base" in args:

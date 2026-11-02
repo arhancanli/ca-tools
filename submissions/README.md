@@ -566,6 +566,28 @@ when it is larger than 1 MiB as text. If that name is already taken
 by a different array, the first eight hex digits of the hash are
 appended, as in `CA_9_2_4_3_9133df95.txt`.
 
+### Credit check
+
+The check proves that an array is a covering array. It cannot prove that the
+credit is right, so every submission's credit is read by the maintainer
+before the merge. To make that reading quick, the report ends with a section
+"Credit check" (`tools/credit_check.py`) that lists what deserves a look:
+a `new` link that is someone else's deposit or a reference already in
+`references.csv`, or whose DOI record names other authors than the credit
+field; a starting array named in the construction or notes (written as
+`CA(N; t, k, v)`) that is a row of the table whose source is not in
+`builds_on`, or whose own methods are not listed; an author of a reference
+named in the text without that reference; `new` while the construction text
+matches a known method; and a first submission under a name. These flags
+never fail a claim. If one of them points at your submission, a short reply
+in the pull request or a corrected `builds_on` settles it.
+
+If the credit of a row already in the table is wrong, yours or anyone's, open an
+issue or comment on the pull request that entered it, saying which row and what
+should change. The maintainer corrects it with `tools/correct_credit.py`, and the
+correction, its reason and who asked are kept in `table/CREDIT_CORRECTIONS.csv`
+and marked on the row on the page.
+
 ## Pull requests from forks
 
 Most submitters will open the pull request from a fork. That works
@@ -608,9 +630,14 @@ write access to your fork.
    researcher" is an affiliation), in the pull request text or sent to
    the maintainer at chrispbsmolen@gmail.com. An ORCID iD is welcome
    and is listed when given. An organization or an AI system may be
-   named alongside a person, never instead of one. Pseudonymous credit
-   arranged before 2026-10-31 stays as it was; it is not available for
-   new submissions.
+   named alongside a person, never instead of one. In rare cases, for
+   a reason given to the maintainer such as privacy or safety, the
+   maintainer may agree to credit under a pseudonym. The person's real
+   name, email address and affiliation are then known to the
+   maintainer, the arrangement is recorded, and the pseudonym is marked
+   as one wherever it appears in the table. A name that is not the
+   person's own, used without such an agreement, breaks this rule, and
+   its credit is corrected or removed when that comes to light.
 
 ## Checking locally before you submit
 
