@@ -27,12 +27,13 @@ summary { cursor:pointer; }
 .subhead { font-size:.9rem; margin:.4rem 0; overflow-wrap:anywhere; }
 .lbl { color:var(--mute); font-size:.8rem; margin-right:.3rem; }
 .bo { display:block; color:var(--mute); font-size:.8rem; }
+.corr { display:block; font-size:.8rem; }
 details.sub > summary { padding:.15rem 0; }
 a { color: inherit; }
 @media (max-width: 480px) { body { font-size:15px; } table { font-size:.82rem; } th, td { padding:.25rem .2rem; } }
 </style></head><body><main>
 <h1>Sizes that follow by published constructions</h1>
-<p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 247 lines, 2026-11-02.</p>
+<p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 246 lines, 2026-11-02.</p>
 <p>Constructions: <b>fuse</b> fusing symbols (Colbourn, Kéri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1); <b>derive</b> deriving a strength (CKRS 2010, (7)); <b>comp</b> composition (CKRS 2010, (3)); <b>CK</b> Chateauneuf-Kreher doubling (Cohen, Colbourn, Ling 2008, Thm 2); <b>CMTW34</b> Colbourn, Martirosyan, Trung, Walker 2006, Thm 3.4; <b>kRoux</b> k-ary Roux (CMTW 2006, Thm 3.3; DCAN values of Yin 2003); <b>PCT</b> Power CT (Colbourn and Zhou 2012, Thm 2.1 with Lemma 2.4; Colbourn and Torres-Jimenez 2013); <b>DP2</b> direct product (Colbourn and Torres-Jimenez 2013, Cor 4.3); <b>OD</b> ordered design (Cohen, Colbourn, Ling 2008, Construction 1); <b>SM</b> Shokri and Moura (J. Combin. Des. 2025).</p>
 <details class=sub><summary>t = 3, v = 6 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>20</td><td class=n>606</td><td class=n>620</td><td class=n>2.26%</td><td>CK</td><td class=ev>CAN(3,10,6)=366 + (6-1)xCAN(2,10,6)=48</td></tr>
@@ -49,12 +50,9 @@ a { color: inherit; }
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 12 (4)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>912</td><td class=n>8747</td><td class=n>9361</td><td class=n>6.56%</td><td>fuse</td><td class=ev>CAN(3,912,13)=8749 - 2x1</td></tr>
-<tr><td class=n>2379</td><td class=n>10164</td><td class=n>10297</td><td class=n>1.29%</td><td>fuse</td><td class=ev>CAN(3,2379,13)=10166 - 2x1</td></tr>
+<tr><td class=n>2379</td><td class=n>9995</td><td class=n>10297</td><td class=n>2.93%</td><td>fuse</td><td class=ev>CAN(3,2379,13)=9997 - 2x1</td></tr>
 <tr><td class=n>3393</td><td class=n>10931</td><td class=n>12491</td><td class=n>12.49%</td><td>fuse</td><td class=ev>CAN(3,3393,13)=10933 - 2x1</td></tr>
 <tr><td class=n>10000</td><td class=n>13115</td><td class=n>13151</td><td class=n>0.27%</td><td>fuse</td><td class=ev>CAN(3,10000,13)=13117 - 2x1</td></tr>
-</tbody></table></details>
-<details class=sub><summary>t = 3, v = 13 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
-<tr><td class=n>2379</td><td class=n>10166</td><td class=n>10321</td><td class=n>1.50%</td><td>SM</td><td class=ev>2x13^3 + (13-2)xmin(CAN(2,183,13)=325, 2q^2-q=325) + CAN(3,13,13)=2197</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 14 (6)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>24</td><td class=n>6202</td><td class=n>6279</td><td class=n>1.23%</td><td>CK</td><td class=ev>CAN(3,12,14)=3381 + (14-1)xCAN(2,12,14)=217</td></tr>
