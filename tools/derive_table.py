@@ -60,6 +60,13 @@ def compute(log=sys.stderr):
                 grid[tv] = sorted(set(grid[tv]) | new); grown += len(new)
         if not grown:
             break
+    # a point the counted lookup cannot answer (k above the largest counted k of its t, v; for
+    # example k - 1 derived from a strength t + 1 row wider than every strength t row) has no
+    # value to improve on, so it is left out of the grid
+    for tv in list(grid):
+        grid[tv] = [k for k in grid[tv] if e0(tv[0], k, tv[1]) is not None]
+        if not grid[tv]:
+            del grid[tv]
     best = {(t, v, k): e0(t, k, v) for (t, v), ks in grid.items() for k in ks}
     orig = dict(best)
     suf = {}
