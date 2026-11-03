@@ -1,0 +1,2 @@
+kind,sha256,credit,notes
+array,9d855adc99ee59baf1d98ed04a73e0e1819a569c69c6740d83240aec28aa350f,Christopher Smolen,"exact check of CA(718; 6, 181, 2); a full ca_verify run on a local machine passed (44913567336 column sets)"
