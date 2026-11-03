@@ -460,6 +460,15 @@ issue or an email with the output), who checks it again and adds the
 VERIFIED row. Either way the SCREENED row stays in the table, as
 `../table/README.md` describes.
 
+Since 2026-11-03 this request is made for you. When a merged claims
+submission enters a row as SCREENED, the table workflow writes the
+request `submissions/<slug>-exact/upgrade.csv` for it, with your credit
+as the person who asks, and starts the exact check on GitHub at once.
+You do not need a second pull request. If the check passes, a VERIFIED
+row is added beside the SCREENED one. If it is over the budget, the
+request gets `NOT_APPLIED.md` saying so, and the route above (the
+maintainer) remains.
+
 ## Upgrading a SCREENED entry (upgrade.csv)
 
 A SCREENED row is evidence, not proof, and it does not count as best

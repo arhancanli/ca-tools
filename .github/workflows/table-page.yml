@@ -41,6 +41,14 @@
 # tools/construction_cert.py on every certificate (a fraction of a second each), and enters the
 # rows, the certificates (table/constructions/<slug>/) and the rebuilt arrays that fit the
 # storage rules (table/arrays/), or writes NOT_APPLIED.md.
+#
+# Automatic exact checks (since 2026-11-03): an array of a claims submission whose full check is
+# over this run's budget enters as SCREENED. tools/auto_upgrade.py then writes the upgrade request
+# submissions/<slug>-exact/upgrade.csv for every such row (credit of the row as the person who
+# asks), it is committed with the rows, and after the push certificate-check.yml is started for
+# it (workflow_dispatch; a push made with GITHUB_TOKEN starts no workflow on its own). Its result
+# is entered by a later run of this workflow like any upgrade request, so the submitter does not
+# need a second pull request.
 
 name: Table page
 
@@ -52,7 +60,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  actions: read           # the results of certificate-check.yml (artifacts)
+  actions: write          # the results of certificate-check.yml (artifacts), and to start it for automatic exact checks
 
 concurrency:
   group: table-page
@@ -121,6 +129,14 @@ jobs:
             fi
           done
           rm -f ca_verify tools/constant_rows c.md
+      - name: Queue the exact check of arrays that entered as SCREENED
+        run: |
+          : > queued.txt
+          [ -s applied.txt ] || exit 0
+          python3 tools/auto_upgrade.py --table-dir table $(cat applied.txt) > queued.txt
+          if [ -s queued.txt ]; then
+            echo "Exact checks queued as upgrade requests: $(tr '\n' ' ' < queued.txt)" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Add the rows of checked certificate submissions not yet in the table
         run: |
           : > applied_cert.txt
@@ -302,6 +318,7 @@ jobs:
         run: |
           git add docs/index.html docs/derived.html table/README.md table/ca_table.rda table/ca_table.csv table/MANIFEST.csv table/arrays table/derived.csv table/certificates table/EXTERNAL.csv table/constructions
           git add submissions/*/NOT_APPLIED.md 2>/dev/null || true
+          while read -r s; do [ -n "$s" ] && git add "submissions/$s/upgrade.csv"; done < queued.txt
           if git diff --cached --quiet; then
             echo "Nothing changed."
             exit 0
@@ -315,7 +332,14 @@ jobs:
             git commit -q -m "Regenerate table page, counts and R data file"
           fi
           for i in 1 2 3; do
-            git pull --rebase -q && git push && exit 0
+            if git pull --rebase -q && git push; then
+              while read -r s; do
+                [ -n "$s" ] || continue
+                gh workflow run certificate-check.yml --repo "$GITHUB_REPOSITORY" --ref main -f slug="$s" \
+                  || echo "::warning::could not start certificate-check.yml for $s; start it by hand (Run workflow, slug $s)"
+              done < queued.txt
+              exit 0
+            fi
             sleep 10
           done
           exit 1
