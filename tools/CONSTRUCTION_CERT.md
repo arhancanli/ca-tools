@@ -1,8 +1,9 @@
 # Construction certificates
 
 A construction certificate proves a covering array by its recipe instead of by checking every
-t-set of the array. Four constructions are known to the checker, each with its theorem stated
-and proved below. They are Power CZ (`powercz-1`, Colbourn and Zhou 2012), fusing one symbol
+t-set of the array. Five constructions are known to the checker, each with its theorem stated
+and proved below. They are Power CZ (`powercz-1`, Colbourn and Zhou 2012), Power CZ with relabelled
+blocks and constant tuples proved by enumeration (`powercz-2`, since 2026-11-03), fusing one symbol
 (`fuse-1`, Colbourn, Keri, Rivas Soriano and Schlage-Puchta 2010, Lemma 3.1), the derived array of
 a lower strength (`derive-1`) and the direct product of two strength-2 arrays (`product-1`). Since
 2026-11-02 a certificate is also a submission route (`constructions.csv`, section "The submission
@@ -288,6 +289,222 @@ The outputs of these runs are not kept in the repository.
   description is not trusted.
 * The paper's Theorem 2.1 constant-row saving (chi) is not part of powercz-1; a certificate that
   uses it needs a separate construction id.
+
+## Power CZ with relabelled blocks (powercz-2)
+
+`powercz-2` extends `powercz-1` in two ways, for binary arrays (v = 2). Each row of the hash
+family may carry its own permutation of the ingredient's columns, and the constant tuples (weight
+0, all entries 0, and weight t, all entries 1) may be proved by an exact enumeration done by the
+checker, instead of being declared by some block. The second change is what lets every block drop
+its constant rows. The first is what makes the enumeration come out empty. For the CA(1400; 5,
+10201, 2) of `submissions/smolen-2026-11-powercz10201/`, seven blocks of a 200-row Paley ingredient
+without its two constant rows replace the 2 + 7 x 200 = 1402 rows of Power CT with shared constant
+rows. Both changes are new in this repository (2026-11-03). The method underneath is Colbourn and
+Zhou's (Theorem 2.2 with Lemma 2.3, `power-cz2012`), and `builds_on` gets that reference as for
+`powercz-1`.
+
+### The construction
+
+As in `powercz-1` there is a hash family H (M rows, k columns, row i over 0..w_i-1 after the
+forbidden values are removed) and one binary ingredient Q_i with R_i rows and w_i columns per row,
+declared to cover a set D_i of weights. Row i may also give a permutation pi_i of 0..w_i-1 (the
+identity when it gives none). Block i of the array is A_i[r][c] = Q_i[r][pi_i(H[i][c])], so the
+symbol x of row i selects column pi_i(x) of the ingredient. A set E of enumerated weights is a
+subset of {0, t}.
+
+### The theorem
+
+Let H' be the family with H'[i][c] = pi_i(H[i][c]). For a weight in E write z for its constant
+value (z = 0 for weight 0, z = 1 for weight t). Call a set of ingredient columns bad for z when no
+row of the ingredient is constant z on it. The image of a set T of array columns in block i is
+the set {H'[i][c] for c in T} of ingredient columns. Suppose that
+
+* (W), (A) and (Q) hold as for `powercz-1`,
+* (S') every weight w not in E is declared in more than (e-1) w (t-w) rows,
+* (E1) for every weight in E, no ingredient has a set of fewer than t columns that is bad for z,
+* (E2) for every weight in E, no t-set T of array columns has, in every block i, an image of t
+  columns that is bad for z.
+
+Then the array is a CA(sum R_i; t, k, 2).
+
+### Proof
+
+Relabelling. A permutation is a bijection, so two columns of H' agree in row i exactly when they
+agree in row i of H. H' therefore has the widths and the agreement bound of H, and the array is
+the `powercz-1` array of H' with the same ingredients. The proof of `powercz-1` covers a target
+tuple using (S) for that tuple's species only. So every tuple whose weight is not in E is covered
+by (W), (A), (Q) and (S').
+
+Constant tuples. Take a weight in E, its value z, and a t-set T of array columns. If the image of
+T in some block i has s < t columns, (E1) gives a row of Q_i that is constant z on the image, and
+the row of the array from that row of Q_i is constant z on T. Otherwise every image has t
+columns. If some image is not bad, a row of that block is constant z on T. So z^t is missed on T
+only when every image has t columns and is bad, and (E2) says this never happens. This is the
+collapse argument. A t-set whose image collapses in some block is covered there because the
+collapsed image is a smaller set, which (E1) pads, and repeated columns cost nothing when every
+target value is the same.
+
+### How the checker verifies (E1) and (E2)
+
+(E1) is checked by listing, for each ingredient and each s = 1, ..., t-1, the s-sets of columns
+that are bad for z. Every count must be 0. (A bad s-set makes every larger set containing it bad,
+so the counts stop at the first s that has one.)
+
+(E2) is checked for e = 2 by enumeration. Choose two rows a and b of the family. By (A) with e = 2,
+two distinct columns agree in at most one row, so the map c -> (H'[a][c], H'[b][c]) is injective.
+For every bad t-set X_a = {x_1 < ... < x_t} of Q_a, every bad t-set X_b of Q_b and every bijection
+sigma from X_a to X_b (t! of them), the checker looks up for each j the column c_j with values
+(x_j, sigma(x_j)) in rows a and b. When all t exist they are t distinct columns (their values in
+row a differ), a candidate. The candidate survives if no other block has a row constant z on its
+image (the test ANDs, over the t columns, the rows equal to z, so a collapsed image is tested as
+the smaller set it is). The weight passes when there is no survivor.
+
+The enumeration is exhaustive. Let T violate (E2). Its images X_a and X_b are bad t-sets, and
+sigma(H'[a][c]) = H'[b][c] for c in T is a bijection between them. At (X_a, X_b, sigma) the
+lookup returns exactly the columns of T, and T survives the test of the other blocks. Conversely
+a survivor is a t-set whose images in rows a and b are bad t-sets and which has no row constant z
+in any other block, so it violates (E2). Different triples give different t-sets (the t-set
+determines its images and sigma), so the number of survivors is exactly the number of t-sets of
+array columns that miss z^t, given (E1). The tests compare that number with a brute-force count.
+
+The checker takes a and b with the smallest product of the numbers of bad t-sets (the first such
+pair in order). If some block has no bad t-set, the product is 0 and so is the count. (E1) is
+needed only for the two blocks a and b (in the other blocks the test sees a collapsed image as
+it is), but the checker requires it of every ingredient, which is simpler to state. It is not
+redundant. The fixed example of the tests (t = 3, an explicit family of three columns) has a
+t-set that collapses onto a bad 2-set in rows a and b and misses 000, and the enumeration without
+(E1) accepts it. An ingredient that covers weight 1 on every t-set has no bad (t-1)-set for z = 0
+(the tuple with t-1 zeros and a one would be missing), and one that covers weight t-1 has none
+for z = 1, so (E1) holds automatically for ingredients that declare weights 1 and t-1.
+
+Only the constant tuples may be enumerated. For a tuple with two different values, a t-set whose
+image collapses two columns with different targets cannot be covered in that block at all, and
+the padding argument above fails. The checker refuses any other weight in `enumerate_weights`.
+The enumeration is implemented for e = 2 only. For e >= 3 a column is determined by e rows, which
+would need e lists and (t!)^(e-1) bijections. A certificate with `enumerate_weights` and another
+e is refused as malformed.
+
+### Format
+
+As for `powercz-1` (section "Certificate format" above), with `"construction": "powercz-2"`, v = 2,
+2 <= t <= 7, and two more keys.
+
+* `"enumerate_weights": [0, t]` at the top level (optional, default empty) lists the weights
+  proved by enumeration, a subset of {0, t} without repeats. When it is not empty, e must be 2.
+* `"relabel": [pi(0), ..., pi(w-1)]` in a family row (optional, default the identity), for a
+  Reed-Solomon or an explicit family. Here w is the row's width after the forbidden values are
+  removed, and the symbol x of the row (numbered 0..w-1 in increasing order, as in `powercz-1`)
+  selects ingredient column pi(x).
+
+A `powercz-1` certificate with either key is malformed, so `powercz-1` is unchanged.
+
+### The checks
+
+| name | hypothesis |
+|---|---|
+| field, shape, width, ingredient_hash | as for `powercz-1` |
+| agreement | (A) on the relabelled family H' (the same as on H) |
+| relabel | every `relabel` is a permutation of the columns 0..w_i-1 of its row's ingredient (otherwise it is reported and not applied) |
+| quilting | (Q), exact, every t-set of columns of every file or inline ingredient |
+| species | (S'), every weight not in `enumerate_weights` declared in more than (e-1) tau rows |
+| enumeration | (E1) and (E2) for every weight in `enumerate_weights`, with the survivor count, which must be 0 |
+| symbols, N, k, sha256 | as for `powercz-1`, on the array assembled with the relabelling |
+
+The quilting check, the lists of bad sets and the enumeration run in the C helper
+`tools/cz2help.c`. The checker compiles it at run time with `cc -O3` into a temporary folder (as
+`tools/check_upgrades.py` builds `ca_verify`), after checking that the source has the sha256
+recorded in `construction_cert.py` (`HELPER_SHA256`). The tool hash in a row's stamp (the sha256 of
+`construction_cert.py`) therefore fixes the helper too, and a change to `cz2help.c` must update that
+constant. The helper reads the ingredients as the checker parsed them (written to temporary files)
+and exits with an error on anything unexpected, which fails the check. It refuses work above 10^11
+operations on 64-bit words. Without a compiler, when the build fails or when the source hash
+differs, exact Python code does the same work and refuses (fails the check, never passes it) above
+3 x 10^8 entry reads, the limit of inline ingredients. For the 1400 certificate that limit is far
+exceeded, so a run without `cc` rejects it. The environment variable `CONSTRUCTION_CERT_NO_HELPER=1`
+forces the Python path.
+
+### Example
+
+The certificate `submissions/smolen-2026-11-powercz10201/CA_1400_5_10201_2.cert.json` (relabel
+lists shortened here)
+
+    {"format": "construction-cert-1", "construction": "powercz-2",
+     "t": 5, "v": 2, "e": 2, "field": {"q": 101, "p": 101, "m": 1},
+     "family": {"type": "reed-solomon", "rows": [
+        {"point": 0, "forbidden": [], "ingredient": "S14_101", "relabel": [76, 0, 47, ...]},
+        ... points 1 to 6, each with its own relabel ...]},
+     "ingredients": {"S14_101": {"file": "S14_101.txt", "sha256": "fea4d881...",
+                                 "covers": {"weights": [1, 4]}}},
+     "enumerate_weights": [0, 5],
+     "expected": {"N": 1400, "k": 10201, "array_sha256": "049f3a68..."}}
+
+S14_101 is the Paley-type CA(202; 5, 101, 2) of q = 101 without its two constant rows. The checker
+reports (about 20 s on the 2-core VM, 15 s of it the quilting check of C(101, 5) = 79,208,745
+column sets)
+
+    pass [enumeration]
+      weight 0: tuple 0^5; bad s-sets (s = 1..5) per ingredient: S14_101 0/0/0/0/759; blocks 0 and 1,
+      69129720 cases, 69129720 give array columns, 0 survivors (cz2help)
+      weight 5: ... the same numbers ...
+      weight 0       tau  0  need >=  1  have  0  (enumerated)
+      weight 1       tau  4  need >=  5  have  7
+      weight 2       tau  6  need >=  7  have  7
+    N = 1400  k = 10201  t = 5  v = 2  sha256 = 049f3a6878cf9a73eae8b73a0267dadbc279cea6ea5cceb1ded0301dbed0d1ad
+    CERTIFICATE VALID
+
+With the identity relabelling in every row the same certificate is rejected by the enumeration,
+with 20873 survivors for weight 0 and 20873 for weight 5 (all of them t-sets of columns that miss
+the constant tuple). This agrees with two separate programs written before the checker.
+
+### Tests of powercz-2
+
+`tools/tests_construction/test_powercz2.py` has three parts.
+
+1. The real certificate passes and rebuilds the array of sha256 049f3a68.... The identity
+   relabelling is rejected with 20873 survivors per weight. Planted faults are rejected by the
+   check they target. These are a relabel that is not a permutation (a repeated entry, one entry
+   short, an entry out of range), a wrong ingredient hash, a family row removed (species), weight
+   5 declared by the ingredient (quilting), an ingredient without one row (quilting), a repeated
+   point (agreement), weight 5 missing from `enumerate_weights` (species), e = 1 or 3, weight 2 in
+   `enumerate_weights`, and either new key in a `powercz-1` certificate (malformed). Without the
+   helper, and with a helper source of another sha256, the certificate is rejected.
+2. The helper against the Python code on random binary arrays (t = 2 to 6), the number of
+   missing (t-set, tuple) pairs with the first miss, and the bad-set counts for z = 0 and 1.
+3. Random small certificates (t = 3, 4, q = 5, 7, e = 2, 3 to 6 rows, forbidden values, column
+   limits, random relabellings) against an independent oracle with its own Reed-Solomon
+   evaluation, relabelling and assembly and a brute-force count over every t-set. The assertions
+   are (A1) every accepted certificate gives a covering array with the independently computed
+   sha256, (A2) every survivor count equals the brute-force number of t-sets missing the constant
+   tuple, (A3) the helper and the Python code give the same verdict, failures and counts, (A4)
+   every case whose declared weights are true, whose species rule holds, whose ingredients have
+   no bad set below t and whose array misses no constant tuple is accepted, and (A5) planted
+   faults on accepted cases are caught by their check. Two mutants must each accept a
+   non-covering array, the enumeration check disabled (random cases with the identity
+   relabelling) and the condition (E1) dropped (the fixed example above).
+
+#### Results (2026-11-03)
+
+| | seed 20261103 | seed 777 |
+|---|---|---|
+| real certificate and its 17 planted faults | all as intended | (not run, `--skip-real`) |
+| identity relabelling, survivors for weights 0 and 5 | 20873 and 20873 | |
+| helper vs Python, quilting / bad-set comparisons | 200 / 400, 0 differences | 200 / 400, 0 differences |
+| random certificates / accepted | 200 / 84 | 200 / 101 |
+| accepted but not covering (A1) | 0 | 0 |
+| survivor counts compared with brute force (A2), of these nonzero | 459, 30 | 459, 18 |
+| helper and Python verdicts, failures and counts equal (A3) | 200 of 200 | 200 of 200 |
+| A4 cases, of these rejected | 84, 0 | 101, 0 |
+| planted faults on accepted cases (A5), caught | 85, 85 | 101, 101 |
+| mutant without the enumeration check, non-covering arrays accepted | 3 | 4 |
+| mutant without (E1), non-covering arrays accepted | 1 (the fixed example) | 1 |
+
+The run with the real certificate takes about 280 s on the 2-core VM (each full check of the
+1400 certificate takes about 19 s), the run without it about 70 s. The suites of the other
+constructions pass unchanged (`test_construction_cert.py --cases 40`, `test_kinds.py --cases 400`,
+`test_real_certs.py`).
+
+    python3 tools/tests_construction/test_powercz2.py --cases 200 --seed 20261103
+    python3 tools/tests_construction/test_powercz2.py --cases 200 --seed 777 --skip-real
 
 ## Ingredients from the table
 
