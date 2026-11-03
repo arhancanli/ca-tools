@@ -1,0 +1,114 @@
+{
+ "format": "construction-cert-1",
+ "construction": "powercz-1",
+ "t": 4,
+ "v": 2,
+ "e": 3,
+ "field": {
+  "q": 9,
+  "p": 3,
+  "m": 2,
+  "modulus": [
+   1,
+   0,
+   1
+  ]
+ },
+ "family": {
+  "type": "reed-solomon",
+  "rows": [
+   {
+    "point": 0,
+    "forbidden": [],
+    "ingredient": "S04_9"
+   },
+   {
+    "point": 1,
+    "forbidden": [],
+    "ingredient": "S13_9"
+   },
+   {
+    "point": 2,
+    "forbidden": [],
+    "ingredient": "S13_9"
+   },
+   {
+    "point": 3,
+    "forbidden": [],
+    "ingredient": "S13_9"
+   },
+   {
+    "point": 4,
+    "forbidden": [],
+    "ingredient": "S13_9"
+   },
+   {
+    "point": 5,
+    "forbidden": [],
+    "ingredient": "S12_9"
+   },
+   {
+    "point": 6,
+    "forbidden": [],
+    "ingredient": "S12_9"
+   },
+   {
+    "point": 7,
+    "forbidden": [],
+    "ingredient": "S23_9"
+   },
+   {
+    "point": 8,
+    "forbidden": [],
+    "ingredient": "S23_9"
+   }
+  ]
+ },
+ "ingredients": {
+  "S04_9": {
+   "file": "S04_9.txt",
+   "sha256": "15e419504157714134d387202ee1bacb65d633b3b08f32837abb0fe445770153",
+   "covers": {
+    "weights": [
+     0,
+     4
+    ]
+   }
+  },
+  "S13_9": {
+   "file": "S13_9.txt",
+   "sha256": "4c53459c1f99db44dd83454ed808f5f15247716cbdc5d2b4594b7cd4dca622da",
+   "covers": {
+    "weights": [
+     1,
+     3
+    ]
+   }
+  },
+  "S12_9": {
+   "file": "S12_9.txt",
+   "sha256": "b30f54356753ff66a1161cebcd96d78b955f9fcb85af9168a337f36419fd933b",
+   "covers": {
+    "weights": [
+     1,
+     2
+    ]
+   }
+  },
+  "S23_9": {
+   "file": "S23_9.txt",
+   "sha256": "b47077833ff3537f11360549ce57b726f980283a7c65ecbbc11066c7437acc84",
+   "covers": {
+    "weights": [
+     2,
+     3
+    ]
+   }
+  }
+ },
+ "expected": {
+  "N": 184,
+  "k": 729,
+  "array_sha256": "381c87e653b9d1ef93f64dbf4a377c3d71b8b049339d4136cfe067f7c6f5093d"
+ }
+}
