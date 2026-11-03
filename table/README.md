@@ -414,8 +414,18 @@ names (same t, v, k, N, `array_sha256` and `family_sha256`). This is defined onc
 `counted()` in `ca_table.py`, which the tools in `../tools/` import,
 and mirrored by `counted_rows()` in `ca_table.R`. The stair-step rule
 gives the best known N at (t, v, k) as the smallest N among the
-counted rows with the same t and v and k at least the requested k. In
-R, with no packages:
+counted rows with the same t and v and k at least the requested k.
+
+The counted lookup uses only rows entered at the same number of
+symbols v, so that each counted entry points to an array, or a cited
+size, of exactly that kind. An array over more symbols also gives
+sizes at fewer symbols, for example by fusing (Colbourn, Keri, Rivas
+Soriano and Schlage-Puchta 2010, Lemma 3.1: CAN(t, k, v) <= CAN(t, k,
+v + m) - 2m). Such reductions are computed sizes, not arrays. They are
+listed in `derived.csv` and returned by `best_derived()`, and never
+mixed into the counted lookup (raised in issue #30).
+
+In R, with no packages:
 
     tab <- read.csv("https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/ca_table.csv",
                     stringsAsFactors = FALSE,
