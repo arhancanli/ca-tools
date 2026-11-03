@@ -1,0 +1,122 @@
+{
+ "format": "construction-cert-1",
+ "construction": "powercz-1",
+ "notes": [
+  "Colbourn and Zhou 2012, Thm 2.2 with Lemma 2.3; GF(13), e=3, 9 rows of width 13; S03_13/S14_13 (31 rows, complements) from the CA(32;4,13,2) derived from the CA(64;5,14,2) of Colbourn, Keri, Rivas Soriano, Schlage-Puchta 2010; S13_13 declared on the S14_13 file; S12_13 (26 rows) found by SAT under Z13 column symmetry, S23_13 its complement"
+ ],
+ "t": 4,
+ "v": 2,
+ "e": 3,
+ "field": {
+  "q": 13,
+  "p": 13,
+  "m": 1
+ },
+ "family": {
+  "type": "reed-solomon",
+  "rows": [
+   {
+    "point": 0,
+    "forbidden": [],
+    "ingredient": "S03_13"
+   },
+   {
+    "point": 1,
+    "forbidden": [],
+    "ingredient": "S14_13"
+   },
+   {
+    "point": 2,
+    "forbidden": [],
+    "ingredient": "S13_13"
+   },
+   {
+    "point": 3,
+    "forbidden": [],
+    "ingredient": "S13_13"
+   },
+   {
+    "point": 4,
+    "forbidden": [],
+    "ingredient": "S13_13"
+   },
+   {
+    "point": 5,
+    "forbidden": [],
+    "ingredient": "S12_13"
+   },
+   {
+    "point": 6,
+    "forbidden": [],
+    "ingredient": "S12_13"
+   },
+   {
+    "point": 7,
+    "forbidden": [],
+    "ingredient": "S23_13"
+   },
+   {
+    "point": 8,
+    "forbidden": [],
+    "ingredient": "S23_13"
+   }
+  ]
+ },
+ "ingredients": {
+  "S03_13": {
+   "file": "S03_13.txt",
+   "sha256": "2ea65c6485a926f885078188062d50c10a4bf8692aac5400ca02574b84e39899",
+   "covers": {
+    "weights": [
+     0,
+     3
+    ]
+   }
+  },
+  "S14_13": {
+   "file": "S14_13.txt",
+   "sha256": "8a1e048525c812056f1da322e365130e9ee22e3764fad6391fb5c741e9af4cd2",
+   "covers": {
+    "weights": [
+     1,
+     4
+    ]
+   }
+  },
+  "S13_13": {
+   "file": "S13_13.txt",
+   "sha256": "8a1e048525c812056f1da322e365130e9ee22e3764fad6391fb5c741e9af4cd2",
+   "covers": {
+    "weights": [
+     1,
+     3
+    ]
+   }
+  },
+  "S12_13": {
+   "file": "S12_13.txt",
+   "sha256": "4e886480e278a7463d3121974f1cb4a3844d417cb2d589d0dd013e971435c658",
+   "covers": {
+    "weights": [
+     1,
+     2
+    ]
+   }
+  },
+  "S23_13": {
+   "file": "S23_13.txt",
+   "sha256": "acc7f0c957937c2652afad0470edb124ccaa6f152498ab255620d08460964966",
+   "covers": {
+    "weights": [
+     2,
+     3
+    ]
+   }
+  }
+ },
+ "expected": {
+  "N": 259,
+  "k": 2197,
+  "array_sha256": "6ef0b1b2b41630f98c9d99e88ed450eb362ab06a45078fd38e3dd376f59a38eb"
+ }
+}
