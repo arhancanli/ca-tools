@@ -45,6 +45,7 @@ sys.path.insert(0, HERE)
 import check_submission as cs  # noqa: E402
 import builds_on as bo  # noqa: E402
 import construction_cert as ccert  # noqa: E402
+import provenance  # noqa: E402
 
 HEADER = ["t", "v", "k", "N", "file", "source_detail", "construction", "builds_on", "credit", "notes"]
 LIST_HEADER = ["file", "t", "v", "k", "N", "construction", "sha256", "array_sha256", "check", "stored"]
@@ -102,6 +103,9 @@ def check_claim(cl, ctx, tmp):
                 raise ConError("constructions.csv field %s contains a line break" % fld)
         t, v, k, N = (int_of(raw, x, 1) for x in ("t", "v", "k", "N"))
         cl.update(t=t, v=v, k=k, N=N)
+        for prob in (provenance.construction_problem(raw.get("construction")), provenance.tj_text_problem(raw)):
+            if prob:
+                raise ConError(prob)
         fname = raw["file"].strip()
         if not cs.SAFE_NAME.match(fname) or not fname.endswith(".json"):
             raise ConError("file %r is not a plain .json file name in the submission directory" % fname)
@@ -138,6 +142,9 @@ def check_claim(cl, ctx, tmp):
         cl["lines"].append("array sha256 (canonical form): `%s`" % sha)
         for ing in res["ingredients"]:
             cl["lines"].append("ingredient %s: %s" % (ing["name"], ingredient_text(ing)))
+            if ing["source"] == "table" and provenance.TJ_DATA.search(manifest_source(ing["file"])):
+                raise ConError("ingredient %s is the table array %s, a Torres-Jimenez array: his arrays may not "
+                               "be ingredients (submissions/README.md, rule 6)" % (ing["name"], ing["file"]))
         # builds_on: as given, checked, with the reference of the construction's theorem
         given = raw.get("builds_on") or ""
         ref = ccert.REFERENCE[kind]
@@ -196,6 +203,19 @@ def check_claim(cl, ctx, tmp):
     except (ConError, OSError, ValueError) as e:
         cl["reasons"].append(str(e))
     return cl
+
+
+_MANIFEST = None
+
+
+def manifest_source(fname):
+    """source_detail of a table array file (table/MANIFEST.csv)"""
+    global _MANIFEST
+    if _MANIFEST is None:
+        import csv
+        with open(os.path.join(REPO, "table", "MANIFEST.csv"), newline="", encoding="utf-8") as f:
+            _MANIFEST = {m["file"]: m["source_detail"] for m in csv.DictReader(f)}
+    return _MANIFEST.get(fname, "")
 
 
 def ingredient_text(ing):

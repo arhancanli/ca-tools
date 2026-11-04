@@ -47,6 +47,7 @@ sys.path.insert(0, os.path.join(REPO, "table"))
 from ca_table import counted  # noqa: E402  (the one definition of the counted rows)
 sys.path.insert(0, os.path.join(REPO, "tools"))
 import builds_on  # noqa: E402  (references.csv and the builds_on field)
+import provenance  # noqa: E402  (HOW.md, named constructions, no Torres-Jimenez bases)
 
 CLAIMS_HEADER = ["t", "v", "k", "N", "file", "source_detail", "construction",
                  "builds_on", "credit", "notes"]
@@ -359,7 +360,8 @@ def read_table_array(table_dir, name, v):
 def similar_known(rows, v, ctx):
     """Known arrays with the same N, k and v whose fingerprint equals this
     array's: arrays on file in the table, and the arrays withdrawn on
-    2026-10-27 (table/withdrawn_fingerprints.csv). Returns a list of texts."""
+    2026-10-27 (table/withdrawn_fingerprints.csv) and the Torres-Jimenez arrays of the CAs package
+    (table/tj_fingerprints.csv). Returns a list of texts."""
     n, k = len(rows), len(rows[0])
     cand_table = [m for m in ctx["manifest"] if int(m["v"]) == v and int(m["k"]) == k and int(m["N"]) == n]
     cand_wd = [w for w in ctx["withdrawn_fp"] if int(w["v"]) == v and int(w["k"]) == k and int(w["N"]) == n]
@@ -520,10 +522,12 @@ def check_claim(cl, ctx, deadline):
         for fld in ("file", "source_detail", "credit"):
             if not (raw.get(fld) or "").strip():
                 raise ClaimError("claims.csv field %s is empty" % fld)
-        if not (raw.get("construction") or "").strip():
-            raise ClaimError("claims.csv field construction is empty: name the "
-                             "construction or search that produced the array "
-                             "(write 'unknown' if it is not known)")
+        p = provenance.construction_problem(raw.get("construction"))
+        if p:
+            raise ClaimError("claims.csv field " + p)
+        p = provenance.tj_text_problem(raw)
+        if p:
+            raise ClaimError(p)
         for fld in CLAIMS_HEADER:
             if any(ch in (raw.get(fld) or "") for ch in "\r\n"):
                 raise ClaimError("claims.csv field %s contains a line break" % fld)
@@ -602,6 +606,11 @@ def check_claim(cl, ctx, deadline):
         found, checked = similar_known(rows, v, ctx)
         cl["similar"] = found
         cl["similar_checked"] = checked
+        tj = [x for x in found if x.startswith("withdrawn array ")]
+        if tj:
+            raise ClaimError("this array is the same as a Torres-Jimenez array up to row, column and "
+                             "symbol permutations (%s); his arrays may not be submitted, as ingredients, "
+                             "starts or copies (submissions/README.md, rule 6)" % "; ".join(tj))
 
         # table comparison (done before verification so the report has it
         # even when verification fails)
@@ -1189,7 +1198,7 @@ def main(argv=None):
                constant_rows=constant_rows_binary(),
                constant_rows_budget=a.constant_rows_minutes * 60.0,
                table_dir=a.table_dir, manifest=manifest,
-               withdrawn_fp=load_withdrawn_fp(a.table_dir),
+               withdrawn_fp=provenance.load_tj_fingerprints(a.table_dir),
                references=load_references(a.table_dir))
 
     start = time.monotonic()
@@ -1208,6 +1217,8 @@ def main(argv=None):
                         "limit per submission; split it into several pull requests "
                         "(see \"Size limits\" in submissions/README.md)"
                         % (total_bytes / 1048576.0, MAX_SUBMISSION_BYTES // 1048576))
+    if not problems:
+        problems += provenance.how_problems(sub, slug)
     cpath = os.path.join(sub, "claims.csv")
     # certificates (certificates.csv) get the light check of tools/check_certificates.py here: format,
     # identity, duplicates, the estimate and plan of the exact check, and a small screen; the exact
@@ -1249,7 +1260,8 @@ def main(argv=None):
         problems.append("the submission directory and claims.csv must not be "
                         "symbolic links")
     elif not os.path.isfile(cpath):
-        problems.append("claims.csv is missing from submissions/%s/" % slug)
+        if not others:
+            problems.append("claims.csv is missing from submissions/%s/" % slug)
     else:
         with open(cpath, newline="", encoding="utf-8-sig") as f:
             reader = csv.reader(f)

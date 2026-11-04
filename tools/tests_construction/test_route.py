@@ -70,6 +70,7 @@ def run(keep=None):
     oa16 = [[a, b] + [a ^ mul[m][b] for m in (1, 2, 3)] for a in range(4) for b in range(4)]
     S0 = os.path.join(T, "submissions", "seed")
     os.makedirs(S0)
+    open(os.path.join(S0, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     tu.write_rows(os.path.join(S0, "OA16.txt"), oa16)
     scr = tu.random_ca(rng, cav, 30, 2, 40, 2, W)
     tu.write_rows(os.path.join(S0, "S.txt"), scr)
@@ -88,6 +89,7 @@ def run(keep=None):
     scr2 = tu.random_ca(rng, cav, 31, 2, 41, 2, W)
     S0b = os.path.join(T, "submissions", "seed-screened")
     os.makedirs(S0b)
+    open(os.path.join(S0b, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     tu.write_rows(os.path.join(S0b, "S2.txt"), scr2)
     open(os.path.join(S0b, "claims.csv"), "w").write(",".join(cs.CLAIMS_HEADER) + "\n" +
                                                      tu.claims_line(2, 2, 41, 31, "S2.txt", "Ann Seed"))
@@ -102,6 +104,7 @@ def run(keep=None):
     # --- the submission --------------------------------------------------------------------------
     S = os.path.join(T, "submissions", "con-1")
     os.makedirs(S)
+    open(os.path.join(S, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     r_fuse = finish(os.path.join(S, "fuse.json"), cert("fuse-1", {"t": 2, "v": 3, "input": {"table": sha_oa}}), TD)
     ca3 = None
     while ca3 is None:
@@ -172,6 +175,7 @@ def run(keep=None):
     def neg(name, files, line, why):
         d = os.path.join(T, "submissions", name)
         os.makedirs(d)
+        open(os.path.join(d, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
         for fn, content in files.items():
             open(os.path.join(d, fn), "w").write(content)
         open(os.path.join(d, "constructions.csv"), "w").write(",".join(ccn.HEADER) + "\n" + line)
@@ -207,6 +211,7 @@ def run(keep=None):
     # not stored: the storage limit lowered, so only the certificate is kept
     d = os.path.join(T, "submissions", "con-big")
     os.makedirs(d)
+    open(os.path.join(d, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     shutil.copyfile(os.path.join(tmpd, "d2.json"), os.path.join(d, "d2.json"))
     open(os.path.join(d, "constructions.csv"), "w").write(",".join(ccn.HEADER) + "\n" +
                                                           con_line(1, 2, 39, r2["N"], "d2.json", "Eve Big", "derived array", "fuse-ckrs2010"))

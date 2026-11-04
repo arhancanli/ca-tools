@@ -68,6 +68,7 @@ sys.path.insert(0, HERE)
 import check_submission as cs  # noqa: E402
 import builds_on as bo  # noqa: E402
 import cphf_cert as cc  # noqa: E402
+import provenance  # noqa: E402
 from cphf_cert import CertError  # noqa: E402
 
 HEADER = ["t", "v", "k", "N", "file", "mode", "source_detail", "construction", "builds_on", "credit",
@@ -229,6 +230,9 @@ def read_claims(sub, builds_on_override=None):
 
 def prepare(raw, sub, exe, ctx, tmp):
     c = dict(raw=raw)
+    for prob in (provenance.construction_problem(raw.get("construction")), provenance.tj_text_problem(raw)):
+        if prob:
+            raise CertError(prob)
     c["builds_on"], c["builds_on_warnings"] = claim_builds_on(raw, ctx["refs"])
     for fld in ("file", "source_detail", "construction", "credit"):
         if not (raw.get(fld) or "").strip():

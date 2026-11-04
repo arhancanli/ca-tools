@@ -15,7 +15,9 @@ from the `docs/` folder of `main` and regenerated on every push to
 A submission is one new directory, `submissions/<slug>/`, where the
 slug is a short name of your choosing made of letters, digits, dots,
 hyphens and underscores, for example `smith-t4-v3-2026-11`. It holds
-a file named `claims.csv` and the array files that file names.
+a file named `claims.csv`, the array files that file names, and a
+`HOW.md` that says how the arrays were built (below, "How it was
+built").
 Nothing else in the repository should change in your pull request.
 This is the route for an array file of at most 50 MiB. The section
 "Which route to use" below lists the others: a covering perfect hash
@@ -40,8 +42,9 @@ search method (for example "simulated annealing from the
 CA(136; 4, 179, 2) with one column added"), or an algebraic source.
 It is required, because the construction is what another researcher
 needs in order to know how the array can be used as an ingredient
-(constant rows, how it splits). Write `unknown` only if you cannot
-say. `builds_on` names the published work the array rests on. List
+(constant rows, how it splits). `unknown` is not accepted (since
+2026-11-04): an array whose construction cannot be named is not
+entered. `builds_on` names the published work the array rests on. List
 the id of every method used, from `../table/references.csv`, separated
 by semicolons (for example `cphf-smc2006;fuse-ckrs2010`). An id that
 is not in that file fails the claim, and so does an empty field. If a
@@ -83,6 +86,28 @@ check records it as `equals_best`. (It is a different array from the
 Dwyer array already stored as `table/arrays/CA_9_2_4_3.txt`. A
 verbatim copy of that file would be rejected as a duplicate.) The
 example directory itself is never checked or recorded.
+
+## How it was built (HOW.md)
+
+The table exists so that anyone can see how every array in it was
+built, and rebuild it. Every submission that adds arrays
+(`claims.csv`, `certificates.csv`, `constructions.csv` or
+`external.csv`) therefore holds a file `HOW.md` with three parts,
+each filled in:
+
+    Construction: the construction or search method, by name
+    Built from: every base array or ingredient, by its table file name
+      or by an openly licensed source; "nothing" if built from scratch
+    Program: the program or recipe that rebuilds the arrays, as a link
+      to the code or as the commands, with seeds and settings for a search
+
+One `HOW.md` covers the whole submission; per array details stay in
+`claims.csv`. The check fails a submission without it, or with a part
+left empty. Submissions opened before 2026-11-04 are listed in
+`HOW_EXEMPT.txt`. A request to check a SCREENED entry exactly
+(`upgrade.csv`) adds no array and needs no `HOW.md`. The check can
+see that the parts are there, not that the program works; the
+maintainer reads them before the merge.
 
 ## What a claim means
 
@@ -610,13 +635,13 @@ exactly as above: the check fetches your branch as data, reports on
 the pull request, and the rows are added after merge. Nothing needs
 write access to your fork.
 
-## Rules (since 2026-10-31)
+## Rules (since 2026-10-31; rules 1 and 6 as of 2026-11-04)
 
-1. Say how the work was done. In the pull request text, name the tools
-   that found the arrays and wrote the claims and text, AI systems
-   included, and who takes responsibility for the submission. The
-   check decides whether an array is accepted, not the tools used, but
-   readers deserve to know.
+1. Say how the arrays were built, so they can be rebuilt: `HOW.md`
+   (above, "How it was built") with the construction, what it was
+   built from and the program or recipe. This is checked. Naming other
+   tools, AI systems included, is welcome but not required. A person
+   takes responsibility for every submission (rule 5).
 2. Arrays, not assertions. A claim is accepted only with an array the
    check can verify, or a certificate the table can check with its own
    tool. A proof, size or bound supported only by a description, or by
@@ -653,6 +678,18 @@ write access to your fork.
    as one wherever it appears in the table. A name that is not the
    person's own, used without such an agreement, breaks this rule, and
    its credit is corrected or removed when that comes to light.
+
+6. No Torres-Jimenez arrays. The arrays withdrawn on 2026-10-27
+   (`../table/withdrawn_files.csv`) and the Torres-Jimenez arrays of
+   the CAs package (`TJ2level_CAs`, `CAEX_CAs`, `TJcat`) may not be
+   submitted, as copies, ingredients or starts. The check refuses a
+   claim whose `builds_on` names his array repository (`web-tj`),
+   whose text names one of those data sets or arrays, or whose array
+   is the same as one of them up to row, column and symbol
+   permutations (`../table/withdrawn_fingerprints.csv`,
+   `../table/tj_fingerprints.csv`, fingerprints only). His published
+   methods, such as the CA Extender (`caex-tjaa2021`), may be used and
+   are credited as methods.
 
 ## Checking locally before you submit
 

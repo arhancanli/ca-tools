@@ -181,6 +181,7 @@ def run(keep=None):
     cs.FULL_FRACTION = -1.0                      # every array with more than 30 columns is screened
     S1 = os.path.join(T, "submissions", "scr-array")
     os.makedirs(S1)
+    open(os.path.join(S1, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     arr1 = random_ca(rng, cav, 30, 2, 40, 2, W)
     write_rows(os.path.join(S1, "A1.txt"), arr1)
     arr2 = random_ca(rng, cav, 120, 2, 45, 3, W)
@@ -211,6 +212,7 @@ def run(keep=None):
     deposit[loc3] = p3
     S2 = os.path.join(T, "submissions", "scr-external")
     os.makedirs(S2)
+    open(os.path.join(S2, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     with open(os.path.join(S2, "external.csv"), "w") as f:
         f.write(",".join(ea.EXT_CLAIMS_HEADER) + "\n")
         f.write("2,2,42,35,%s,%s,test deposit,random search,new https://example.org/y,Carol Original,\n" % (loc3, sha3))
@@ -220,6 +222,7 @@ def run(keep=None):
     # a CPHF family planned over the budget, so screened
     S3 = os.path.join(T, "submissions", "scr-family")
     os.makedirs(S3)
+    open(os.path.join(S3, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     with tempfile.TemporaryDirectory(prefix="cafam-") as tmpb:
         exe = ck.build(tmpb)
         while True:
@@ -387,6 +390,7 @@ def run(keep=None):
     cs.FULL_FRACTION = -1.0
     S4 = os.path.join(T, "submissions", "scr-more")
     os.makedirs(S4)
+    open(os.path.join(S4, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     arr5 = random_ca(rng, cav, 32, 2, 41, 2, W)
     arr6 = random_ca(rng, cav, 33, 2, 43, 2, W)
     write_rows(os.path.join(S4, "A5.txt"), arr5)
