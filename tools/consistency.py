@@ -713,7 +713,7 @@ def _look(st, t, k, v):
 
 def check_derived(rows):
     """table/derived.csv (tools/derive_table.py), checked without the engine: every line is
-    below the counted lookup, names a published construction, and its arithmetic, with every
+    below the counted lookup (or, past the table's range, has none and says so), names a published construction, and its arithmetic, with every
     ingredient equal to the lookup (counted or derived) at that point, gives its N."""
     if not os.path.exists(DERIVED):
         return 0
@@ -731,14 +731,18 @@ def check_derived(rows):
         key = (int(d["t"]), int(d["v"]), int(d["k"])); n = int(d["N"])
         comb[key] = min(n, comb.get(key, n))
     st1 = _stairs(comb)
-    tok = re.compile(r"CAN\((\d+),(\d+),(\d+)\)=(\d+)")
+    tok = re.compile(r"(?<!D)CAN\((\d+),(\d+),(\d+)\)=(\d+)")   # not the DCAN of k-ary Roux
     for d in der:
         t, v, k, n = int(d["t"]), int(d["v"]), int(d["k"]), int(d["N"])
         where = "%s: %d,%d,%d,%d" % (DERIVED, t, v, k, n)
         if d["law"] not in DERIVED_LAWS:
             problem("%s: unknown construction %r" % (where, d["law"])); continue
         l0 = _look(st0, t, k, v)
-        if l0 is None or n >= l0 or int(d["lookup_N"]) != l0:
+        if d["lookup_N"] == "" or d["gain_pct"] == "":
+            # past the table's range (derive_table.py EXT_LADDER): no counted value at this k
+            if l0 is not None or d["lookup_N"] != "" or d["gain_pct"] != "":
+                problem("%s: lookup left empty but the counted lookup is %s" % (where, l0)); continue
+        elif l0 is None or n >= l0 or int(d["lookup_N"]) != l0:
             problem("%s: not below the counted lookup %s (line says %s)" % (where, l0, d["lookup_N"])); continue
         expr = d["arithmetic"]
         bad = []
@@ -752,7 +756,7 @@ def check_derived(rows):
             problem("%s: %s" % (where, "; ".join(bad))); continue
         expr = re.sub(r", q=\d+, e=\d+, p=\d+$", "", expr)              # PCT parameters
         expr = re.sub(r"^M=(\d+) x", r"\1 x", expr)                     # PCT copies
-        expr = re.sub(r"DCAN\(2,\d+,\d+\)=(\d+) \(Yin 2003, [^)]*\)", r"\1", expr)
+        expr = re.sub(r"DCAN\(2,\d+,\d+\)=(\d+) \(Yin 2003, .*\)$", r"\1", expr)   # group names may hold parentheses
         expr = re.sub(r"2q\^2-q=(\d+)", r"\1", expr)                    # Shokri-Moura cap
         expr = re.sub(r"C\((\d+)\+1,2\)", lambda m: str(math.comb(int(m.group(1)) + 1, 2)), expr)
         expr = re.sub(r"^floor\((.*) / (\d+)\)$", r"(\1)//(\2)", expr)

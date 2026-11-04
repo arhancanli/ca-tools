@@ -19,6 +19,13 @@ Thm 3.4, k-ary Roux (CMTW 2006 Thm 3.3 with Yin 2003 DCAN values), Power CT (CZ 
 Thm 2.1 with Lemma 2.4, one constant row per copy, CTJ 2013 Obs 3.2), direct product
 (CTJ 2013 Cor 4.3), ordered design (CCL 2008 Construction 1), Shokri-Moura (JCD 2025).
 
+Past the baseline's column range (k = 20,000 at strength 2 and 10,000 above; the largest k
+of Colbourn's rows for that strength and alphabet), the table holds only arrays added to it.
+So that a reader can judge a rung there, the engine also evaluates a fixed ladder of points
+EXT_LADDER past that range, up to EXT_KMAX. At such a point there may be no counted value at
+all: the line is then kept when it sets the combined stair-step, and its lookup_N and
+gain_pct are left empty.
+
 Usage: derive_table.py [--out table/derived.csv] [--check]
 --check regenerates into a temporary file and fails if table/derived.csv differs.
 """
@@ -34,6 +41,22 @@ sys.path.insert(0, HERE)
 import derive_laws as L  # noqa: E402
 
 HEADER = "t,v,k,N,lookup_N,gain_pct,law,arithmetic,round\n"
+INF = 10 ** 18
+EXT_KMAX = 100000
+EXT_LADDER = [11000, 12500, 15000, 17500, 20000, 25000, 30000, 35000, 40000, 50000,
+              60000, 70000, 80000, 90000, 100000]
+
+
+def baseline_kmax():
+    """largest k of the baseline (Colbourn's tables, source S1) per (t, v)"""
+    out = {}
+    for r in L.rows:
+        if r["source_id"] == "S1":
+            tv = (int(r["t"]), int(r["v"]))
+            out[tv] = max(out.get(tv, 0), int(r["k"]))
+    return out
+
+
 LAWS = [("fuse", L.law_fuse), ("derive", L.law_derive), ("comp", L.law_comp), ("CK", L.law_ck),
         ("CMTW34", L.law_cmtw34), ("kRoux", L.law_kroux), ("PCT", None), ("DP2", L.law_dp2),
         ("OD", L.law_od), ("SM", L.law_sm)]
@@ -67,14 +90,25 @@ def compute(log=sys.stderr):
         grid[tv] = [k for k in grid[tv] if e0(tv[0], k, tv[1]) is not None]
         if not grid[tv]:
             del grid[tv]
-    best = {(t, v, k): e0(t, k, v) for (t, v), ks in grid.items() for k in ks}
+    # the ladder past the baseline's range (points there may have no counted value: INF)
+    bk = baseline_kmax()
+    for tv in list(grid):
+        top = bk.get(tv)
+        if top is None:
+            continue
+        grid[tv] = sorted(set(grid[tv]) | {k for k in EXT_LADDER if top < k <= EXT_KMAX})
+    best = {}
+    for (t, v), ks in grid.items():
+        for k in ks:
+            x = e0(t, k, v)
+            best[(t, v, k)] = INF if x is None else x
     orig = dict(best)
     suf = {}
 
     def rebuild():
         suf.clear()
         for (t, v), ks in grid.items():
-            m = 10 ** 18; s = [0] * len(ks)
+            m = INF; s = [0] * len(ks)
             for i in range(len(ks) - 1, -1, -1):
                 m = min(m, best[(t, v, ks[i])]); s[i] = m
             suf[(t, v)] = s
@@ -90,7 +124,8 @@ def compute(log=sys.stderr):
             if not ks: return None
             i = bisect.bisect_left(ks, k)
             if i >= len(ks): return None
-            return suf[(t, v)][i]
+            x = suf[(t, v)][i]
+            return None if x >= INF else x
         return e
 
     cands = {tv: L.pct_candidates(tv[0], tv[1], max(ks)) for tv, ks in grid.items()}
@@ -111,13 +146,13 @@ def compute(log=sys.stderr):
     out = []
     lookup_points = 0
     for (t, v), ks in sorted(grid.items()):
-        m0 = 10 ** 18
+        m0 = INF
         stair0 = {}
         for kk in reversed(ks):
             m0 = min(m0, orig[(t, v, kk)]); stair0[kk] = m0
         # keep a derived point only if it sets the combined stair-step: smaller than
         # everything (counted or derived) at every larger k
-        keep = set(); m1 = 10 ** 18
+        keep = set(); m1 = INF
         for kk in reversed(ks):
             if best[(t, v, kk)] < m1 and best[(t, v, kk)] < stair0[kk]:
                 keep.add(kk)
@@ -125,7 +160,7 @@ def compute(log=sys.stderr):
         # integer k whose lookup the derived values lower (for the summary)
         prev = t
         for kk in ks:
-            if suf[(t, v)][ks.index(kk)] < stair0[kk]:
+            if stair0[kk] < INF and suf[(t, v)][ks.index(kk)] < stair0[kk]:
                 lookup_points += kk - prev
             prev = kk
         for kk in ks:
@@ -149,8 +184,11 @@ def write(rows, path):
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(HEADER)
         for t, v, k, N, l0, law, arith, r in rows:
-            f.write('%d,%d,%d,%d,%d,%.2f,%s,"%s",%d\n' % (t, v, k, N, l0, 100.0 * (l0 - N) / l0, law,
-                                                          arith.replace('"', "'"), r))
+            if l0 >= INF:   # past the table's range: no counted value to compare with
+                f.write('%d,%d,%d,%d,,,%s,"%s",%d\n' % (t, v, k, N, law, arith.replace('"', "'"), r))
+            else:
+                f.write('%d,%d,%d,%d,%d,%.2f,%s,"%s",%d\n' % (t, v, k, N, l0, 100.0 * (l0 - N) / l0, law,
+                                                              arith.replace('"', "'"), r))
 
 
 def main(argv=None):

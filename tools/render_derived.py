@@ -54,6 +54,12 @@ def main():
          "that point, so each line can be followed back to table entries. Stair-step as in "
          "the table: a line (t, v, k, N) gives N for up to k columns. %d lines%s.</p>"
          % (REPO_URL, len(rows), (", " + html.escape(a.date)) if a.date else ""),
+         "<p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table "
+         "holds only arrays added to it, so the same constructions are also evaluated at a fixed "
+         "ladder of widths up to k = 100,000 (%d lines). Where the table has no entry that wide, the "
+         "counted column reads <i>none</i>: the line is the smallest size these constructions give "
+         "from the table, a yardstick for any array added there, not a survey of the literature.</p>"
+         % sum(1 for r in rows if r["lookup_N"] == ""),
          "<p>Constructions: " + "; ".join("<b>%s</b> %s" % (k, html.escape(v)) for k, v in LAWS.items()) + ".</p>"]
     for (t, v) in sorted(by):
         rs = sorted(by[(t, v)], key=lambda r: int(r["k"]))
@@ -61,9 +67,10 @@ def main():
                  "<th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th>"
                  "</tr></thead><tbody>" % (t, v, len(rs)))
         for r in rs:
-            H.append("<tr><td class=n>%s</td><td class=n>%s</td><td class=n>%s</td><td class=n>%s%%</td>"
+            H.append("<tr><td class=n>%s</td><td class=n>%s</td><td class=n>%s</td><td class=n>%s</td>"
                      "<td>%s</td><td class=ev>%s</td></tr>"
-                     % (r["k"], r["N"], r["lookup_N"], r["gain_pct"], html.escape(r["law"]),
+                     % (r["k"], r["N"], r["lookup_N"] or "<i>none</i>",
+                        r["gain_pct"] + "%" if r["gain_pct"] else "", html.escape(r["law"]),
                         html.escape(r["arithmetic"])))
         H.append("</tbody></table></details>")
     H.append("</main></body></html>")

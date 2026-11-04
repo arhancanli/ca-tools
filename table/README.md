@@ -160,7 +160,11 @@ the array files and these documents agree.
   checked line by line by `../tools/consistency.py` without that program. These
   are computed sizes, not arrays: they are never part of the counted rows, and
   `best_derived()` in `ca_table.py` / `ca_table.R` is the lookup that includes
-  them. The page lists them on `derived.html`.
+  them. The page lists them on `derived.html`. Past the baseline's column range
+  (k = 20,000 at strength 2, 10,000 above) the constructions are also evaluated
+  at a fixed ladder of widths up to k = 100,000, as a yardstick for arrays added
+  there; where the table has no entry that wide, `lookup_N` and `gain_pct` are
+  empty.
 - `EXTERNAL.csv` - one row per array kept in a public deposit instead of
   `arrays/` (too large for the repository): its SHA-256, parameters, size in
   bytes, location (https URL, or zip URL `::` member), status and the stamp of

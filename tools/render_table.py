@@ -524,7 +524,8 @@ def render(rows, manifest, date):
              "<a href=\"derived.html\">the derived sizes page</a> (%s points); they are not "
              "counted as best known here. The baseline runs to k = 20,000 at strength 2 and "
              "k = 10,000 at higher strengths; past that, a stair-step holds only arrays added "
-             "here, and its rungs say so.</p>" % DERIVED_COUNT[0])
+             "here, its rungs say so, and the derived sizes page evaluates the constructions out "
+             "to k = 100,000 for comparison.</p>" % DERIVED_COUNT[0])
     H.append("<p>Rows are stair-steps: an entry (t, v, k, N) means N runs suffice for up "
              "to k columns, so the best known N at k is the smallest N among entries with "
              "at least k columns. The construction column names the construction or "
@@ -588,7 +589,9 @@ def render(rows, manifest, date):
             krange = str(k1) if k0 == k1 else "%d to %d" % (k0, k1)
             past = ("<span class=stamp>past k = %s, the end of the baseline for this strength and "
                     "alphabet: this rung holds only arrays added here, and smaller arrays may be "
-                    "known for some of these columns</span>" % "{:,}".format(base_k)
+                    "known for some of these columns; <a href=\"derived.html\">the derived sizes "
+                    "page</a> gives what published constructions yield from this table at these "
+                    "widths</span>" % "{:,}".format(base_k)
                     if base_k and k1 > base_k else "")
             H.append("<tr><td class=n>%s</td><td class=n>%d</td><td class=ev>%s%s%s</td></tr>"
                      % (krange, n, evidence_html(e),
