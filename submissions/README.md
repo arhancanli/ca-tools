@@ -109,6 +109,16 @@ left empty. Submissions opened before 2026-11-04 are listed in
 see that the parts are there, not that the program works; the
 maintainer reads them before the merge.
 
+If the program will be released with a paper that is not out yet,
+say so in `Program:`: name the paper or preprint, and describe the
+construction precisely enough that the exact arrays can be rebuilt
+from the description (every choice the construction leaves open:
+field and polynomial, column order, seeds). Write `program pending`
+and the paper in the `notes` of each claim, so the rows say so in
+the table. Add the link by a later pull request when the program is
+released; the maintainer then removes the note, and may withdraw the
+rows if it never comes.
+
 ## What a claim means
 
 The table uses stair-step semantics. A row (t, v, k, N) says that N
