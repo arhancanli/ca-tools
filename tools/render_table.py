@@ -522,7 +522,9 @@ def render(rows, manifest, date):
              "constructions (fusing symbols, deriving a strength, Power CT and others) are "
              "recomputed on every change and listed separately, each with its arithmetic, on "
              "<a href=\"derived.html\">the derived sizes page</a> (%s points); they are not "
-             "counted as best known here.</p>" % DERIVED_COUNT[0])
+             "counted as best known here. The baseline runs to k = 20,000 at strength 2 and "
+             "k = 10,000 at higher strengths; past that, a stair-step holds only arrays added "
+             "here, and its rungs say so.</p>" % DERIVED_COUNT[0])
     H.append("<p>Rows are stair-steps: an entry (t, v, k, N) means N runs suffice for up "
              "to k columns, so the best known N at k is the smallest N among entries with "
              "at least k columns. The construction column names the construction or "
@@ -579,11 +581,18 @@ def render(rows, manifest, date):
                     ", %d disputed" % len(dis) if dis else ""))
         H.append("<table><thead><tr><th class=n>k</th><th class=n>N</th>"
                  "<th>evidence</th></tr></thead><tbody>")
+        # Columns past the baseline's range for this (t, v): the table holds only what was
+        # submitted there, so say so on every such rung (no survey of the literature).
+        base_k = max((r["k"] for r in rs if r["source_id"] == "S1"), default=0)
         for n, k0, k1, e in steps:
             krange = str(k1) if k0 == k1 else "%d to %d" % (k0, k1)
-            H.append("<tr><td class=n>%s</td><td class=n>%d</td><td class=ev>%s%s</td></tr>"
+            past = ("<span class=stamp>past k = %s, the end of the baseline for this strength and "
+                    "alphabet: this rung holds only arrays added here, and smaller arrays may be "
+                    "known for some of these columns</span>" % "{:,}".format(base_k)
+                    if base_k and k1 > base_k else "")
+            H.append("<tr><td class=n>%s</td><td class=n>%d</td><td class=ev>%s%s%s</td></tr>"
                      % (krange, n, evidence_html(e),
-                        disputed_html(dis[(k1, n)], rs) if (k1, n) in dis else ""))
+                        disputed_html(dis[(k1, n)], rs) if (k1, n) in dis else "", past))
         rung_keys = {(k1, n) for n, _, k1, _ in steps}
         for (dk, dn), d in sorted(dis.items()):
             if (dk, dn) not in rung_keys:
