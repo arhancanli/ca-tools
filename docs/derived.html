@@ -33,7 +33,7 @@ a { color: inherit; }
 @media (max-width: 480px) { body { font-size:15px; } table { font-size:.82rem; } th, td { padding:.25rem .2rem; } }
 </style></head><body><main>
 <h1>Sizes that follow by published constructions</h1>
-<p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 858 lines, 2026-11-05.</p>
+<p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 861 lines, 2026-11-05.</p>
 <p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table holds only arrays added to it, so the same constructions are also evaluated at a fixed ladder of widths up to k = 100,000 (546 lines). Where the table has no entry that wide, the counted column reads <i>none</i>: the line is the smallest size these constructions give from the table, a yardstick for any array added there, not a survey of the literature.</p>
 <p>Constructions: <b>fuse</b> fusing symbols (Colbourn, Kéri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1); <b>derive</b> deriving a strength (CKRS 2010, (7)); <b>comp</b> composition (CKRS 2010, (3)); <b>CK</b> Chateauneuf-Kreher doubling (Cohen, Colbourn, Ling 2008, Thm 2); <b>CMTW34</b> Colbourn, Martirosyan, Trung, Walker 2006, Thm 3.4; <b>kRoux</b> k-ary Roux (CMTW 2006, Thm 3.3; DCAN values of Yin 2003); <b>PCT</b> Power CT (Colbourn and Zhou 2012, Thm 2.1 with Lemma 2.4; Colbourn and Torres-Jimenez 2013); <b>DP2</b> direct product (Colbourn and Torres-Jimenez 2013, Cor 4.3); <b>OD</b> ordered design (Cohen, Colbourn, Ling 2008, Construction 1); <b>SM</b> Shokri and Moura (J. Combin. Des. 2025).</p>
 <details class=sub><summary>t = 2, v = 2 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
@@ -290,9 +290,10 @@ a { color: inherit; }
 <tr><td class=n>35000</td><td class=n>15299</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,35000,13)=15301 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>17483</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,13)=17485 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 14 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 14 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>24</td><td class=n>6202</td><td class=n>6279</td><td class=n>1.23%</td><td>CK</td><td class=ev>CAN(3,12,14)=3381 + (14-1)xCAN(2,12,14)=217</td></tr>
 <tr><td class=n>36</td><td class=n>7212</td><td class=n>7225</td><td class=n>0.18%</td><td>CK</td><td class=ev>CAN(3,18,14)=4014 + (14-1)xCAN(2,18,14)=246</td></tr>
+<tr><td class=n>258</td><td class=n>8172</td><td class=n>8187</td><td class=n>0.18%</td><td>fuse</td><td class=ev>CAN(3,258,15)=8174 - 2x1</td></tr>
 <tr><td class=n>338</td><td class=n>12252</td><td class=n>12282</td><td class=n>0.24%</td><td>fuse</td><td class=ev>CAN(3,338,15)=12254 - 2x1</td></tr>
 <tr><td class=n>1429</td><td class=n>16332</td><td class=n>17662</td><td class=n>7.53%</td><td>fuse</td><td class=ev>CAN(3,1429,15)=16334 - 2x1</td></tr>
 <tr><td class=n>4368</td><td class=n>19228</td><td class=n>19387</td><td class=n>0.82%</td><td>fuse</td><td class=ev>CAN(3,4368,15)=19230 - 2x1</td></tr>
@@ -301,8 +302,10 @@ a { color: inherit; }
 <tr><td class=n>80000</td><td class=n>28572</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,80000,15)=28574 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>32652</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,15)=32654 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 15 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 15 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>258</td><td class=n>8174</td><td class=n>8189</td><td class=n>0.18%</td><td>fuse</td><td class=ev>CAN(3,258,16)=8176 - 2x1</td></tr>
 <tr><td class=n>338</td><td class=n>12254</td><td class=n>12284</td><td class=n>0.24%</td><td>fuse</td><td class=ev>CAN(3,338,16)=12256 - 2x1</td></tr>
+<tr><td class=n>516</td><td class=n>14852</td><td class=n>14867</td><td class=n>0.10%</td><td>CK</td><td class=ev>CAN(3,258,15)=8174 + (15-1)xCAN(2,258,15)=477</td></tr>
 <tr><td class=n>1429</td><td class=n>16334</td><td class=n>18267</td><td class=n>10.58%</td><td>fuse</td><td class=ev>CAN(3,1429,16)=16336 - 2x1</td></tr>
 <tr><td class=n>4368</td><td class=n>19230</td><td class=n>19459</td><td class=n>1.18%</td><td>fuse</td><td class=ev>CAN(3,4368,16)=19232 - 2x1</td></tr>
 <tr><td class=n>5880</td><td class=n>20414</td><td class=n>23534</td><td class=n>13.26%</td><td>fuse</td><td class=ev>CAN(3,5880,16)=20416 - 2x1</td></tr>
