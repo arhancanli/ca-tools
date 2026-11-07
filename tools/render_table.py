@@ -592,7 +592,10 @@ def render(rows, manifest, date):
                     "known for some of these columns; <a href=\"derived.html\">the derived sizes "
                     "page</a> gives what published constructions yield from this table at these "
                     "widths</span>" % "{:,}".format(base_k)
-                    if base_k and k1 > base_k else "")
+                    if base_k and k1 > base_k else
+                    # a strength and alphabet the baseline does not have (for example v above 25)
+                    "<span class=stamp>no baseline for this strength and alphabet: this rung holds only "
+                    "arrays added here, and smaller arrays may be known</span>" if not base_k else "")
             H.append("<tr><td class=n>%s</td><td class=n>%d</td><td class=ev>%s%s%s</td></tr>"
                      % (krange, n, evidence_html(e),
                         disputed_html(dis[(k1, n)], rs) if (k1, n) in dis else "", past))
