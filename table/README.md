@@ -162,7 +162,8 @@ the array files and these documents agree.
   `best_derived()` in `ca_table.py` / `ca_table.R` is the lookup that includes
   them. The page lists them on `derived.html`. Past the baseline's column range
   (k = 20,000 at strength 2, 10,000 above) the constructions are also evaluated
-  at a fixed ladder of widths up to k = 100,000, as a yardstick for arrays added
+  at a fixed ladder of widths up to k = 100,000 (and on, at a strength whose
+  widest entry is wider, up to that entry), as a yardstick for arrays added
   there; where the table has no entry that wide, `lookup_N` and `gain_pct` are
   empty.
 - `EXTERNAL.csv` - one row per array kept in a public deposit instead of

@@ -106,6 +106,7 @@ SHA2FILE = {}
 SHA2CERT = {}
 SHA2EXT = {}      # table/EXTERNAL.csv: arrays kept in a public deposit
 DERIVED_COUNT = [0]   # lines of table/derived.csv
+DERIVED_KMAX = ["100,000"]   # the end of its ladder past the table's range (render_derived.ladder_end)
 CERT_URL = "https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/certificates/"
 LOG_URL = REPO_URL + "/blob/main/table/VERIFICATION_LOG.md"
 ARRAY_URL = "https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/arrays/"
@@ -525,7 +526,7 @@ def render(rows, manifest, date):
              "counted as best known here. The baseline runs to k = 20,000 at strength 2 and "
              "k = 10,000 at higher strengths; past that, a stair-step holds only arrays added "
              "here, its rungs say so, and the derived sizes page evaluates the constructions out "
-             "to k = 100,000 for comparison.</p>" % DERIVED_COUNT[0])
+             "to k = %s for comparison.</p>" % (DERIVED_COUNT[0], DERIVED_KMAX[0]))
     H.append("<p>Rows are stair-steps: an entry (t, v, k, N) means N runs suffice for up "
              "to k columns, so the best known N at k is the smallest N among entries with "
              "at least k columns. The construction column names the construction or "
@@ -654,7 +655,9 @@ def main():
     dp = os.path.join(a.table_dir, "derived.csv")
     if os.path.exists(dp):
         with open(dp, newline="", encoding="utf-8") as f:
-            DERIVED_COUNT[0] = sum(1 for _ in csv.DictReader(f))
+            drows = list(csv.DictReader(f))
+            DERIVED_COUNT[0] = len(drows)
+            DERIVED_KMAX[0] = "{:,}".format(max([100000] + [int(r["k"]) for r in drows if r["lookup_N"] == ""]))
     xp = os.path.join(a.table_dir, "EXTERNAL.csv")
     if os.path.exists(xp):
         with open(xp, newline="", encoding="utf-8") as f:

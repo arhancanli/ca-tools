@@ -30,6 +30,12 @@ LAWS = {
 }
 
 
+def ladder_end(rows):
+    """k = 100,000, the end of the ladder of tools/derive_table.py, or the widest line past the table's
+    range when the ladder goes further (a strength with an entry wider than 100,000)"""
+    return "{:,}".format(max([100000] + [int(r["k"]) for r in rows if r["lookup_N"] == ""]))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--table-dir", default="table")
@@ -56,10 +62,10 @@ def main():
          % (REPO_URL, len(rows), (", " + html.escape(a.date)) if a.date else ""),
          "<p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table "
          "holds only arrays added to it, so the same constructions are also evaluated at a fixed "
-         "ladder of widths up to k = 100,000 (%d lines). Where the table has no entry that wide, the "
+         "ladder of widths up to k = %s (%d lines). Where the table has no entry that wide, the "
          "counted column reads <i>none</i>: the line is the smallest size these constructions give "
          "from the table, a yardstick for any array added there, not a survey of the literature.</p>"
-         % sum(1 for r in rows if r["lookup_N"] == ""),
+         % (ladder_end(rows), sum(1 for r in rows if r["lookup_N"] == "")),
          "<p>Constructions: " + "; ".join("<b>%s</b> %s" % (k, html.escape(v)) for k, v in LAWS.items()) + ".</p>"]
     for (t, v) in sorted(by):
         rs = sorted(by[(t, v)], key=lambda r: int(r["k"]))

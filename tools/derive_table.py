@@ -22,9 +22,10 @@ Thm 2.1 with Lemma 2.4, one constant row per copy, CTJ 2013 Obs 3.2), direct pro
 Past the baseline's column range (k = 20,000 at strength 2 and 10,000 above; the largest k
 of Colbourn's rows for that strength and alphabet), the table holds only arrays added to it.
 So that a reader can judge a rung there, the engine also evaluates a fixed ladder of points
-EXT_LADDER past that range, up to EXT_KMAX. At such a point there may be no counted value at
-all: the line is then kept when it sets the combined stair-step, and its lookup_N and
-gain_pct are left empty.
+EXT_LADDER past that range, up to EXT_KMAX, and on along EXT_LADDER_WIDE up to the widest counted
+entry of the same strength when one is wider than EXT_KMAX (strength 3 past 100,000 columns). At
+such a point there may be no counted value at all: the line is then kept when it sets the combined
+stair-step, and its lookup_N and gain_pct are left empty.
 
 Usage: derive_table.py [--out table/derived.csv] [--check]
 --check regenerates into a temporary file and fails if table/derived.csv differs.
@@ -45,6 +46,17 @@ INF = 10 ** 18
 EXT_KMAX = 100000
 EXT_LADDER = [11000, 12500, 15000, 17500, 20000, 25000, 30000, 35000, 40000, 50000,
               60000, 70000, 80000, 90000, 100000]
+EXT_LADDER_WIDE = [125000, 150000, 175000, 200000, 250000, 300000, 350000, 400000, 500000, 600000,
+                   700000, 800000, 900000, 1000000]
+
+
+def ladder_kmax(grid):
+    """the ladder's end for each strength: EXT_KMAX, or the widest counted entry of that strength
+    when it is wider"""
+    out = {}
+    for (t, v), ks in grid.items():
+        out[t] = max(out.get(t, EXT_KMAX), max(ks))
+    return out
 
 
 def baseline_kmax():
@@ -92,11 +104,12 @@ def compute(log=sys.stderr):
             del grid[tv]
     # the ladder past the baseline's range (points there may have no counted value: INF)
     bk = baseline_kmax()
+    kmax = ladder_kmax(grid)
     for tv in list(grid):
         top = bk.get(tv)
         if top is None:
             continue
-        grid[tv] = sorted(set(grid[tv]) | {k for k in EXT_LADDER if top < k <= EXT_KMAX})
+        grid[tv] = sorted(set(grid[tv]) | {k for k in EXT_LADDER + EXT_LADDER_WIDE if top < k <= kmax[tv[0]]})
     best = {}
     for (t, v), ks in grid.items():
         for k in ks:
