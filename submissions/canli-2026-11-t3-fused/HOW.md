@@ -1,0 +1,7 @@
+Construction: fused listings (Lemma 3.1 of Colbourn, Keri, Rivas Soriano and Schlage-Puchta 2010) of 19 Sherwood covering perfect hash families of strength 3 that the table already holds, each checked exactly on GitHub when it entered (pull request #51; Canli 2026, doi:10.5281/zenodo.23839216). Each array is the family's expansion by smc-1-affine with its largest symbols removed, two runs per symbol: CA(N - 2m; 3, k, q - m) from the CA(N; 3, k, q) of the family. The 28 rows give v = 6, 10, 12, 14, 15, 18, 20, 21, 22 and 24 at the widths of the families, from 13,871 to 100,000 columns, with a rung at 100,000 for every v.
+
+Built from: the families in table/certificates/ named in certificates.csv (entered from submissions/canli-2026-11-t3-k100000 on 2026-11-04), and nothing else.
+
+Program: the rule in the column expansion, applied as tools/check_certificates.py does on main: `cphfcheck FILE 3 q expand OUT affine`, then `tools/cphf/fusestream.c OUT q fuse2 q-1 [fuse2 q-2 ...]`; `tools/cphf/fuse2.c`, run once per step, gives the same bytes. Nothing is searched and there are no seeds. Our own rebuild of every array, its hash and a spot check of 10,000 random 3-sets are in the notes of each row.
+
+The families were found by our search program pq_cphf3big, written with the help of Claude, an AI system from Anthropic, and this submission was prepared with Claude's help. Arhan Canli takes responsibility for it.
