@@ -551,6 +551,13 @@ array (column `expansion`):
 
 The listings of 2026-10-28 to 2026-10-31 are `smc-1`, `smc-1+fuse 4>0` and `smc-1+fuse2 4`.
 
+`fusestream.c` applies the steps of a rule to an expanded array as a stream, one run at a time, and
+can spot-check the result on random t-sets as it goes; `../cphf_cert.py` `fuse_steps()` checks the
+steps (each removes the largest symbol) and gives its arguments. Its output is that of `fuse2.c`,
+step by step, byte for byte, and it rebuilds the two fused listings above to their listed
+array_sha256 (`tests/test_fused.py`). `../check_certificates.py` uses it for fused listings
+submitted in `certificates.csv` (`../../submissions/README.md`, "Certificates").
+
 ### Buffered expand
 
 Since 2026-11-02 `expand` builds each run in a buffer (per row, the sum over the first t-1

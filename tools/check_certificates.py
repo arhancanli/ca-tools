@@ -27,6 +27,18 @@ check (it then gets a VERIFIED row). The array is expanded and hashed as a strea
 to disk) when it has at most 10^12 entries; above that the row is identified by family_sha256
 alone and its stamp says "array not hashed".
 
+A last column expansion may follow notes. Empty, it changes nothing. A rule with fusing steps
+(tools/cphf_cert.py, for example "smc-1-affine+fuse2 6") makes the claim a fused listing: the array
+that a family already in the table gives by fusing symbols (Lemma 3.1 of Colbourn, Keri, Rivas
+Soriano and Schlage-Puchta 2010), at v = q less one per step. file then names the family by its
+file in the table, table/certificates/NAME, which must be listed there as itself with an exact
+check; mode stays empty. The family is not checked again: the row stands on that exact check and
+the lemma, as the fused listings of 2026-10-31 and 2026-11-01 do. The check confirms the listing,
+the family's identity, that the rule starts with the listing's own expansion and that each step
+removes the largest symbol, the size the rule gives, and that the listing is new; on main the
+array is rebuilt by the rule (tools/cphf/fusestream.c after cphfcheck expand) and hashed as a
+stream.
+
 Usage (each form prints a report; nothing in table/ changes without --apply):
 
   check_certificates.py SUB [--threads N] [--apply] [--builds-on VALUE]
@@ -78,6 +90,10 @@ HEADER_NO_MODE = [h for h in HEADER if h != "mode"]
 # the header before builds_on (2026-11), still read; such claims get
 # builds_on = cphf-smc2006 plus the ids their construction text matches
 PREV_HEADER = ["t", "v", "k", "N", "file", "mode", "source_detail", "construction", "credit", "notes"]
+# an optional last column expansion: a fused listing of a family in the table (above)
+HEADERS = (HEADER, HEADER_NO_MODE, PREV_HEADER, HEADER + ["expansion"], HEADER_NO_MODE + ["expansion"])
+FUSED_PREFIX = "table/certificates/"
+FUSE_SRC = os.path.join(HERE, "cphf", "fusestream.c")
 CERT_HEADER = ["file", "t", "v", "k", "N", "family", "sha256", "array_sha256", "check", "family_sha256",
                "expansion"]
 SRC = os.path.join(HERE, "cphf", "cphfcheck.c")
@@ -86,6 +102,9 @@ MODE_RE = re.compile(r"^(auto|full|fullfast|progression|fastprog|cyclic (\d+))?(
 # windows seeded from the hash, each checked exactly), and a sample of single t-sets
 SCREEN_WINDOWS, SCREEN_WIDTH, SCREEN_SAMPLES = 20, 30, 10 ** 6
 LIGHT_WINDOWS, LIGHT_SAMPLES = 5, 10 ** 5
+# a fused array is spot-checked as it is hashed (tools/cphf/fusestream.c "check"), as the fused listings
+# of 2026-10-31 and 2026-11-01 were: random t-sets seeded from family_sha256, evidence beside the lemma
+SPOT_SETS = 10 ** 4
 
 
 def build(tmp):
@@ -100,8 +119,18 @@ def build(tmp):
     raise SystemExit("could not build %s" % SRC)
 
 
-def tool_hash():
-    return hashlib.sha256(open(SRC, "rb").read()).hexdigest()[:12]
+def build_fuse(tmp):
+    """tools/cphf/fusestream.c, built when a fused listing is hashed"""
+    exe = os.path.join(tmp, "fusestream")
+    if not os.path.exists(exe):
+        if subprocess.run(["cc", "-O2", "-o", exe, FUSE_SRC], stdout=subprocess.DEVNULL,
+                          stderr=subprocess.DEVNULL).returncode != 0:
+            raise SystemExit("could not build %s" % FUSE_SRC)
+    return exe
+
+
+def tool_hash(src=SRC):
+    return hashlib.sha256(open(src, "rb").read()).hexdigest()[:12]
 
 
 def file_sha(path):
@@ -122,17 +151,26 @@ def run(exe, args, timeout=None):
     return p.returncode, p.stdout, p.stderr
 
 
-def stream_hash(exe, fam, t, v, affine, tmp):
-    """expand into a FIFO and hash it as it is written; returns (rows, sha256)"""
+def stream_hash(exe, fam, t, v, affine, tmp, steps=None, spot=None):
+    """expand into a FIFO and hash it as it is written; returns (rows, sha256). With fusing steps
+    (cphf_cert.fuse_steps, v then the family's q) tools/cphf/fusestream.c reads the FIFO and the
+    fused array it writes is hashed instead; with spot (dict sets, seed) it also spot-checks that
+    array and puts its line in spot["text"]."""
     fifo = os.path.join(tmp, "ca.fifo")
     if os.path.exists(fifo):
         os.remove(fifo)
     os.mkfifo(fifo)
     res = {}
+    fz = None
+    if steps:
+        args = [build_fuse(tmp), fifo, str(v)] + [x for s in steps for x in s]
+        if spot is not None:
+            args += ["check", str(t), str(spot["sets"]), str(spot["seed"])]
+        fz = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def reader():
         h = hashlib.sha256(); rows = 0
-        with open(fifo, "rb") as f:
+        with (fz.stdout if fz else open(fifo, "rb")) as f:
             while True:
                 b = f.read(1 << 20)
                 if not b:
@@ -142,9 +180,17 @@ def stream_hash(exe, fam, t, v, affine, tmp):
     th = threading.Thread(target=reader); th.start()
     p = subprocess.run([exe, fam, str(t), str(v), "expand", fifo] + (["affine"] if affine else []),
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    if fz and p.returncode != 0:
+        fz.kill()                         # it may still wait for the FIFO to be opened
     th.join()
     if p.returncode != 0:
         raise CertError("expand failed: %s" % (p.stderr.strip() or p.stdout.strip()))
+    if fz:
+        code, msg = fz.wait(), fz.stderr.read().decode("ascii", "replace").strip()
+        if code != 0:
+            raise CertError(("the fused array misses a tuple: %s" if code == 1 else "fusing failed: %s") % msg[:300])
+        if spot is not None:
+            spot["text"] = msg.splitlines()[-1] if msg else "no spot check"
     return res["rows"], res["sha"]
 
 
@@ -157,6 +203,8 @@ def claim_builds_on(raw, refs):
         given = raw["builds_on"]
         if "cphf-smc2006" not in given.split(";"):
             given = "cphf-smc2006;" + given if given.strip() else given
+        if (raw.get("expansion") or "").strip() and "fuse-ckrs2010" not in given.split(";") and given.strip():
+            given += ";fuse-ckrs2010"         # a fused listing (Lemma 3.1 of CKRS 2010)
         norm, errs, warns, links = bo.check(given, raw["construction"], refs)
         if errs:
             raise CertError("builds_on: " + "; ".join(errs))
@@ -205,9 +253,9 @@ def read_claims(sub, builds_on_override=None):
     path = os.path.join(sub, "certificates.csv")
     with open(path, newline="", encoding="utf-8-sig") as f:
         rd = csv.reader(f); hdr = [h.strip() for h in next(rd, [])]
-        if hdr not in (HEADER, HEADER_NO_MODE, PREV_HEADER):
-            raise SystemExit("certificates.csv header must be %s (the mode column may be left out)"
-                             % ",".join(HEADER))
+        if hdr not in HEADERS:
+            raise SystemExit("certificates.csv header must be %s (the mode column may be left out, a column "
+                             "expansion may follow notes)" % ",".join(HEADER))
         claims = []
         for rec in rd:
             if not any(x.strip() for x in rec):
@@ -249,6 +297,11 @@ def prepare(raw, sub, exe, ctx, tmp):
                         "optionally followed by ' affine'" % raw["mode"])
     method = m.group(1) if m.group(1) and m.group(1) != "auto" else None
     said_affine = bool(m.group(3))
+    rule = (raw.get("expansion") or "").strip()
+    if rule:
+        if method or said_affine:
+            raise CertError("a fused listing takes no mode (its family is not checked again); leave mode empty")
+        return prepare_fused(c, rule, t, v, k, N, exe, ctx, tmp)
     fname = raw["file"].strip()
     parts = fname.split("/")
     if not fname or any(not cs.SAFE_NAME.match(x) for x in parts) or len(parts) > 3:
@@ -301,6 +354,75 @@ def prepare(raw, sub, exe, ctx, tmp):
              comparison=("exceeds_table" if prev is None or N < prev else
                          "equals_best" if N == prev else "above_table"))
     return c
+
+
+def prepare_fused(c, rule, t, v, k, N, exe, ctx, tmp):
+    """A fused listing: the array that a family already in the table, listed as itself with an exact
+    check, gives by the rule. The family is read from the table (table/certificates/NAME), never from
+    the submission, and is not checked again; nothing about the array is taken from the claim."""
+    fname = c["raw"]["file"].strip()
+    name = fname[len(FUSED_PREFIX):] if fname.startswith(FUSED_PREFIX) else ""
+    if not cs.SAFE_NAME.match(name):
+        raise CertError("a fused listing names its family by its file in the table, %sNAME (not %r)"
+                        % (FUSED_PREFIX, fname))
+    own = [x for x in ctx["certs"] if x["file"] == name and "fused" not in x["family"]
+           and "screened" not in x["check"]]
+    m = re.match(r"^CPHF\((\d+); (\d+), (\d+), (\d+)\)", own[0]["family"]) if own else None
+    if not m or not re.match(r"^(repcheck|repcheck_pp|cphfcheck) \S+ \S+ \S+: ", own[0]["check"]):
+        raise CertError("%s is not listed in table/certificates/CERTIFICATES.csv as itself with an exact check"
+                        % fname)
+    lst = own[0]
+    n, kf, q, tf = (int(x) for x in m.groups())
+    if (tf, kf) != (t, k):
+        raise CertError("the family is a CPHF(%d; %d, %d, %d); the claim says t=%d, k=%d" % (n, kf, q, tf, t, k))
+    fam = os.path.join(ctx["table_dir"], "certificates", name)
+    fsha, nn, kk, _ = cc.family_identity(fam, q, t)
+    if (fsha, nn, kk, file_sha(fam)) != (lst["family_sha256"], n, k, lst["sha256"]):
+        raise CertError("%s does not match its listing in CERTIFICATES.csv" % fname)
+    canon = os.path.join(tmp, "canon.txt")
+    code, out, err = run(exe, [fam, t, q, "canon", canon])
+    if code != 0 or file_sha(canon) != fsha:
+        raise CertError("cphfcheck reads the family differently from its identity (a bug)")
+    if rule.split("+", 1)[0] != lst["expansion"]:
+        raise CertError("expansion %s: the family's own listing is expanded by %s, so the rule must start with it"
+                        % (rule, lst["expansion"]))
+    steps, vf = cc.fuse_steps(rule, q)
+    if not steps:
+        raise CertError("expansion %s has no fusing step; a family is entered as itself without the column" % rule)
+    Nf, _ = cc.expansion_runs(rule, n, q, t)
+    if (Nf, vf) != (N, v):
+        raise CertError("%s of CPHF(%d; %d, %d, %d) gives CA(%d; %d, %d, %d); the claim says CA(%d; %d, %d, %d)"
+                        % (rule, n, k, q, t, Nf, t, k, vf, N, t, k, v))
+    if not cc.array_is_hashed(N, k):
+        raise CertError("a fused listing above %d entries would not be hashed; not supported"
+                        % cc.ARRAY_HASH_MAX_ENTRIES)
+    if (fsha, rule) in ctx["seen_family"]:
+        raise CertError("duplicate: the same fused listing is named twice in this submission")
+    if any(x.get("family_sha256") == fsha and x.get("expansion") == rule for x in ctx["certs"]):
+        raise CertError("duplicate: this family with expansion %s is already in the table" % rule)
+    ctx["seen_family"].add((fsha, rule))
+    prev, prev_row = cs.best_known(ctx["table_rows"], t, v, k)
+    c.update(t=t, v=v, k=k, N=N, n=n, q=q, fam=fam, fname=fname, fam_sha=fsha, file_sha=lst["sha256"],
+             method=None, affine=lst["expansion"] == "smc-1-affine", expansion=rule, steps=steps,
+             fused=dict(file=name, check=lst["check"]), upgrade=False, hashed=True, prev=prev,
+             prev_row=prev_row, comparison=("exceeds_table" if prev is None or N < prev else
+                                            "equals_best" if N == prev else "above_table"))
+    return c
+
+
+# the plan of a fused listing: no exact check (its family's is on record), only the array hash
+FUSED_PLAN = dict(method="fused", shards=0, core_hours=0.0, shard_hours=0.0, exact=True)
+
+
+def finish_fused(c, date, machine, sha):
+    """stamp and check text of a fused listing: those of its family's exact check, then the rule"""
+    base, how = c["fused"]["check"].split(": ", 1)
+    words = "%s by Lemma 3.1 of Colbourn, Keri, Rivas Soriano and Schlage-Puchta 2010" % cc.fuse_text(c["steps"])
+    c["tier"], c["sha"], c["method_text"] = "VERIFIED", sha, "stands on the family's exact check"
+    c["stamp"] = "%s (CPHF certificate, exact; %s)" % (base, words)
+    c["check"] = ("%s: %s; fused listing (expansion %s): %s, array rebuilt by cphfcheck expand and "
+                  "tools/cphf/fusestream.c %s and hashed %s %s; fused array %s"
+                  % (base, how, c["expansion"], words, tool_hash(FUSE_SRC), date, machine, c["spot"]))
 
 
 def mode_args(method, threads):
@@ -402,7 +524,10 @@ def screen(c, exe, threads, tmp, windows=None, width=None, samples=None):
 def array_hash(c, exe, tmp):
     if not c["hashed"]:
         return None
-    rows, sha = stream_hash(exe, c["fam"], c["t"], c["v"], c["affine"], tmp)
+    spot = dict(sets=SPOT_SETS, seed=int(c["fam_sha"][:15], 16)) if c.get("steps") else None
+    rows, sha = stream_hash(exe, c["fam"], c["t"], c.get("q", c["v"]), c["affine"], tmp, c.get("steps"), spot)
+    if spot:
+        c["spot"] = "%s, seed %s" % (spot["text"], c["fam_sha"][:16])
     if rows != c["N"]:
         raise CertError("expanded array has %d runs, expected %d" % (rows, c["N"]))
     return sha
@@ -436,7 +561,10 @@ def write_rows(results, slug, ctx, today):
                 name = "CPHF_%d_%d_%d_%d_%s.txt" % (c["n"], c["k"], c["v"], c["t"], c["file_sha"][:8])
             shutil.copyfile(c["fam"], os.path.join(cdir, name))
             by_fam[c["fam_sha"]] = name
-        family = "CPHF(%d; %d, %d, %d)%s" % (c["n"], c["k"], c["v"], c["t"], ", affine" if c["affine"] else "")
+        family = "CPHF(%d; %d, %d, %d)%s" % (c["n"], c["k"], c.get("q", c["v"]), c["t"],
+                                             ", affine" if c["affine"] else "")
+        if c.get("steps"):                # a fused listing: the family's file, listed again (tools/consistency.py)
+            family += ", fused: " + cc.fuse_text(c["steps"])
         cmp_txt = {"exceeds_table": "exceeds table: ", "equals_best": "equals table: ",
                    "above_table": "above table best, not an improvement: "}[c["comparison"]] + previous_text(c)
         notes = ["credit: " + raw["credit"].strip(), cmp_txt,
@@ -490,9 +618,13 @@ def report(slug, title, claims, ok, extra=()):
 
 def describe(c):
     out = ["CPHF(%d; %d, %d, %d) gives CA(%d; %d, %d, %d), expansion %s"
-           % (c["n"], c["k"], c["v"], c["t"], c["N"], c["t"], c["k"], c["v"], c["expansion"]),
+           % (c["n"], c["k"], c.get("q", c["v"]), c["t"], c["N"], c["t"], c["k"], c["v"], c["expansion"]),
            "family_sha256 `%s`" % c["fam_sha"],
            "table: %s; %s" % (c["comparison"], previous_text(c))]
+    if c.get("fused"):
+        out.append("fused listing: %s (Lemma 3.1 of Colbourn, Keri, Rivas Soriano and Schlage-Puchta 2010) of the "
+                   "family listed as table/certificates/%s, checked exactly when it entered: %s"
+                   % (cc.fuse_text(c["steps"]), c["fused"]["file"], c["fused"]["check"]))
     if not c["hashed"]:
         out.append("array of %d entries, above 10^12: identified by family_sha256, array not hashed"
                    % (c["N"] * c["k"]))
@@ -540,17 +672,22 @@ def make_plan(claims, sub, exe, ctx, tmp, a):
     for i, raw in enumerate(claims):
         c = prepare(raw, sub, exe, ctx, tmp)
         ctx["seen_family"].add(c["fam_sha"])
-        est = estimate(c, exe, a.threads)
-        p = pool.take(cc.plan_claim(est, c["k"], c["t"], **budget_args(a)), c["hashed"])
+        est = None if c.get("fused") else estimate(c, exe, a.threads)
+        p = pool.take(FUSED_PLAN if est is None else cc.plan_claim(est, c["k"], c["t"], **budget_args(a)),
+                      c["hashed"])
         plan.append(dict(index=i, file=c["fname"], t=c["t"], v=c["v"], k=c["k"], N=c["N"], n=c["n"],
                          family_sha256=c["fam_sha"], file_sha256=c["file_sha"], affine=c["affine"],
                          hashed=c["hashed"], method=p["method"], shards=p["shards"], exact=p["exact"],
                          core_hours=p["core_hours"], shard_hours=p["shard_hours"], estimate=est,
-                         prepared=c))
+                         q=c.get("q", c["v"]), expansion=c["expansion"], prepared=c))
     return plan
 
 
 def plan_text(p, a):
+    if p["method"] == "fused":
+        return ("no exact check: the family's exact check is on record; the array is rebuilt by the rule and "
+                "hashed on GitHub (one job)%s" % ("; enters as VERIFIED" if p["exact"] else
+                                                 ", but the jobs of this submission are used up: not entered"))
     if p["exact"]:
         return ("exact check with %s in %d shard%s on GitHub, about %.2g hours each (estimate times %g, "
                 "%.3g core-hours in all); enters as VERIFIED" % (
@@ -649,12 +786,16 @@ def form_local(claims, sub, slug, exe, ctx, tmp, a, today):
         try:
             c = prepare(raw, sub, exe, ctx, tmp)
             ctx["seen_family"].add(c["fam_sha"])
-            ex = exact_local(c, exe, a.threads)
+            ex = (dict(method="fused", checked="the family's exact check on record") if c.get("fused")
+                  else exact_local(c, exe, a.threads))
             sha = array_hash(c, exe, tmp)
             if sha and sha in ctx["known_sha"] and not c["upgrade"]:
                 raise CertError("duplicate: this array is already in the table")
             c["method_text"] = ex["method"]
-            finish(c, tool, today, machine_tag(), True, "method %s: %s" % (ex["method"], ex["checked"]), sha)
+            if c.get("fused"):
+                finish_fused(c, today, machine_tag(), sha)
+            else:
+                finish(c, tool, today, machine_tag(), True, "method %s: %s" % (ex["method"], ex["checked"]), sha)
             c["passed"] = True
             print("  PASS %s: %s, %s; array sha256 %s; %s (previous best %s); builds on %s"
                   % (raw["file"], ex["method"], ex["checked"], (sha or "not hashed")[:12], c["comparison"],
@@ -684,6 +825,14 @@ def form_light(claims, sub, slug, exe, ctx, tmp, a):
             ctx["seen_family"].add(p["fam_sha"])
             c.update(p)
             c["lines"] += describe(c)
+            if c.get("fused"):
+                pl = pool.take(FUSED_PLAN, c["hashed"])
+                c["lines"].append("on merge: " + plan_text(pl, a))
+                if not pl["exact"]:
+                    raise CertError("the jobs of this submission are used up before this claim")
+                c["passed"] = True
+                out.append(c)
+                continue
             est = estimate(c, exe, a.runner_threads)
             pl = pool.take(cc.plan_claim(est, c["k"], c["t"], **budget_args(a)), c["hashed"])
             ests = ", ".join("%s %.3g core-seconds" % (e["method"], e["core_seconds"])
@@ -746,12 +895,15 @@ def form_run(sub, exe, tmp, a):
     if not m or a.task not in doc["tasks"]:
         raise SystemExit("task %r is not in the plan" % a.task)
     p = doc["claims"][int(m.group(1))]
-    fam = os.path.join(sub, *p["file"].split("/"))
+    if p["method"] == "fused":            # the family of a fused listing is read from the table
+        fam = os.path.join(a.table_dir, "certificates", p["file"][len(FUSED_PREFIX):])
+    else:
+        fam = os.path.join(sub, *p["file"].split("/"))
     if file_sha(fam) != p["file_sha256"]:
         raise SystemExit("the family file changed since the plan was made")
     os.makedirs(a.out, exist_ok=True)
     meta = ["# family_sha256: %s" % p["family_sha256"], "# tool: %s" % tool_hash(),
-            "# method: %s" % p["method"], "# t: %d" % p["t"], "# q: %d" % p["v"], "# task: %s" % a.task]
+            "# method: %s" % p["method"], "# t: %d" % p["t"], "# q: %d" % p.get("q", p["v"]), "# task: %s" % a.task]
     if m.group(3) is not None:
         j = int(m.group(3))
         args = [fam, p["t"], p["v"]] + mode_args(p["method"], a.threads) + ["shard", j, p["shards"]]
@@ -762,8 +914,12 @@ def form_run(sub, exe, tmp, a):
             body += "".join("# stderr: %s\n" % l for l in err.strip().splitlines()[:20])
     else:
         c = dict(fam=fam, t=p["t"], v=p["v"], affine=p["affine"], hashed=p["hashed"], N=p["N"])
+        if p["method"] == "fused":
+            c.update(q=p["q"], steps=cc.fuse_steps(p["expansion"], p["q"])[0], fam_sha=p["family_sha256"])
         try:
             sha = array_hash(c, exe, tmp); code, body = 0, "array_sha256 %s\nruns %d\n" % (sha, p["N"])
+            if c.get("spot"):
+                body += "spot_check %s\n" % c["spot"]
         except CertError as e:
             code, body = 1, "# error: %s\n" % e
     path = os.path.join(a.out, "%s.txt" % a.task)
@@ -797,6 +953,15 @@ def settle(c, p, shards, hashtxt, exe, tmp, a, today, tool):
         meta = cc.parse_shard(hashtxt)["meta"]
         if meta.get("family_sha256") != c["fam_sha"]:
             raise CertError("the array hash task was run on another family")
+    if p["method"] == "fused":
+        if not p["exact"]:
+            raise CertError("the jobs of this submission were used up before this fused listing")
+        m = re.search(r"^spot_check (spot check: .*, uncovered 0, seed [0-9a-f]{16})$", hashtxt or "", re.M)
+        if not m:
+            raise CertError("the array hash task did not spot-check the fused array")
+        c["spot"] = m.group(1)
+        finish_fused(c, today, machine_tag(), sha)
+        return c["check"].split(": ", 1)[1]
     exact, why = False, None
     if p["exact"]:
         try:
@@ -873,12 +1038,13 @@ def form_results(claims, sub, slug, exe, ctx, tmp, a, today):
             ok = False; c["passed"] = False; c["reasons"].append(str(e))
         rep.append(c)
     text = report(slug, "Checked on main by the certificate workflow (plan: %s)." % ", ".join(
-        "%s %s" % (p["file"], ("exact in %d shard%s" % (p["shards"], "" if p["shards"] == 1 else "s"))
-                   if p["exact"] else "screen")
+        "%s %s" % (p["file"], "fused listing" if p["method"] == "fused" else
+                   ("exact in %d shard%s" % (p["shards"], "" if p["shards"] == 1 else "s")) if p["exact"] else "screen")
         for p in doc["claims"]), rep, ok)
     res = dict(slug=slug, passed=ok, date=today, machine=machine_tag(), plan=doc,
                claims=[dict(index=i, file=c["raw"]["file"], family_sha256=c["fam_sha"], file_sha256=c["file_sha"],
-                            tier=c["tier"], stamp=c["stamp"], check=c["check"], array_sha256=c["sha"],
+                            expansion=c["expansion"], tier=c["tier"], stamp=c["stamp"], check=c["check"],
+                            array_sha256=c["sha"],
                             method=c["method_text"], screen=c.get("screen"), screen_why=c.get("screen_why"))
                        for i, c in enumerate(results)])
     with open(os.path.join(outdir, "result.json"), "w", encoding="utf-8") as f:
@@ -900,17 +1066,23 @@ def form_apply_result(claims, sub, slug, exe, ctx, tmp, a, today):
         rep.append(dict(raw=dict(file="(result)"), passed=False,
                         reasons=["the certificate workflow did not pass this submission; see its report"]))
     plan = res["plan"]
-    done = {x["file"]: x for x in res.get("claims", [])}
+    # a family file may be named by several fused listings, each with its own expansion
+    done = {(x["file"], x.get("expansion") or ""): x for x in res.get("claims", [])}
     for p in plan["claims"] if res.get("passed") else []:
         raw = claims[p["index"]]
         c = dict(raw=raw, lines=[], reasons=[])
         try:
             c.update(prepare(raw, sub, exe, ctx, tmp))
             ctx["seen_family"].add(c["fam_sha"])
-            r = done.get(p["file"])
+            r = done.get((p["file"], p.get("expansion") or ""))
             if r is None or r["family_sha256"] != c["fam_sha"] or r["file_sha256"] != c["file_sha"]:
                 raise CertError("the result does not match the family file as it is now")
-            if r["tier"] == "VERIFIED":
+            if p["method"] == "fused":    # stands on its family's exact check, confirmed by prepare() above
+                base = c["fused"]["check"].split(": ", 1)[0]
+                if (r["tier"] != "VERIFIED" or not r["stamp"].startswith(base + " (CPHF certificate, exact; ")
+                        or not r["check"].startswith(c["fused"]["check"] + "; fused listing")):
+                    raise CertError("the result does not show the exact check of the family of this fused listing")
+            elif r["tier"] == "VERIFIED":
                 shards, _ = read_tasks(os.path.join(rdir, "tasks"), p["index"])
                 cm = cc.combine(shards, p["method"], c["k"], c["t"])
                 if cm["uncovered"] or cc.parse_shard(shards[0])["meta"]["family_sha256"] != c["fam_sha"]:

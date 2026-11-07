@@ -22,6 +22,8 @@ Expansion rules (the column "expansion" of table/certificates/CERTIFICATES.csv):
   RULE+fuse a>b  then symbol a is written as b in every entry (Colbourn, Keri, Rivas Soriano and
                  Schlage-Puchta 2010, Lemma 3.1): same runs, one symbol fewer
   RULE+fuse2 a   then symbol a is removed with two runs, as tools/cphf/fuse2.c does: N - 2 runs
+fuse_steps() checks the steps of a rule (each removes the largest symbol of its input) and gives them in the
+arguments of tools/cphf/fusestream.c, which applies them to the expanded array as a stream.
 
 Shards. cphfcheck "MODE ... shard i m" does shard i of m of the outer loop of an exact mode and
 prints its partial counts; combine() checks that the partial counts of shards 0..m-1, each present
@@ -155,6 +157,38 @@ def expansion_runs(rule, n, q, t):
             N -= 2
         v -= 1
     return N, v
+
+
+def fuse_steps(rule, q):
+    """The fusing steps of an expansion rule for a family over GF(q), checked: each step removes the
+    largest symbol of its input (a = the number of symbols before it, less one), "fuse a>b" writes it as
+    a smaller symbol b, and at least two symbols remain. Returns (steps, v): steps as the arguments of
+    tools/cphf/fusestream.c (["fuse2", "6"], ["fuse", "5", "0"]), v the number of symbols of the
+    result. A rule without steps gives ([], q)."""
+    m = EXPANSION_RE.match(rule or "")
+    if not m:
+        raise CertError("unknown expansion rule %r" % rule)
+    steps, v = [], q
+    for st in re.finditer(r"\+fuse (\d+)>(\d+)|\+fuse2 (\d+)", m.group(2)):
+        a = int(st.group(3) if st.group(3) is not None else st.group(1))
+        if a != v - 1 or v - 1 < 2:
+            raise CertError("expansion %r: a step removes symbol %d, but the largest symbol is %d%s"
+                            % (rule, a, v - 1, "" if v - 1 >= 2 else " and two must remain"))
+        if st.group(3) is not None:
+            steps.append(["fuse2", str(a)])
+        else:
+            b = int(st.group(2))
+            if b >= a:
+                raise CertError("expansion %r: fuse %d>%d must write the symbol as a smaller one" % (rule, a, b))
+            steps.append(["fuse", str(a), str(b)])
+        v -= 1
+    return steps, v
+
+
+def fuse_text(steps):
+    """The steps in words, as the listings say them ("symbol 6 removed with two rows", "symbol 4 -> 0")."""
+    return ", then ".join("symbol %s removed with two rows" % s[1] if s[0] == "fuse2"
+                          else "symbol %s -> %s" % (s[1], s[2]) for s in steps)
 
 
 # ---------------------------------------------------------------------------------------------

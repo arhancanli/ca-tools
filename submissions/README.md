@@ -330,6 +330,27 @@ been checked exactly. The array is identified as before by the SHA-256 of
 its canonical text when it has at most 10^12 entries (N times k); a larger
 array is not hashed, and its row is identified by the family alone.
 
+A fused listing enters the array that a family already in the table
+gives by fusing symbols (Lemma 3.1 of Colbourn, Keri, Rivas Soriano and
+Schlage-Puchta 2010, `fuse-ckrs2010`), at its own number of symbols. Its
+row of `certificates.csv` has one more field at the end, under the header
+`expansion`: a rule of `../tools/cphf/README.md` ("Expansion rules") with
+fusing steps, for example `smc-1-affine+fuse2 6`. Each step removes the
+largest symbol, `+fuse2 a` with two runs and `+fuse a>b` with none, so v
+is q less one per step and N is the size the rule gives. `file` names the
+family by its file in the table, `table/certificates/<name>`, which
+`../table/certificates/CERTIFICATES.csv` must list as itself with an
+exact check, and `mode` stays empty. The family is not checked again:
+the row stands on that exact check and the lemma, and `builds_on` gets
+`fuse-ckrs2010`. After the merge one job rebuilds the array by the rule
+(`cphfcheck expand`, then `../tools/cphf/fusestream.c`), hashes it and
+spot-checks it on 10,000 random t-sets, and the listing enters
+`CERTIFICATES.csv` beside the family's own, with the family's file and
+the stamp of its exact check. A listing already in the table, and one
+above 10^12 entries (it would not be hashed), are refused. A file without
+the column is read as before; an empty field is a family entered as
+itself.
+
 What happens:
 
 1. On the pull request, the check (`.github/workflows/verify-submission.yml`,

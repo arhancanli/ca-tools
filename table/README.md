@@ -250,7 +250,10 @@ v symbols". `tier` is the evidence class:
   the stamp then says "fused", the certificate is listed again in
   `certificates/CERTIFICATES.csv` for the fused array, and the fused
   array is spot-checked directly as well. Only fusing, and only from
-  certificates this table has checked itself, is accepted this way.
+  certificates this table has checked itself, is accepted this way. A
+  submission may ask for such a listing of a family the table has
+  checked exactly (`certificates.csv` with the column `expansion`,
+  `../submissions/README.md`, "Certificates").
   Since 2026-11-02 a submitted certificate is checked by
   `../tools/cphf/cphfcheck.c` with the cheapest exact method it finds in
   the data (a certified cyclic symmetry, progression rows, projection
