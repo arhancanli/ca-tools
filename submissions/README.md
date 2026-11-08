@@ -19,6 +19,11 @@ They appear only in the derived lookup (`../table/derived.csv`), which
 the maintainer computes from the table. The project takes arrays and
 certificates, not code (Rule 7).
 
+Some contributors keep arrays beyond these limits in their own
+repositories. Arhan Canli's strength-3 families wider than 100,000
+columns, each with its certificate and two separate checks, are at
+https://github.com/arhancanli/quantavane-covering-arrays.
+
 ## What a submission looks like
 
 A submission is one new directory, `submissions/<slug>/`, where the
