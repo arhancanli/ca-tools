@@ -103,6 +103,9 @@ def check_claim(cl, ctx, tmp):
                 raise ConError("constructions.csv field %s contains a line break" % fld)
         t, v, k, N = (int_of(raw, x, 1) for x in ("t", "v", "k", "N"))
         cl.update(t=t, v=v, k=k, N=N)
+        p = cs.scope_problem(t, v, k)
+        if p:
+            raise ConError(p)
         for prob in (provenance.construction_problem(raw.get("construction")), provenance.tj_text_problem(raw)):
             if prob:
                 raise ConError(prob)

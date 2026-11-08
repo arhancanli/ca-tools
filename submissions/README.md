@@ -10,6 +10,15 @@ published as a web page from `docs/index.html` (GitHub Pages, served
 from the `docs/` folder of `main` and regenerated on every push to
 `main`).
 
+## What the table covers
+
+The table records covering arrays of strength 2 to 6 with at most 25
+symbols and at most 100,000 columns. The check refuses a claim outside
+these limits. Sizes obtained by fusing symbols are not entered as rows.
+They appear only in the derived lookup (`../table/derived.csv`), which
+the maintainer computes from the table. The project takes arrays and
+certificates, not code (Rule 7).
+
 ## What a submission looks like
 
 A submission is one new directory, `submissions/<slug>/`, where the
@@ -301,8 +310,9 @@ may not be empty.
 and the family files it names, each at most 50 MiB: n lines of k
 integers, each integer a vector of GF(v)^t written in base v, most
 significant digit first (for v = p^e the digits are field elements
-coded as in `../tools/cphf/cphfcheck.c`, Conway polynomials; v up to 32,
-t up to 8, n up to 64). N must be the size the family gives: n(v^t - 1) + 1, or
+coded as in `../tools/cphf/cphfcheck.c`, Conway polynomials). The
+table's scope (above, "What the table covers") limits v to 25 and t to
+2 to 6, and n is at most 64. N must be the size the family gives: n(v^t - 1) + 1, or
 n(v^t - v) + v when every vector has first coordinate 1 (points of an
 affine space, Sherwood, Martirosyan and Colbourn 2006).
 
@@ -645,7 +655,7 @@ exactly as above: the check fetches your branch as data, reports on
 the pull request, and the rows are added after merge. Nothing needs
 write access to your fork.
 
-## Rules (since 2026-10-31; rules 1 and 6 as of 2026-11-04)
+## Rules (since 2026-10-31; rules 1 and 6 as of 2026-11-04, rule 7 as of 2026-11-07)
 
 1. Say how the arrays were built, so they can be rebuilt: `HOW.md`
    (above, "How it was built") with the construction, what it was
@@ -700,6 +710,11 @@ write access to your fork.
    `../table/tj_fingerprints.csv`, fingerprints only). His published
    methods, such as the CA Extender (`caex-tjaa2021`), may be used and
    are credited as methods.
+7. Arrays and certificates only. A pull request adds one submission
+   directory and nothing else. Pull requests that change code, tests,
+   workflows or documents are closed unmerged, whatever their merit.
+   Please report a fault in them as an issue instead. The maintainer
+   writes every fix himself, and credits the report.
 
 ## Checking locally before you submit
 

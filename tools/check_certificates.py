@@ -241,6 +241,9 @@ def prepare(raw, sub, exe, ctx, tmp):
         if not re.fullmatch(r"[0-9]+", (raw.get(fld) or "").strip()):
             raise CertError("certificates.csv field %s=%r is not a whole number" % (fld, raw.get(fld)))
     t, v, k, N = (int(raw[x]) for x in ("t", "v", "k", "N"))
+    p = cs.scope_problem(t, v, k)
+    if p:
+        raise CertError(p)
     if not (2 <= t <= 8) or not (2 <= v <= 32):
         raise CertError("t must be 2..8 and v 2..32 (the range of cphfcheck)")
     m = MODE_RE.match((raw.get("mode") or "").strip())

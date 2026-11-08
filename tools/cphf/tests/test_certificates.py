@@ -22,6 +22,8 @@ Works on a temporary copy of table/ (without arrays/), never on the repository's
   fill         family_sha256 filled once in the existing certificate rows: allowed from empty to the
                listing's value, refused for another value, on another row, or once set (needs git)
   light        the pull request check through check_submission.py
+  scope        claims with t outside 2..6, v above 25 or k above 100,000 refused by check_certificates.py
+               and check_submission.py; table rows outside the scope flagged by consistency.py
 Prints PASS/FAIL per test; exit status 0 only if everything passed.
 """
 import contextlib
@@ -121,6 +123,12 @@ def fresh(tmp):
     return root
 
 
+def write_how(sub):
+    """submissions need HOW.md (tools/provenance.py, since 3002b36)"""
+    with open(os.path.join(sub, "HOW.md"), "w") as f:
+        f.write("Construction: test family\nBuilt from: nothing\nProgram: this test\n")
+
+
 def make_subs(root):
     """test-rev: CPHF_11_121_3_5 with its columns reversed (a CPHF, progression rows, cyclic);
     test-aff: the affine CPHF(1; 5, 5, 2); test-bad: a random family that is not a CPHF"""
@@ -129,11 +137,13 @@ def make_subs(root):
     with open(os.path.join(sub, "rev.txt"), "w") as f:
         f.write("# reversed\n" + "".join(" ".join(r[::-1]) + "\n" for r in stored_family("CPHF_11_121_3_5.txt")))
     write_claims(sub, [claim(5, 3, 121, 2663, "rev.txt")])
+    write_how(sub)
     sub2 = os.path.join(root, "submissions", "test-aff")
     os.makedirs(sub2)
     with open(os.path.join(sub2, "aff.txt"), "w") as f:
         f.write(" ".join(str(5 + x) for x in range(5)) + "\n")
     write_claims(sub2, [claim(2, 5, 5, 25, "aff.txt", "auto affine")])
+    write_how(sub2)
     sub3 = os.path.join(root, "submissions", "test-bad")
     os.makedirs(sub3)
     rng = random.Random(7)
@@ -141,6 +151,7 @@ def make_subs(root):
         for _ in range(3):
             f.write(" ".join(str(rng.randrange(1, 27)) for _ in range(60)) + "\n")
     write_claims(sub3, [claim(3, 3, 60, 3 * 26 + 1, "bad.txt")])
+    write_how(sub3)
     return sub, sub2, sub3
 
 
@@ -174,7 +185,11 @@ def fill_tests(tmp):
     path = os.path.join(root, "table", "ca_table.csv")
     raw = open(path, "rb").read()
     lines = raw.split(b"\r\n")
-    filled = [i for i, l in enumerate(lines) if re.search(rb",[0-9a-f]{64}$", l) and i > 0]
+    # the certificate rows with an array hash; a hashless row (no array_sha256) is identified by its
+    # family_sha256 alone, so it never had an empty one and is left as it is
+    listed = list(csv.DictReader(io.StringIO(raw.decode("utf-8"), newline="")))
+    filled = [i for i, l in enumerate(lines) if i > 0 and re.search(rb",[0-9a-f]{64}$", l)
+              and listed[i - 1]["array_sha256"]]
     if len(filled) < 2:
         record("family_sha256 fill: certificate rows filled in this table", False, "%d rows" % len(filled))
         return
@@ -455,7 +470,45 @@ def run_all(tmp):
     record("light check of a non-CPHF fails in the screen", code == 1 and "not a CPHF" in rep, rep[-300:])
     write_claims(sub2, [claim(2, 5, 5, 25, "aff.txt", "sideways")])
     code, text = quiet(cs.main, [sub2, "--table-dir", tdir, "--ca-verify", cav, "--out", os.path.join(root, "l2"), "--threads", "2"])
-    record("light check: bad mode fails", code == 1, "")
+    rep = open(os.path.join(root, "l2", "report.md")).read()
+    record("light check: bad mode fails with the mode message", code == 1 and "sideways" in rep
+           and "is not empty, 'auto'" in rep, rep[-300:])
+
+    # the scope of the table (strengths 2 to 6, alphabets up to 25, widths up to 100,000): a claim
+    # outside it is refused by both routes, and a table row outside it is a consistency problem
+    out_of_scope = [(7, 5, 5, "strength t=7"), (1, 5, 5, "strength t=1"), (2, 26, 5, "alphabet v=26"),
+                    (2, 5, 100001, "width k=100001")]
+    for t, v, k, what in out_of_scope:
+        write_claims(sub2, [claim(t, v, k, 25, "aff.txt", "")])
+        code, out = cert([sub2, "--table-dir", tdir, "--threads", "2"])
+        record("certificate claim out of scope (%s) refused" % what, code == 1 and "out of scope" in out
+               and what in out and "What the table covers" in out, out[-300:])
+    sc = os.path.join(root, "submissions", "test-scope")
+    os.makedirs(sc)
+    write_how(sc)
+    for i, (t, v, k, what) in enumerate(out_of_scope):
+        with open(os.path.join(sc, "claims.csv"), "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(cs.CLAIMS_HEADER)
+            w.writerow([dict(t=t, v=v, k=k, N=25, file="a.txt", source_detail="test", construction="test array",
+                             builds_on="new https://example.org/x", credit="Test Person", notes="").get(x, "")
+                        for x in cs.CLAIMS_HEADER])
+        out = os.path.join(root, "scope%d" % i)
+        code, text = quiet(cs.main, [sc, "--table-dir", tdir, "--ca-verify", cav, "--out", out, "--threads", "2"])
+        rep = open(os.path.join(out, "report.md")).read()
+        record("array claim out of scope (%s) refused" % what, code == 1 and "out of scope" in rep and what in rep,
+               rep[-300:])
+    root = fresh(tmp); tdir = os.path.join(root, "table")
+    pr = consistency_problems(root)
+    record("scope: every table row is inside the scope", not any("scope" in p for p in pr), "; ".join(pr[:2]))
+    rows = table_rows(root)
+    with open(os.path.join(tdir, "ca_table.csv"), "a", newline="", encoding="utf-8") as f:
+        for t, v, k, what in out_of_scope:
+            r = dict(rows[0]); r.update(t=t, v=v, k=k, notes="test: out of scope")
+            csv.writer(f, lineterminator="\r\n").writerow([r[h] for h in cs.TABLE_HEADER])
+    pr = consistency_problems(root)
+    record("scope: consistency flags table rows outside it",
+           sum("outside the table's scope" in p for p in pr) == len(out_of_scope), "; ".join(pr[:4]))
 
 
 if __name__ == "__main__":

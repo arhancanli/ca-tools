@@ -86,6 +86,28 @@ FULL_FRACTION = 0.4
 SCREEN_THRESHOLD = 0         # deprecated, off (the decision is by predicted time, see above)
 CA_VERIFY_MAX_V = 127        # ca_verify stores symbols as int8
 CA_VERIFY_MAX_VT1 = 1 << 26  # ca_verify refuses v^(t-1) above this (its class tables)
+# The scope of the table (submissions/README.md, "What the table covers"): strengths 2 to 6,
+# alphabets up to 25, widths up to 100,000. A claim outside it is refused before anything else
+# is read; check_certificates.py and consistency.py use the same limits.
+SCOPE_T = (2, 6)
+SCOPE_V_MAX = 25
+SCOPE_K_MAX = 100000
+
+
+def scope_problem(t, v, k):
+    """None if (t, v, k) is inside the table's scope, otherwise the reason it is not"""
+    out = []
+    if not SCOPE_T[0] <= t <= SCOPE_T[1]:
+        out.append("strength t=%d is outside %d to %d" % (t, SCOPE_T[0], SCOPE_T[1]))
+    if v > SCOPE_V_MAX:
+        out.append("alphabet v=%d is above %d" % (v, SCOPE_V_MAX))
+    if k > SCOPE_K_MAX:
+        out.append("width k=%d is above %s" % (k, format(SCOPE_K_MAX, ",")))
+    if not out:
+        return None
+    return ("out of scope: %s (the table covers strengths %d to %d, alphabets up to %d and widths up "
+            "to %s; see submissions/README.md, \"What the table covers\")"
+            % ("; ".join(out), SCOPE_T[0], SCOPE_T[1], SCOPE_V_MAX, format(SCOPE_K_MAX, ",")))
 
 # Cost model of ca_verify (version 2), calibrated 2026-11-02 on this repository's 2-vCPU VM
 # (Intel Xeon 2.1 GHz, AVX2 kernels, gcc 13.3, 2 threads) against wall-clock runs of synthetic
@@ -559,6 +581,9 @@ def check_claim(cl, ctx, deadline):
         k = int_field(raw, "k", 1)
         N = int_field(raw, "N", 1)
         cl.update(t=t, v=v, k=k, N=N)
+        p = scope_problem(t, v, k)
+        if p:
+            raise ClaimError(p)
         if t > k:
             raise ClaimError("strength t=%d exceeds k=%d" % (t, k))
         if v ** t > (1 << 40) or v ** (t - 1) > CA_VERIFY_MAX_VT1:

@@ -39,6 +39,14 @@ try:
     os.makedirs(td)
     for n in ("ca_table.csv", "references.csv"):
         shutil.copy(os.path.join(REPO, "table", n), td)
+    # the test adds postop-nck2013 to CA(6228; 3, 196, 12); the real table has carried that id
+    # since the correction of 2026-11-07 (issue #47), so take it out of the copy first
+    p = os.path.join(td, "ca_table.csv")
+    lines = open(p, encoding="utf-8", newline="").read().split("\n")
+    for i, ln in enumerate(lines):
+        if ln.startswith("3,12,196,6228,"):
+            lines[i] = ln.replace(";postop-nck2013", "")
+    open(p, "w", encoding="utf-8", newline="").write("\n".join(lines))
     before = open(os.path.join(td, "ca_table.csv"), "rb").read()
     old_rows = rows_of(td)
     target = next(r for r in old_rows if (r["t"], r["v"], r["k"], r["N"]) == ("3", "12", "196", "6228"))
