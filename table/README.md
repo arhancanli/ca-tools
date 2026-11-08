@@ -698,3 +698,6 @@ Verification stamps were produced with the caverify R package and,
 for submissions, with `ca_verify.c` (both in this repository). The arrays
 themselves are mathematical objects; each file's origin is in the
 MANIFEST.
+
+The conventions of the table (the words, the tiers, the counting rules, what may be relied on, derived
+sizes and how to get an array) are in `CONVENTIONS.md`.
