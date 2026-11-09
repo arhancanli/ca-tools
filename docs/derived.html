@@ -33,9 +33,9 @@ a { color: inherit; }
 @media (max-width: 480px) { body { font-size:15px; } table { font-size:.82rem; } th, td { padding:.25rem .2rem; } }
 </style></head><body><main>
 <h1>Sizes that follow by published constructions</h1>
-<p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 867 lines, 2026-11-09.</p>
-<p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table holds only arrays added to it, so the same constructions are also evaluated at a fixed ladder of widths up to k = 100,000 (548 lines). Where the table has no entry that wide, the counted column reads <i>none</i>: the line is the smallest size these constructions give from the table, a yardstick for any array added there, not a survey of the literature.</p>
-<p>Constructions: <b>fuse</b> fusing symbols (Colbourn, Kéri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1); <b>derive</b> deriving a strength (CKRS 2010, (7)); <b>comp</b> composition (CKRS 2010, (3)); <b>CK</b> Chateauneuf-Kreher doubling (Cohen, Colbourn, Ling 2008, Thm 2); <b>CMTW34</b> Colbourn, Martirosyan, Trung, Walker 2006, Thm 3.4; <b>kRoux</b> k-ary Roux (CMTW 2006, Thm 3.3; DCAN values of Yin 2003); <b>PCT</b> Power CT (Colbourn and Zhou 2012, Thm 2.1 with Lemma 2.4; Colbourn and Torres-Jimenez 2013); <b>DP2</b> direct product (Colbourn and Torres-Jimenez 2013, Cor 4.3); <b>OD</b> ordered design (Cohen, Colbourn, Ling 2008, Construction 1); <b>SM</b> Shokri and Moura (J. Combin. Des. 2025).</p>
+<p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 1045 lines, 2026-11-09.</p>
+<p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table holds only arrays added to it, so the same constructions are also evaluated at a fixed ladder of widths up to k = 100,000 (550 lines). Where the table has no entry that wide, the counted column reads <i>none</i>: the line is the smallest size these constructions give from the table, a yardstick for any array added there, not a survey of the literature.</p>
+<p>Constructions: <b>fuse</b> fusing symbols (Colbourn, Kéri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1); <b>derive</b> deriving a strength (CKRS 2010, (7)); <b>add1</b> adding one column (CKRS 2010, Theorem 3.2); <b>comp</b> composition (CKRS 2010, (3)); <b>CK</b> Chateauneuf-Kreher doubling (Cohen, Colbourn, Ling 2008, Thm 2); <b>CMTW34</b> Colbourn, Martirosyan, Trung, Walker 2006, Thm 3.4; <b>kRoux</b> k-ary Roux (CMTW 2006, Thm 3.3; DCAN values of Yin 2003); <b>PCT</b> Power CT (Colbourn and Zhou 2012, Thm 2.1 with Lemma 2.4; Colbourn and Torres-Jimenez 2013); <b>DP2</b> direct product (Colbourn and Torres-Jimenez 2013, Cor 4.3); <b>OD</b> ordered design (Cohen, Colbourn, Ling 2008, Construction 1); <b>SM</b> Shokri and Moura (J. Combin. Des. 2025).</p>
 <details class=sub><summary>t = 2, v = 2 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>30000</td><td class=n>19</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,3,2)=4 + CAN(2,10000,2)=17 - 2</td></tr>
 <tr><td class=n>60000</td><td class=n>20</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,3,2)=4 + CAN(2,20000,2)=18 - 2</td></tr>
@@ -253,7 +253,7 @@ a { color: inherit; }
 <tr><td class=n>100000</td><td class=n>99</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=9 x (CAN(3,11,2)=12 - 1), q=11, e=5, p=0</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 3 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
-<tr><td class=n>8226</td><td class=n>352</td><td class=n>354</td><td class=n>0.56%</td><td>CMTW34</td><td class=ev>CAN(3,2742,3)=264 + (3-1)xCAN(2,2742,3)=35 + 3^3-3^2</td></tr>
+<tr><td class=n>8227</td><td class=n>352</td><td class=n>354</td><td class=n>0.56%</td><td>CMTW34</td><td class=ev>CAN(3,2743,3)=264 + (3-1)xCAN(2,2743,3)=35 + 3^3-3^2</td></tr>
 <tr><td class=n>11000</td><td class=n>372</td><td class=n><i>none</i></td><td class=n></td><td>CMTW34</td><td class=ev>CAN(3,3667,3)=282 + (3-1)xCAN(2,3667,3)=36 + 3^3-3^2</td></tr>
 <tr><td class=n>12500</td><td class=n>395</td><td class=n><i>none</i></td><td class=n></td><td>CMTW34</td><td class=ev>CAN(3,4167,3)=303 + (3-1)xCAN(2,4167,3)=37 + 3^3-3^2</td></tr>
 <tr><td class=n>15000</td><td class=n>408</td><td class=n><i>none</i></td><td class=n></td><td>CMTW34</td><td class=ev>CAN(3,5000,3)=314 + (3-1)xCAN(2,5000,3)=38 + 3^3-3^2</td></tr>
@@ -267,12 +267,36 @@ a { color: inherit; }
 <tr><td class=n>80000</td><td class=n>570</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=10 x (CAN(3,17,3)=58 - 1), q=17, e=4, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>572</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=13 x (CAN(3,13,3)=45 - 1), q=13, e=5, p=0</td></tr>
 </tbody></table></details>
+<details class=sub><summary>t = 3, v = 4 (4)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>15180</td><td class=n>832</td><td class=n>844</td><td class=n>1.42%</td><td>add1</td><td class=ev>CAN(3,15179,4)=784 + 4x(4-1)x4</td></tr>
+<tr><td class=n>27462</td><td class=n>892</td><td class=n>904</td><td class=n>1.33%</td><td>add1</td><td class=ev>CAN(3,27461,4)=844 + 4x(4-1)x4</td></tr>
+<tr><td class=n>49764</td><td class=n>952</td><td class=n>964</td><td class=n>1.24%</td><td>add1</td><td class=ev>CAN(3,49763,4)=904 + 4x(4-1)x4</td></tr>
+<tr><td class=n>90724</td><td class=n>1012</td><td class=n>1024</td><td class=n>1.17%</td><td>add1</td><td class=ev>CAN(3,90723,4)=964 + 4x(4-1)x4</td></tr>
+</tbody></table></details>
+<details class=sub><summary>t = 3, v = 5 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>17874</td><td class=n>1425</td><td class=n>1445</td><td class=n>1.38%</td><td>add1</td><td class=ev>CAN(3,17873,5)=1325 + 5x(5-1)x5</td></tr>
+<tr><td class=n>36549</td><td class=n>1545</td><td class=n>1565</td><td class=n>1.28%</td><td>add1</td><td class=ev>CAN(3,36548,5)=1445 + 5x(5-1)x5</td></tr>
+<tr><td class=n>75080</td><td class=n>1665</td><td class=n>1685</td><td class=n>1.19%</td><td>add1</td><td class=ev>CAN(3,75079,5)=1565 + 5x(5-1)x5</td></tr>
+</tbody></table></details>
 <details class=sub><summary>t = 3, v = 6 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>20</td><td class=n>606</td><td class=n>620</td><td class=n>2.26%</td><td>CK</td><td class=ev>CAN(3,10,6)=366 + (6-1)xCAN(2,10,6)=48</td></tr>
 <tr><td class=n>12500</td><td class=n>2900</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=4 x (CAN(3,113,6)=726 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>20000</td><td class=n>3029</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,20000,7)=3031 - 2x1</td></tr>
 <tr><td class=n>50000</td><td class=n>3365</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,50000,7)=3367 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>3701</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,7)=3703 - 2x1</td></tr>
+</tbody></table></details>
+<details class=sub><summary>t = 3, v = 7 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>22535</td><td class=n>3325</td><td class=n>3367</td><td class=n>1.25%</td><td>add1</td><td class=ev>CAN(3,22534,7)=3031 + 7x(7-1)x7</td></tr>
+<tr><td class=n>55582</td><td class=n>3661</td><td class=n>3703</td><td class=n>1.13%</td><td>add1</td><td class=ev>CAN(3,55581,7)=3367 + 7x(7-1)x7</td></tr>
+</tbody></table></details>
+<details class=sub><summary>t = 3, v = 8 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>16455</td><td class=n>4488</td><td class=n>4544</td><td class=n>1.23%</td><td>add1</td><td class=ev>CAN(3,16454,8)=4040 + 8x(8-1)x8</td></tr>
+<tr><td class=n>43713</td><td class=n>4992</td><td class=n>5048</td><td class=n>1.11%</td><td>add1</td><td class=ev>CAN(3,43712,8)=4544 + 8x(8-1)x8</td></tr>
+</tbody></table></details>
+<details class=sub><summary>t = 3, v = 9 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>10001</td><td class=n>5697</td><td class=n>5769</td><td class=n>1.25%</td><td>add1</td><td class=ev>CAN(3,10000,9)=5049 + 9x(9-1)x9</td></tr>
+<tr><td class=n>27339</td><td class=n>6417</td><td class=n>6489</td><td class=n>1.11%</td><td>add1</td><td class=ev>CAN(3,27338,9)=5769 + 9x(9-1)x9</td></tr>
+<tr><td class=n>77649</td><td class=n>7137</td><td class=n>7209</td><td class=n>1.00%</td><td>add1</td><td class=ev>CAN(3,77648,9)=6489 + 9x(9-1)x9</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 10 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>16</td><td class=n>2178</td><td class=n>2205</td><td class=n>1.22%</td><td>CK</td><td class=ev>CAN(3,8,10)=1170 + (10-1)xCAN(2,8,10)=112</td></tr>
@@ -283,6 +307,10 @@ a { color: inherit; }
 <tr><td class=n>60000</td><td class=n>10569</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,60000,11)=10571 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>11889</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,11)=11891 - 2x1</td></tr>
 </tbody></table></details>
+<details class=sub><summary>t = 3, v = 11 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>20726</td><td class=n>10461</td><td class=n>10571</td><td class=n>1.04%</td><td>add1</td><td class=ev>CAN(3,20725,11)=9251 + 11x(11-1)x11</td></tr>
+<tr><td class=n>64004</td><td class=n>11781</td><td class=n>11891</td><td class=n>0.93%</td><td>add1</td><td class=ev>CAN(3,64003,11)=10571 + 11x(11-1)x11</td></tr>
+</tbody></table></details>
 <details class=sub><summary>t = 3, v = 12 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>912</td><td class=n>8747</td><td class=n>9361</td><td class=n>6.56%</td><td>fuse</td><td class=ev>CAN(3,912,13)=8749 - 2x1</td></tr>
 <tr><td class=n>3393</td><td class=n>10931</td><td class=n>12491</td><td class=n>12.49%</td><td>fuse</td><td class=ev>CAN(3,3393,13)=10933 - 2x1</td></tr>
@@ -290,7 +318,11 @@ a { color: inherit; }
 <tr><td class=n>35000</td><td class=n>15299</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,35000,13)=15301 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>17483</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,13)=17485 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 14 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 13 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>11289</td><td class=n>15145</td><td class=n>15301</td><td class=n>1.02%</td><td>add1</td><td class=ev>CAN(3,11288,13)=13117 + 13x(13-1)x13</td></tr>
+<tr><td class=n>38416</td><td class=n>17329</td><td class=n>17485</td><td class=n>0.89%</td><td>add1</td><td class=ev>CAN(3,38415,13)=15301 + 13x(13-1)x13</td></tr>
+</tbody></table></details>
+<details class=sub><summary>t = 3, v = 14 (11)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>24</td><td class=n>6202</td><td class=n>6279</td><td class=n>1.23%</td><td>CK</td><td class=ev>CAN(3,12,14)=3381 + (14-1)xCAN(2,12,14)=217</td></tr>
 <tr><td class=n>36</td><td class=n>7212</td><td class=n>7225</td><td class=n>0.18%</td><td>CK</td><td class=ev>CAN(3,18,14)=4014 + (14-1)xCAN(2,18,14)=246</td></tr>
 <tr><td class=n>258</td><td class=n>8172</td><td class=n>8187</td><td class=n>0.18%</td><td>fuse</td><td class=ev>CAN(3,258,15)=8174 - 2x1</td></tr>
@@ -298,6 +330,7 @@ a { color: inherit; }
 <tr><td class=n>1429</td><td class=n>16332</td><td class=n>17662</td><td class=n>7.53%</td><td>fuse</td><td class=ev>CAN(3,1429,15)=16334 - 2x1</td></tr>
 <tr><td class=n>4368</td><td class=n>19228</td><td class=n>19387</td><td class=n>0.82%</td><td>fuse</td><td class=ev>CAN(3,4368,15)=19230 - 2x1</td></tr>
 <tr><td class=n>5880</td><td class=n>20412</td><td class=n>23431</td><td class=n>12.88%</td><td>fuse</td><td class=ev>CAN(3,5880,15)=20414 - 2x1</td></tr>
+<tr><td class=n>5881</td><td class=n>22960</td><td class=n>23431</td><td class=n>2.01%</td><td>add1</td><td class=ev>CAN(3,5880,14)=20412 + 14x(14-1)x14</td></tr>
 <tr><td class=n>20000</td><td class=n>24492</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,20000,15)=24494 - 2x1</td></tr>
 <tr><td class=n>80000</td><td class=n>28572</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,80000,15)=28574 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>32652</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,15)=32654 - 2x1</td></tr>
@@ -313,11 +346,14 @@ a { color: inherit; }
 <tr><td class=n>80000</td><td class=n>28574</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,80000,16)=28576 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>32654</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,16)=32656 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 16 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 16 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>4368</td><td class=n>19232</td><td class=n>19471</td><td class=n>1.23%</td><td>SM</td><td class=ev>2x16^3 + (16-2)xmin(CAN(2,273,16)=496, 2q^2-q=496) + CAN(3,16,16)=4096</td></tr>
+<tr><td class=n>21807</td><td class=n>28336</td><td class=n>28576</td><td class=n>0.84%</td><td>add1</td><td class=ev>CAN(3,21806,16)=24496 + 16x(16-1)x16</td></tr>
+<tr><td class=n>82959</td><td class=n>32416</td><td class=n>32656</td><td class=n>0.73%</td><td>add1</td><td class=ev>CAN(3,82958,16)=28576 + 16x(16-1)x16</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 17 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 17 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>5219</td><td class=n>23154</td><td class=n>23425</td><td class=n>1.16%</td><td>SM</td><td class=ev>2x17^3 + (17-2)xmin(CAN(2,307,17)=561, 2q^2-q=561) + CAN(3,17,17)=4913</td></tr>
+<tr><td class=n>26602</td><td class=n>34017</td><td class=n>34289</td><td class=n>0.79%</td><td>add1</td><td class=ev>CAN(3,26601,17)=29393 + 17x(17-1)x17</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 18 (6)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>446</td><td class=n>20537</td><td class=n>23364</td><td class=n>12.10%</td><td>fuse</td><td class=ev>CAN(3,446,19)=20539 - 2x1</td></tr>
@@ -327,8 +363,9 @@ a { color: inherit; }
 <tr><td class=n>35000</td><td class=n>41057</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,35000,19)=41059 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>47897</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,19)=47899 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 19 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 19 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>7239</td><td class=n>32528</td><td class=n>32869</td><td class=n>1.04%</td><td>SM</td><td class=ev>2x19^3 + (19-2)xmin(CAN(2,381,19)=703, 2q^2-q=703) + CAN(3,19,19)=6859</td></tr>
+<tr><td class=n>37439</td><td class=n>47557</td><td class=n>47899</td><td class=n>0.71%</td><td>add1</td><td class=ev>CAN(3,37438,19)=41059 + 19x(19-1)x19</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 20 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>36</td><td class=n>18487</td><td class=n>18677</td><td class=n>1.02%</td><td>CK</td><td class=ev>CAN(3,18,20)=10070 + (20-1)xCAN(2,18,20)=443</td></tr>
@@ -351,8 +388,10 @@ a { color: inherit; }
 <tr><td class=n>60000</td><td class=n>72885</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,60000,23)=72887 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>85029</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,23)=85031 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 23 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 23 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>12500</td><td class=n>58236</td><td class=n>60743</td><td class=n>4.13%</td><td>SM</td><td class=ev>2x23^3 + (23-2)xmin(CAN(2,553,23)=1035, 2q^2-q=1035) + CAN(3,23,23)=12167</td></tr>
+<tr><td class=n>13875</td><td class=n>67127</td><td class=n>72887</td><td class=n>7.90%</td><td>CMTW34</td><td class=ev>CAN(3,604,23)=31245 + (23-1)xCAN(2,604,23)=1102 + 23^3-23^2</td></tr>
+<tr><td class=n>64304</td><td class=n>84525</td><td class=n>85031</td><td class=n>0.60%</td><td>add1</td><td class=ev>CAN(3,64303,23)=72887 + 23x(23-1)x23</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 24 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>3738</td><td class=n>62423</td><td class=n>72071</td><td class=n>13.39%</td><td>fuse</td><td class=ev>CAN(3,3738,25)=62425 - 2x1</td></tr>
@@ -361,9 +400,10 @@ a { color: inherit; }
 <tr><td class=n>80000</td><td class=n>93623</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,80000,25)=93625 - 2x1</td></tr>
 <tr><td class=n>100000</td><td class=n>109223</td><td class=n><i>none</i></td><td class=n></td><td>fuse</td><td class=ev>CAN(3,100000,25)=109225 - 2x1</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 3, v = 25 (2)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 3, v = 25 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>15000</td><td class=n>75050</td><td class=n>78025</td><td class=n>3.81%</td><td>SM</td><td class=ev>2x25^3 + (25-2)xmin(CAN(2,651,25)=1225, 2q^2-q=1225) + CAN(3,25,25)=15625</td></tr>
 <tr><td class=n>17500</td><td class=n>84911</td><td class=n>93625</td><td class=n>9.31%</td><td>CMTW34</td><td class=ev>CAN(3,700,25)=39335 + (25-1)xCAN(2,700,25)=1274 + 25^3-25^2</td></tr>
+<tr><td class=n>84290</td><td class=n>108625</td><td class=n>109225</td><td class=n>0.55%</td><td>add1</td><td class=ev>CAN(3,84289,25)=93625 + 25x(25-1)x25</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 4, v = 2 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>25000</td><td class=n>403</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=13 x (CAN(4,13,2)=32 - 1), q=13, e=4, p=0</td></tr>
@@ -606,7 +646,7 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>380184</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,5)=18105 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>393204</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,5)=18725 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 6 (39)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 6 (45)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>47</td><td class=n>79217</td><td class=n>83627</td><td class=n>5.27%</td><td>fuse</td><td class=ev>CAN(5,47,7)=79219 - 2x1</td></tr>
 <tr><td class=n>52</td><td class=n>81611</td><td class=n>84029</td><td class=n>2.88%</td><td>fuse</td><td class=ev>CAN(5,52,7)=81613 - 2x1</td></tr>
 <tr><td class=n>57</td><td class=n>84005</td><td class=n>96017</td><td class=n>12.51%</td><td>fuse</td><td class=ev>CAN(5,57,7)=84007 - 2x1</td></tr>
@@ -636,6 +676,12 @@ a { color: inherit; }
 <tr><td class=n>1483</td><td class=n>218405</td><td class=n>543897</td><td class=n>59.84%</td><td>fuse</td><td class=ev>CAN(5,1483,7)=218407 - 2x1</td></tr>
 <tr><td class=n>2801</td><td class=n>218477</td><td class=n>575103</td><td class=n>62.01%</td><td>fuse</td><td class=ev>CAN(5,2801,7)=218479 - 2x1</td></tr>
 <tr><td class=n>5602</td><td class=n>268895</td><td class=n>868781</td><td class=n>69.05%</td><td>fuse</td><td class=ev>CAN(5,5602,7)=268897 - 2x1</td></tr>
+<tr><td class=n>5603</td><td class=n>339875</td><td class=n>868781</td><td class=n>60.88%</td><td>add1</td><td class=ev>CAN(5,5602,6)=268895 + 6x(6-1)xCAN(3,5601,6)=2366</td></tr>
+<tr><td class=n>5604</td><td class=n>410855</td><td class=n>868781</td><td class=n>52.71%</td><td>add1</td><td class=ev>CAN(5,5603,6)=339875 + 6x(6-1)xCAN(3,5602,6)=2366</td></tr>
+<tr><td class=n>5605</td><td class=n>481835</td><td class=n>868781</td><td class=n>44.54%</td><td>add1</td><td class=ev>CAN(5,5604,6)=410855 + 6x(6-1)xCAN(3,5603,6)=2366</td></tr>
+<tr><td class=n>5606</td><td class=n>552815</td><td class=n>868781</td><td class=n>36.37%</td><td>add1</td><td class=ev>CAN(5,5605,6)=481835 + 6x(6-1)xCAN(3,5604,6)=2366</td></tr>
+<tr><td class=n>5607</td><td class=n>623795</td><td class=n>868781</td><td class=n>28.20%</td><td>add1</td><td class=ev>CAN(5,5606,6)=552815 + 6x(6-1)xCAN(3,5605,6)=2366</td></tr>
+<tr><td class=n>5608</td><td class=n>694775</td><td class=n>868781</td><td class=n>20.03%</td><td>add1</td><td class=ev>CAN(5,5607,6)=623795 + 6x(6-1)xCAN(3,5606,6)=2366</td></tr>
 <tr><td class=n>11000</td><td class=n>929880</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,23,6)=44281 - 1), q=23, e=3, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>1027005</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,6)=48906 - 1), q=25, e=3, p=0</td></tr>
 <tr><td class=n>17500</td><td class=n>1134651</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,27,6)=54032 - 1), q=27, e=3, p=0</td></tr>
@@ -647,8 +693,14 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>1457526</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,6)=69407 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>1663536</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,6)=79217 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 7 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 7 (15)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>5603</td><td class=n>378559</td><td class=n>919506</td><td class=n>58.83%</td><td>add1</td><td class=ev>CAN(5,5602,7)=268897 + 7x(7-1)xCAN(3,5601,7)=2611</td></tr>
+<tr><td class=n>5604</td><td class=n>488221</td><td class=n>919506</td><td class=n>46.90%</td><td>add1</td><td class=ev>CAN(5,5603,7)=378559 + 7x(7-1)xCAN(3,5602,7)=2611</td></tr>
+<tr><td class=n>5605</td><td class=n>597883</td><td class=n>919506</td><td class=n>34.98%</td><td>add1</td><td class=ev>CAN(5,5604,7)=488221 + 7x(7-1)xCAN(3,5603,7)=2611</td></tr>
+<tr><td class=n>5606</td><td class=n>707545</td><td class=n>919506</td><td class=n>23.05%</td><td>add1</td><td class=ev>CAN(5,5605,7)=597883 + 7x(7-1)xCAN(3,5604,7)=2611</td></tr>
+<tr><td class=n>5607</td><td class=n>817207</td><td class=n>919506</td><td class=n>11.13%</td><td>add1</td><td class=ev>CAN(5,5606,7)=707545 + 7x(7-1)xCAN(3,5605,7)=2611</td></tr>
 <tr><td class=n>7381</td><td class=n>885717</td><td class=n>1036908</td><td class=n>14.58%</td><td>fuse</td><td class=ev>CAN(5,7381,8)=885719 - 2x1</td></tr>
+<tr><td class=n>7382</td><td class=n>998655</td><td class=n>1036908</td><td class=n>3.69%</td><td>add1</td><td class=ev>CAN(5,7381,7)=885717 + 7x(7-1)xCAN(3,7380,7)=2689</td></tr>
 <tr><td class=n>11000</td><td class=n>1057770</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,23,7)=50371 - 1), q=23, e=3, p=0</td></tr>
 <tr><td class=n>12500</td><td class=n>1267332</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=11 x (CAN(5,113,7)=115213 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>1293666</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=11 x (CAN(5,125,7)=117607 - 1), q=125, e=2, p=0</td></tr>
@@ -658,10 +710,13 @@ a { color: inherit; }
 <tr><td class=n>50000</td><td class=n>1411704</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,37,7)=67225 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>1663578</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,7)=79219 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 8 (11)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 8 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>1999</td><td class=n>622574</td><td class=n>1425767</td><td class=n>56.33%</td><td>derive</td><td class=ev>floor(CAN(6,2000,8)=4980592 / 8)</td></tr>
 <tr><td class=n>3170</td><td class=n>753642</td><td class=n>1473927</td><td class=n>48.87%</td><td>derive</td><td class=ev>floor(CAN(6,3171,8)=6029136 / 8)</td></tr>
 <tr><td class=n>7381</td><td class=n>885719</td><td class=n>1769383</td><td class=n>49.94%</td><td>fuse</td><td class=ev>CAN(5,7381,9)=885721 - 2x1</td></tr>
+<tr><td class=n>7382</td><td class=n>1100591</td><td class=n>1769383</td><td class=n>37.80%</td><td>add1</td><td class=ev>CAN(5,7381,8)=885719 + 8x(8-1)xCAN(3,7380,8)=3837</td></tr>
+<tr><td class=n>7383</td><td class=n>1315463</td><td class=n>1769383</td><td class=n>25.65%</td><td>add1</td><td class=ev>CAN(5,7382,8)=1100591 + 8x(8-1)xCAN(3,7381,8)=3837</td></tr>
+<tr><td class=n>7384</td><td class=n>1530335</td><td class=n>1769383</td><td class=n>13.51%</td><td>add1</td><td class=ev>CAN(5,7383,8)=1315463 + 8x(8-1)xCAN(3,7382,8)=3837</td></tr>
 <tr><td class=n>11000</td><td class=n>2053443</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,23,8)=97784 - 1), q=23, e=3, p=0</td></tr>
 <tr><td class=n>17500</td><td class=n>2064027</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,27,8)=98288 - 1), q=27, e=3, p=0</td></tr>
 <tr><td class=n>20000</td><td class=n>2580291</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,29,8)=122872 - 1), q=29, e=3, p=0</td></tr>
@@ -671,7 +726,11 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>3268251</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,8)=155632 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>3343515</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,8)=159216 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 9 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 9 (11)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>7382</td><td class=n>1249249</td><td class=n>3129544</td><td class=n>60.08%</td><td>add1</td><td class=ev>CAN(5,7381,9)=885721 + 9x(9-1)xCAN(3,7380,9)=5049</td></tr>
+<tr><td class=n>7383</td><td class=n>1612777</td><td class=n>3129544</td><td class=n>48.47%</td><td>add1</td><td class=ev>CAN(5,7382,9)=1249249 + 9x(9-1)xCAN(3,7381,9)=5049</td></tr>
+<tr><td class=n>7384</td><td class=n>1976305</td><td class=n>3129544</td><td class=n>36.85%</td><td>add1</td><td class=ev>CAN(5,7383,9)=1612777 + 9x(9-1)xCAN(3,7382,9)=5049</td></tr>
+<tr><td class=n>7385</td><td class=n>2339833</td><td class=n>3129544</td><td class=n>25.23%</td><td>add1</td><td class=ev>CAN(5,7384,9)=1976305 + 9x(9-1)xCAN(3,7383,9)=5049</td></tr>
 <tr><td class=n>10000</td><td class=n>2415607</td><td class=n>3187832</td><td class=n>24.22%</td><td>fuse</td><td class=ev>CAN(5,10000,10)=2415609 - 2x1</td></tr>
 <tr><td class=n>11000</td><td class=n>3704568</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,23,9)=176409 - 1), q=23, e=3, p=0</td></tr>
 <tr><td class=n>20000</td><td class=n>3719688</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,29,9)=177129 - 1), q=29, e=3, p=0</td></tr>
@@ -680,11 +739,12 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>4960032</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,9)=236193 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>5924184</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,9)=282105 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 10 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 10 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>463</td><td class=n>1288329</td><td class=n>1434739</td><td class=n>10.20%</td><td>fuse</td><td class=ev>CAN(5,463,11)=1288331 - 2x1</td></tr>
 <tr><td class=n>812</td><td class=n>1449369</td><td class=n>1609089</td><td class=n>9.93%</td><td>fuse</td><td class=ev>CAN(5,812,11)=1449371 - 2x1</td></tr>
 <tr><td class=n>1365</td><td class=n>1610409</td><td class=n>4576169</td><td class=n>64.81%</td><td>fuse</td><td class=ev>CAN(5,1365,11)=1610411 - 2x1</td></tr>
 <tr><td class=n>1683</td><td class=n>1771449</td><td class=n>5725792</td><td class=n>69.06%</td><td>fuse</td><td class=ev>CAN(5,1683,11)=1771451 - 2x1</td></tr>
+<tr><td class=n>1684</td><td class=n>2366259</td><td class=n>5737782</td><td class=n>58.76%</td><td>add1</td><td class=ev>CAN(5,1683,10)=1771449 + 10x(10-1)xCAN(3,1682,10)=6609</td></tr>
 <tr><td class=n>10000</td><td class=n>2415609</td><td class=n>8524672</td><td class=n>71.66%</td><td>fuse</td><td class=ev>CAN(5,10000,11)=2415611 - 2x1</td></tr>
 <tr><td class=n>11000</td><td class=n>6736128</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,23,10)=320769 - 1), q=23, e=3, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>9838458</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,10)=468499 - 1), q=25, e=3, p=0</td></tr>
@@ -705,11 +765,12 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>13472130</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,11)=641531 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>13499850</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,11)=642851 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 12 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 12 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>28</td><td class=n>742571</td><td class=n>1085303</td><td class=n>31.58%</td><td>fuse</td><td class=ev>CAN(5,28,13)=742573 - 2x1</td></tr>
 <tr><td class=n>365</td><td class=n>2598971</td><td class=n>2941703</td><td class=n>11.65%</td><td>fuse</td><td class=ev>CAN(5,365,13)=2598973 - 2x1</td></tr>
 <tr><td class=n>666</td><td class=n>2970251</td><td class=n>3339347</td><td class=n>11.05%</td><td>fuse</td><td class=ev>CAN(5,666,13)=2970253 - 2x1</td></tr>
 <tr><td class=n>1007</td><td class=n>3712811</td><td class=n>9991674</td><td class=n>62.84%</td><td>fuse</td><td class=ev>CAN(5,1007,13)=3712813 - 2x1</td></tr>
+<tr><td class=n>1008</td><td class=n>4951499</td><td class=n>9991674</td><td class=n>50.44%</td><td>add1</td><td class=ev>CAN(5,1007,12)=3712811 + 12x(12-1)xCAN(3,1006,12)=9384</td></tr>
 <tr><td class=n>1999</td><td class=n>5569379</td><td class=n>12907012</td><td class=n>56.85%</td><td>fuse</td><td class=ev>CAN(5,1999,13)=5569381 - 2x1</td></tr>
 <tr><td class=n>4399</td><td class=n>6683255</td><td class=n>15879678</td><td class=n>57.91%</td><td>fuse</td><td class=ev>CAN(5,4399,13)=6683257 - 2x1</td></tr>
 <tr><td class=n>10000</td><td class=n>7796891</td><td class=n>16707918</td><td class=n>53.33%</td><td>fuse</td><td class=ev>CAN(5,10000,13)=7796893 - 2x1</td></tr>
@@ -720,7 +781,8 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>29988714</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,12)=1428035 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>30542358</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,12)=1454399 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 13 (8)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 13 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>1008</td><td class=n>5272345</td><td class=n>7796893</td><td class=n>32.38%</td><td>add1</td><td class=ev>CAN(5,1007,13)=3712813 + 13x(13-1)xCAN(3,1006,13)=9997</td></tr>
 <tr><td class=n>1999</td><td class=n>5569381</td><td class=n>7796893</td><td class=n>28.57%</td><td>derive</td><td class=ev>floor(CAN(6,2000,13)=72401953 / 13)</td></tr>
 <tr><td class=n>4399</td><td class=n>6683257</td><td class=n>7796893</td><td class=n>14.28%</td><td>derive</td><td class=ev>floor(CAN(6,4400,13)=86882341 / 13)</td></tr>
 <tr><td class=n>17500</td><td class=n>15594012</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,27,13)=742573 - 1), q=27, e=3, p=0</td></tr>
@@ -730,21 +792,25 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>29988756</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,43,13)=1428037 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>30542400</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,13)=1454401 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 14 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 14 (16)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>34</td><td class=n>2097132</td><td class=n>3141612</td><td class=n>33.25%</td><td>fuse</td><td class=ev>CAN(5,34,15)=2097134 - 2x1</td></tr>
 <tr><td class=n>36</td><td class=n>2839691</td><td class=n>3141612</td><td class=n>9.61%</td><td>fuse</td><td class=ev>CAN(5,36,15)=2839693 - 2x1</td></tr>
 <tr><td class=n>273</td><td class=n>6291372</td><td class=n>7208892</td><td class=n>12.73%</td><td>fuse</td><td class=ev>CAN(5,273,15)=6291374 - 2x1</td></tr>
 <tr><td class=n>530</td><td class=n>7339932</td><td class=n>8322972</td><td class=n>11.81%</td><td>fuse</td><td class=ev>CAN(5,530,15)=7339934 - 2x1</td></tr>
 <tr><td class=n>1028</td><td class=n>8388492</td><td class=n>26869233</td><td class=n>68.78%</td><td>fuse</td><td class=ev>CAN(5,1028,15)=8388494 - 2x1</td></tr>
+<tr><td class=n>1029</td><td class=n>11066440</td><td class=n>26869233</td><td class=n>58.81%</td><td>add1</td><td class=ev>CAN(5,1028,14)=8388492 + 14x(14-1)xCAN(3,1027,14)=14714</td></tr>
 <tr><td class=n>1164</td><td class=n>11358731</td><td class=n>27634680</td><td class=n>58.90%</td><td>fuse</td><td class=ev>CAN(5,1164,15)=11358733 - 2x1</td></tr>
+<tr><td class=n>1165</td><td class=n>14322055</td><td class=n>27696120</td><td class=n>48.29%</td><td>add1</td><td class=ev>CAN(5,1164,14)=11358731 + 14x(14-1)xCAN(3,1163,14)=16282</td></tr>
 <tr><td class=n>1999</td><td class=n>14680047</td><td class=n>33345164</td><td class=n>55.98%</td><td>fuse</td><td class=ev>CAN(5,1999,15)=14680049 - 2x1</td></tr>
 <tr><td class=n>4799</td><td class=n>17825772</td><td class=n>37748619</td><td class=n>52.78%</td><td>fuse</td><td class=ev>CAN(5,4799,15)=17825774 - 2x1</td></tr>
+<tr><td class=n>4800</td><td class=n>21457036</td><td class=n>37748619</td><td class=n>43.16%</td><td>add1</td><td class=ev>CAN(5,4799,14)=17825772 + 14x(14-1)xCAN(3,4798,14)=19952</td></tr>
 <tr><td class=n>4899</td><td class=n>22717691</td><td class=n>37748664</td><td class=n>39.82%</td><td>fuse</td><td class=ev>CAN(5,4899,15)=22717693 - 2x1</td></tr>
+<tr><td class=n>4900</td><td class=n>26348955</td><td class=n>37748664</td><td class=n>30.20%</td><td>add1</td><td class=ev>CAN(5,4899,14)=22717691 + 14x(14-1)xCAN(3,4898,14)=19952</td></tr>
 <tr><td class=n>10000</td><td class=n>26976971</td><td class=n>46595619</td><td class=n>42.10%</td><td>fuse</td><td class=ev>CAN(5,10000,15)=26976973 - 2x1</td></tr>
 <tr><td class=n>30000</td><td class=n>44039751</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,32,14)=2097132 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>65011061</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(5,31,14)=2097132 - 1), q=31, e=4, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 15 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 15 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>34</td><td class=n>2097134</td><td class=n>3141614</td><td class=n>33.25%</td><td>fuse</td><td class=ev>CAN(5,34,16)=2097136 - 2x1</td></tr>
 <tr><td class=n>36</td><td class=n>2839693</td><td class=n>3141614</td><td class=n>9.61%</td><td>fuse</td><td class=ev>CAN(5,36,16)=2839695 - 2x1</td></tr>
 <tr><td class=n>273</td><td class=n>6291374</td><td class=n>7208894</td><td class=n>12.73%</td><td>fuse</td><td class=ev>CAN(5,273,16)=6291376 - 2x1</td></tr>
@@ -753,7 +819,9 @@ a { color: inherit; }
 <tr><td class=n>1164</td><td class=n>11358733</td><td class=n>31385410</td><td class=n>63.81%</td><td>fuse</td><td class=ev>CAN(5,1164,16)=11358735 - 2x1</td></tr>
 <tr><td class=n>1999</td><td class=n>14680049</td><td class=n>33345172</td><td class=n>55.98%</td><td>fuse</td><td class=ev>CAN(5,1999,16)=14680051 - 2x1</td></tr>
 <tr><td class=n>4799</td><td class=n>17825774</td><td class=n>37748637</td><td class=n>52.78%</td><td>fuse</td><td class=ev>CAN(5,4799,16)=17825776 - 2x1</td></tr>
+<tr><td class=n>4800</td><td class=n>22016114</td><td class=n>37748637</td><td class=n>41.68%</td><td>add1</td><td class=ev>CAN(5,4799,15)=17825774 + 15x(15-1)xCAN(3,4798,15)=19954</td></tr>
 <tr><td class=n>4899</td><td class=n>22717693</td><td class=n>37748682</td><td class=n>39.82%</td><td>fuse</td><td class=ev>CAN(5,4899,16)=22717695 - 2x1</td></tr>
+<tr><td class=n>4900</td><td class=n>26908033</td><td class=n>37748682</td><td class=n>28.72%</td><td>add1</td><td class=ev>CAN(5,4899,15)=22717693 + 15x(15-1)xCAN(3,4898,15)=19954</td></tr>
 <tr><td class=n>10000</td><td class=n>26976973</td><td class=n>46595637</td><td class=n>42.10%</td><td>fuse</td><td class=ev>CAN(5,10000,16)=26976975 - 2x1</td></tr>
 <tr><td class=n>30000</td><td class=n>44039793</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,32,15)=2097134 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>65011123</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(5,31,15)=2097134 - 1), q=31, e=4, p=0</td></tr>
@@ -768,7 +836,8 @@ a { color: inherit; }
 <tr><td class=n>30000</td><td class=n>44039835</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,32,16)=2097136 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>65011185</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(5,31,16)=2097136 - 1), q=31, e=4, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 17 (4)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 17 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>1165</td><td class=n>16690209</td><td class=n>26976977</td><td class=n>38.13%</td><td>add1</td><td class=ev>CAN(5,1164,17)=11358737 + 17x(17-1)xCAN(3,1163,17)=19601</td></tr>
 <tr><td class=n>1999</td><td class=n>19877985</td><td class=n>26976977</td><td class=n>26.32%</td><td>derive</td><td class=ev>floor(CAN(6,2000,17)=337925745 / 17)</td></tr>
 <tr><td class=n>4899</td><td class=n>22717697</td><td class=n>26976977</td><td class=n>15.79%</td><td>derive</td><td class=ev>floor(CAN(6,4900,17)=386200849 / 17)</td></tr>
 <tr><td class=n>30000</td><td class=n>59633616</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,32,17)=2839697 - 1), q=32, e=3, p=0</td></tr>
@@ -789,11 +858,13 @@ a { color: inherit; }
 <tr><td class=n>50000</td><td class=n>103995738</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,37,19)=4952179 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>153517518</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(5,31,19)=4952179 - 1), q=31, e=4, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 20 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 20 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>48</td><td class=n>12872657</td><td class=n>19308977</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(5,48,21)=12872659 - 2x1</td></tr>
 <tr><td class=n>52</td><td class=n>19531215</td><td class=n>25185661</td><td class=n>22.45%</td><td>fuse</td><td class=ev>CAN(5,52,21)=19531217 - 2x1</td></tr>
 <tr><td class=n>472</td><td class=n>38617937</td><td class=n>44494621</td><td class=n>13.21%</td><td>fuse</td><td class=ev>CAN(5,472,21)=38617939 - 2x1</td></tr>
 <tr><td class=n>1004</td><td class=n>45054257</td><td class=n>115504540</td><td class=n>60.99%</td><td>fuse</td><td class=ev>CAN(5,1004,21)=45054259 - 2x1</td></tr>
+<tr><td class=n>1005</td><td class=n>58749457</td><td class=n>115504540</td><td class=n>49.14%</td><td>add1</td><td class=ev>CAN(5,1004,20)=45054257 + 20x(20-1)xCAN(3,1003,20)=36040</td></tr>
+<tr><td class=n>1006</td><td class=n>72444657</td><td class=n>115553150</td><td class=n>37.31%</td><td>add1</td><td class=ev>CAN(5,1005,20)=58749457 + 20x(20-1)xCAN(3,1004,20)=36040</td></tr>
 <tr><td class=n>2999</td><td class=n>83672441</td><td class=n>131090591</td><td class=n>36.17%</td><td>fuse</td><td class=ev>CAN(5,2999,21)=83672443 - 2x1</td></tr>
 <tr><td class=n>4999</td><td class=n>96545125</td><td class=n>132591130</td><td class=n>27.19%</td><td>fuse</td><td class=ev>CAN(5,4999,21)=96545127 - 2x1</td></tr>
 <tr><td class=n>10000</td><td class=n>109417457</td><td class=n>134723455</td><td class=n>18.78%</td><td>fuse</td><td class=ev>CAN(5,10000,21)=109417459 - 2x1</td></tr>
@@ -801,11 +872,13 @@ a { color: inherit; }
 <tr><td class=n>15000</td><td class=n>205077894</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,20)=9765615 - 1), q=25, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>270325776</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,20)=12872657 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 21 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 21 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>48</td><td class=n>12872659</td><td class=n>19308979</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(5,48,22)=12872661 - 2x1</td></tr>
 <tr><td class=n>52</td><td class=n>19531217</td><td class=n>25185663</td><td class=n>22.45%</td><td>fuse</td><td class=ev>CAN(5,52,22)=19531219 - 2x1</td></tr>
 <tr><td class=n>472</td><td class=n>38617939</td><td class=n>44494623</td><td class=n>13.21%</td><td>fuse</td><td class=ev>CAN(5,472,22)=38617941 - 2x1</td></tr>
 <tr><td class=n>1004</td><td class=n>45054259</td><td class=n>119610967</td><td class=n>62.33%</td><td>fuse</td><td class=ev>CAN(5,1004,22)=45054261 - 2x1</td></tr>
+<tr><td class=n>1005</td><td class=n>63486799</td><td class=n>119610967</td><td class=n>46.92%</td><td>add1</td><td class=ev>CAN(5,1004,21)=45054259 + 21x(21-1)xCAN(3,1003,21)=43887</td></tr>
+<tr><td class=n>1006</td><td class=n>81919339</td><td class=n>119610967</td><td class=n>31.51%</td><td>add1</td><td class=ev>CAN(5,1005,21)=63486799 + 21x(21-1)xCAN(3,1004,21)=43887</td></tr>
 <tr><td class=n>2999</td><td class=n>83672443</td><td class=n>132810860</td><td class=n>37.00%</td><td>fuse</td><td class=ev>CAN(5,2999,22)=83672445 - 2x1</td></tr>
 <tr><td class=n>4999</td><td class=n>96545127</td><td class=n>135162739</td><td class=n>28.57%</td><td>fuse</td><td class=ev>CAN(5,4999,22)=96545129 - 2x1</td></tr>
 <tr><td class=n>10000</td><td class=n>109417459</td><td class=n>135162739</td><td class=n>19.05%</td><td>fuse</td><td class=ev>CAN(5,10000,22)=109417461 - 2x1</td></tr>
@@ -813,11 +886,12 @@ a { color: inherit; }
 <tr><td class=n>15000</td><td class=n>205077936</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,21)=9765617 - 1), q=25, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>270325818</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,21)=12872659 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 22 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 22 (11)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>48</td><td class=n>12872661</td><td class=n>19308981</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(5,48,23)=12872663 - 2x1</td></tr>
 <tr><td class=n>52</td><td class=n>19531219</td><td class=n>25185665</td><td class=n>22.45%</td><td>fuse</td><td class=ev>CAN(5,52,23)=19531221 - 2x1</td></tr>
 <tr><td class=n>472</td><td class=n>38617941</td><td class=n>44494625</td><td class=n>13.21%</td><td>fuse</td><td class=ev>CAN(5,472,23)=38617943 - 2x1</td></tr>
 <tr><td class=n>1004</td><td class=n>45054261</td><td class=n>122435638</td><td class=n>63.20%</td><td>fuse</td><td class=ev>CAN(5,1004,23)=45054263 - 2x1</td></tr>
+<tr><td class=n>1005</td><td class=n>66074337</td><td class=n>122435638</td><td class=n>46.03%</td><td>add1</td><td class=ev>CAN(5,1004,22)=45054261 + 22x(22-1)xCAN(3,1003,22)=45498</td></tr>
 <tr><td class=n>2999</td><td class=n>83672445</td><td class=n>133880431</td><td class=n>37.50%</td><td>fuse</td><td class=ev>CAN(5,2999,23)=83672447 - 2x1</td></tr>
 <tr><td class=n>4999</td><td class=n>96545129</td><td class=n>135162741</td><td class=n>28.57%</td><td>fuse</td><td class=ev>CAN(5,4999,23)=96545131 - 2x1</td></tr>
 <tr><td class=n>10000</td><td class=n>109417461</td><td class=n>135162741</td><td class=n>19.05%</td><td>fuse</td><td class=ev>CAN(5,10000,23)=109417463 - 2x1</td></tr>
@@ -825,18 +899,20 @@ a { color: inherit; }
 <tr><td class=n>15000</td><td class=n>205077978</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,22)=9765619 - 1), q=25, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>270325860</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,22)=12872661 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 23 (6)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 23 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>52</td><td class=n>19531221</td><td class=n>25185667</td><td class=n>22.45%</td><td>fuse</td><td class=ev>CAN(5,52,24)=19531223 - 2x1</td></tr>
+<tr><td class=n>1005</td><td class=n>68877249</td><td class=n>109417463</td><td class=n>37.05%</td><td>add1</td><td class=ev>CAN(5,1004,23)=45054263 + 23x(23-1)xCAN(3,1003,23)=47081</td></tr>
 <tr><td class=n>2999</td><td class=n>83672447</td><td class=n>109417463</td><td class=n>23.53%</td><td>derive</td><td class=ev>floor(CAN(6,3000,23)=1924466281 / 23)</td></tr>
 <tr><td class=n>4999</td><td class=n>96545131</td><td class=n>109417463</td><td class=n>11.76%</td><td>derive</td><td class=ev>floor(CAN(6,5000,23)=2220538013 / 23)</td></tr>
 <tr><td class=n>11000</td><td class=n>135163182</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,23,23)=6436343 - 1), q=23, e=3, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>205078020</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,23)=9765621 - 1), q=25, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>270325902</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,23)=12872663 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 24 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 24 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>52</td><td class=n>19531223</td><td class=n>29296871</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(5,52,25)=19531225 - 2x1</td></tr>
 <tr><td class=n>536</td><td class=n>58593623</td><td class=n>67578023</td><td class=n>13.29%</td><td>fuse</td><td class=ev>CAN(5,536,25)=58593625 - 2x1</td></tr>
 <tr><td class=n>915</td><td class=n>78124823</td><td class=n>185764614</td><td class=n>57.94%</td><td>fuse</td><td class=ev>CAN(5,915,25)=78124825 - 2x1</td></tr>
+<tr><td class=n>916</td><td class=n>110557031</td><td class=n>185764614</td><td class=n>40.49%</td><td>add1</td><td class=ev>CAN(5,915,24)=78124823 + 24x(24-1)xCAN(3,914,24)=58754</td></tr>
 <tr><td class=n>2999</td><td class=n>126953111</td><td class=n>203275063</td><td class=n>37.55%</td><td>fuse</td><td class=ev>CAN(5,2999,25)=126953113 - 2x1</td></tr>
 <tr><td class=n>4999</td><td class=n>146484359</td><td class=n>204349437</td><td class=n>28.32%</td><td>fuse</td><td class=ev>CAN(5,4999,25)=146484361 - 2x1</td></tr>
 <tr><td class=n>10000</td><td class=n>166015223</td><td class=n>205078062</td><td class=n>19.05%</td><td>fuse</td><td class=ev>CAN(5,10000,25)=166015225 - 2x1</td></tr>
@@ -844,7 +920,8 @@ a { color: inherit; }
 <tr><td class=n>17500</td><td class=n>301326900</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,27,24)=14348901 - 1), q=27, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>410155662</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,47,24)=19531223 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 5, v = 25 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 5, v = 25 (6)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>916</td><td class=n>113848225</td><td class=n>166015225</td><td class=n>31.42%</td><td>add1</td><td class=ev>CAN(5,915,25)=78124825 + 25x(25-1)xCAN(3,914,25)=59539</td></tr>
 <tr><td class=n>2999</td><td class=n>126953113</td><td class=n>166015225</td><td class=n>23.53%</td><td>derive</td><td class=ev>floor(CAN(6,3000,25)=3173827825 / 25)</td></tr>
 <tr><td class=n>4999</td><td class=n>146484361</td><td class=n>166015225</td><td class=n>11.76%</td><td>derive</td><td class=ev>floor(CAN(6,5000,25)=3662109025 / 25)</td></tr>
 <tr><td class=n>15000</td><td class=n>205078104</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=21 x (CAN(5,25,25)=9765625 - 1), q=25, e=3, p=0</td></tr>
@@ -875,21 +952,29 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>178800</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=25 x (CAN(6,43,3)=7153 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>189150</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=25 x (CAN(6,47,3)=7567 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 4 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 4 (8)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>782</td><td class=n>288239</td><td class=n>381360</td><td class=n>24.42%</td><td>add1</td><td class=ev>CAN(6,781,4)=249983 + 4x(4-1)xCAN(4,780,4)=3188</td></tr>
+<tr><td class=n>783</td><td class=n>326495</td><td class=n>381360</td><td class=n>14.39%</td><td>add1</td><td class=ev>CAN(6,782,4)=288239 + 4x(4-1)xCAN(4,781,4)=3188</td></tr>
+<tr><td class=n>784</td><td class=n>364751</td><td class=n>381360</td><td class=n>4.36%</td><td>add1</td><td class=ev>CAN(6,783,4)=326495 + 4x(4-1)xCAN(4,782,4)=3188</td></tr>
 <tr><td class=n>20000</td><td class=n>735480</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=27 x (CAN(6,29,4)=27241 - 1), q=29, e=3, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>773955</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=27 x (CAN(6,32,4)=28666 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>50000</td><td class=n>874962</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=27 x (CAN(6,37,4)=32407 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>951588</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=27 x (CAN(6,43,4)=35245 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>995085</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=27 x (CAN(6,47,4)=36856 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 5 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 5 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>782</td><td class=n>386485</td><td class=n>1062432</td><td class=n>63.62%</td><td>add1</td><td class=ev>CAN(6,781,5)=249985 + 5x(5-1)xCAN(4,780,5)=6825</td></tr>
+<tr><td class=n>783</td><td class=n>522985</td><td class=n>1062432</td><td class=n>50.77%</td><td>add1</td><td class=ev>CAN(6,782,5)=386485 + 5x(5-1)xCAN(4,781,5)=6825</td></tr>
+<tr><td class=n>784</td><td class=n>659485</td><td class=n>1062432</td><td class=n>37.93%</td><td>add1</td><td class=ev>CAN(6,783,5)=522985 + 5x(5-1)xCAN(4,782,5)=6825</td></tr>
+<tr><td class=n>785</td><td class=n>795985</td><td class=n>1062432</td><td class=n>25.08%</td><td>add1</td><td class=ev>CAN(6,784,5)=659485 + 5x(5-1)xCAN(4,783,5)=6825</td></tr>
+<tr><td class=n>786</td><td class=n>932485</td><td class=n>1062432</td><td class=n>12.23%</td><td>add1</td><td class=ev>CAN(6,785,5)=795985 + 5x(5-1)xCAN(4,784,5)=6825</td></tr>
 <tr><td class=n>30000</td><td class=n>2537036</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=29 x (CAN(6,32,5)=87485 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>50000</td><td class=n>2990016</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=29 x (CAN(6,37,5)=103105 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>3080496</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=29 x (CAN(6,41,5)=106225 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>3170976</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=29 x (CAN(6,43,5)=109345 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>3442996</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=29 x (CAN(6,47,5)=118725 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 6 (44)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 6 (51)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>18</td><td class=n>336131</td><td class=n>352943</td><td class=n>4.76%</td><td>fuse</td><td class=ev>CAN(6,18,7)=336133 - 2x1</td></tr>
 <tr><td class=n>19</td><td class=n>350537</td><td class=n>436973</td><td class=n>19.78%</td><td>fuse</td><td class=ev>CAN(6,19,7)=350539 - 2x1</td></tr>
 <tr><td class=n>21</td><td class=n>436973</td><td class=n>453773</td><td class=n>3.70%</td><td>fuse</td><td class=ev>CAN(6,21,7)=436975 - 2x1</td></tr>
@@ -924,9 +1009,16 @@ a { color: inherit; }
 <tr><td class=n>500</td><td class=n>1529423</td><td class=n>7058540</td><td class=n>78.33%</td><td>fuse</td><td class=ev>CAN(6,500,7)=1529425 - 2x1</td></tr>
 <tr><td class=n>700</td><td class=n>1647071</td><td class=n>8470248</td><td class=n>80.55%</td><td>fuse</td><td class=ev>CAN(6,700,7)=1647073 - 2x1</td></tr>
 <tr><td class=n>800</td><td class=n>1764719</td><td class=n>8767687</td><td class=n>79.87%</td><td>fuse</td><td class=ev>CAN(6,800,7)=1764721 - 2x1</td></tr>
+<tr><td class=n>801</td><td class=n>2241359</td><td class=n>8767687</td><td class=n>74.44%</td><td>add1</td><td class=ev>CAN(6,800,6)=1764719 + 6x(6-1)xCAN(4,799,6)=15888</td></tr>
 <tr><td class=n>2000</td><td class=n>2352845</td><td class=n>9882404</td><td class=n>76.19%</td><td>fuse</td><td class=ev>CAN(6,2000,7)=2352847 - 2x1</td></tr>
 <tr><td class=n>2800</td><td class=n>2705771</td><td class=n>11411828</td><td class=n>76.29%</td><td>fuse</td><td class=ev>CAN(6,2800,7)=2705773 - 2x1</td></tr>
+<tr><td class=n>2801</td><td class=n>3241631</td><td class=n>11411828</td><td class=n>71.59%</td><td>add1</td><td class=ev>CAN(6,2800,6)=2705771 + 6x(6-1)xCAN(4,2799,6)=17862</td></tr>
+<tr><td class=n>2802</td><td class=n>3777491</td><td class=n>11411828</td><td class=n>66.90%</td><td>add1</td><td class=ev>CAN(6,2801,6)=3241631 + 6x(6-1)xCAN(4,2800,6)=17862</td></tr>
+<tr><td class=n>2803</td><td class=n>4313351</td><td class=n>11411828</td><td class=n>62.20%</td><td>add1</td><td class=ev>CAN(6,2802,6)=3777491 + 6x(6-1)xCAN(4,2801,6)=17862</td></tr>
 <tr><td class=n>3171</td><td class=n>6029132</td><td class=n>11411828</td><td class=n>47.17%</td><td>fuse</td><td class=ev>CAN(6,3171,7)=6029134 - 2x1</td></tr>
+<tr><td class=n>3172</td><td class=n>6615932</td><td class=n>11411828</td><td class=n>42.03%</td><td>add1</td><td class=ev>CAN(6,3171,6)=6029132 + 6x(6-1)xCAN(4,3170,6)=19560</td></tr>
+<tr><td class=n>3173</td><td class=n>7202732</td><td class=n>11411828</td><td class=n>36.88%</td><td>add1</td><td class=ev>CAN(6,3172,6)=6615932 + 6x(6-1)xCAN(4,3171,6)=19560</td></tr>
+<tr><td class=n>3174</td><td class=n>7789532</td><td class=n>11411828</td><td class=n>31.74%</td><td>add1</td><td class=ev>CAN(6,3173,6)=7202732 + 6x(6-1)xCAN(4,3172,6)=19560</td></tr>
 <tr><td class=n>3950</td><td class=n>11160075</td><td class=n>11529476</td><td class=n>3.20%</td><td>fuse</td><td class=ev>CAN(6,3950,7)=11160077 - 2x1</td></tr>
 <tr><td class=n>11000</td><td class=n>16134112</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,6)=1008383 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>16671712</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,6)=1041983 - 1), q=125, e=2, p=0</td></tr>
@@ -935,8 +1027,14 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>20839936</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,6)=672257 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>21360736</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,6)=689057 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 7 (8)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 7 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>2801</td><td class=n>3805039</td><td class=n>11411856</td><td class=n>66.66%</td><td>add1</td><td class=ev>CAN(6,2800,7)=2705773 + 7x(7-1)xCAN(4,2799,7)=26173</td></tr>
+<tr><td class=n>2802</td><td class=n>4904305</td><td class=n>11411856</td><td class=n>57.02%</td><td>add1</td><td class=ev>CAN(6,2801,7)=3805039 + 7x(7-1)xCAN(4,2800,7)=26173</td></tr>
+<tr><td class=n>2803</td><td class=n>6003571</td><td class=n>11411856</td><td class=n>47.39%</td><td>add1</td><td class=ev>CAN(6,2802,7)=4904305 + 7x(7-1)xCAN(4,2801,7)=26173</td></tr>
 <tr><td class=n>3171</td><td class=n>6029134</td><td class=n>11411856</td><td class=n>47.17%</td><td>fuse</td><td class=ev>CAN(6,3171,8)=6029136 - 2x1</td></tr>
+<tr><td class=n>3172</td><td class=n>7135456</td><td class=n>11411856</td><td class=n>37.47%</td><td>add1</td><td class=ev>CAN(6,3171,7)=6029134 + 7x(7-1)xCAN(4,3170,7)=26341</td></tr>
+<tr><td class=n>3173</td><td class=n>8241778</td><td class=n>11411856</td><td class=n>27.78%</td><td>add1</td><td class=ev>CAN(6,3172,7)=7135456 + 7x(7-1)xCAN(4,3171,7)=26341</td></tr>
+<tr><td class=n>3174</td><td class=n>9348100</td><td class=n>11411856</td><td class=n>18.08%</td><td>add1</td><td class=ev>CAN(6,3173,7)=8241778 + 7x(7-1)xCAN(4,3172,7)=26341</td></tr>
 <tr><td class=n>3950</td><td class=n>11160077</td><td class=n>11529504</td><td class=n>3.20%</td><td>fuse</td><td class=ev>CAN(6,3950,8)=11160079 - 2x1</td></tr>
 <tr><td class=n>11000</td><td class=n>16134144</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,7)=1008385 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>16671744</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,7)=1041985 - 1), q=125, e=2, p=0</td></tr>
@@ -945,8 +1043,13 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>20839998</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,7)=672259 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>21360798</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,7)=689059 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 8 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 8 (15)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>238</td><td class=n>4257520</td><td class=n>4259480</td><td class=n>0.05%</td><td>add1</td><td class=ev>CAN(6,237,8)=2883504 + 8x(8-1)xCAN(4,236,8)=24536</td></tr>
+<tr><td class=n>3172</td><td class=n>8776720</td><td class=n>23592870</td><td class=n>62.80%</td><td>add1</td><td class=ev>CAN(6,3171,8)=6029136 + 8x(8-1)xCAN(4,3170,8)=49064</td></tr>
 <tr><td class=n>3950</td><td class=n>11160079</td><td class=n>23854467</td><td class=n>53.22%</td><td>fuse</td><td class=ev>CAN(6,3950,9)=11160081 - 2x1</td></tr>
+<tr><td class=n>3951</td><td class=n>13907663</td><td class=n>23854467</td><td class=n>41.70%</td><td>add1</td><td class=ev>CAN(6,3950,8)=11160079 + 8x(8-1)xCAN(4,3949,8)=49064</td></tr>
+<tr><td class=n>3952</td><td class=n>16655247</td><td class=n>23854467</td><td class=n>30.18%</td><td>add1</td><td class=ev>CAN(6,3951,8)=13907663 + 8x(8-1)xCAN(4,3950,8)=49064</td></tr>
+<tr><td class=n>3953</td><td class=n>19402831</td><td class=n>23854467</td><td class=n>18.66%</td><td>add1</td><td class=ev>CAN(6,3952,8)=16655247 + 8x(8-1)xCAN(4,3951,8)=49064</td></tr>
 <tr><td class=n>11000</td><td class=n>36699376</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,8)=2293712 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>12500</td><td class=n>37223536</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,113,8)=2326472 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>37682288</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,8)=2355144 - 1), q=125, e=2, p=0</td></tr>
@@ -957,19 +1060,33 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>48630785</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,8)=1568736 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>48755777</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,8)=1572768 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 9 (6)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 9 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>3951</td><td class=n>16349913</td><td class=n>47703744</td><td class=n>65.73%</td><td>add1</td><td class=ev>CAN(6,3950,9)=11160081 + 9x(9-1)xCAN(4,3949,9)=72081</td></tr>
+<tr><td class=n>3952</td><td class=n>21539745</td><td class=n>47703744</td><td class=n>54.85%</td><td>add1</td><td class=ev>CAN(6,3951,9)=16349913 + 9x(9-1)xCAN(4,3950,9)=72081</td></tr>
+<tr><td class=n>3953</td><td class=n>26729577</td><td class=n>47703744</td><td class=n>43.97%</td><td>add1</td><td class=ev>CAN(6,3952,9)=21539745 + 9x(9-1)xCAN(4,3951,9)=72081</td></tr>
+<tr><td class=n>3954</td><td class=n>31919409</td><td class=n>47703744</td><td class=n>33.09%</td><td>add1</td><td class=ev>CAN(6,3953,9)=26729577 + 9x(9-1)xCAN(4,3952,9)=72081</td></tr>
 <tr><td class=n>4200</td><td class=n>33659457</td><td class=n>47762064</td><td class=n>29.53%</td><td>fuse</td><td class=ev>CAN(6,4200,10)=33659459 - 2x1</td></tr>
+<tr><td class=n>4201</td><td class=n>38849289</td><td class=n>47762064</td><td class=n>18.66%</td><td>add1</td><td class=ev>CAN(6,4200,9)=33659457 + 9x(9-1)xCAN(4,4199,9)=72081</td></tr>
+<tr><td class=n>4202</td><td class=n>44039121</td><td class=n>47762064</td><td class=n>7.79%</td><td>add1</td><td class=ev>CAN(6,4201,9)=38849289 + 9x(9-1)xCAN(4,4200,9)=72081</td></tr>
 <tr><td class=n>25000</td><td class=n>65898560</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,31,9)=2125761 - 1), q=31, e=3, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>78711728</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,9)=2539089 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>50000</td><td class=n>82349888</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,37,9)=2656449 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>82373200</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,9)=2657201 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>97016360</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,9)=3129561 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 10 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 10 (18)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>19</td><td class=n>3543109</td><td class=n>5153619</td><td class=n>31.25%</td><td>fuse</td><td class=ev>CAN(6,19,11)=3543111 - 2x1</td></tr>
+<tr><td class=n>209</td><td class=n>22528269</td><td class=n>22531869</td><td class=n>0.02%</td><td>add1</td><td class=ev>CAN(6,208,10)=15943959 + 10x(10-1)xCAN(4,207,10)=73159</td></tr>
 <tr><td class=n>2000</td><td class=n>28344809</td><td class=n>123994502</td><td class=n>77.14%</td><td>fuse</td><td class=ev>CAN(6,2000,11)=28344811 - 2x1</td></tr>
 <tr><td class=n>4200</td><td class=n>33659459</td><td class=n>148805032</td><td class=n>77.38%</td><td>fuse</td><td class=ev>CAN(6,4200,11)=33659461 - 2x1</td></tr>
+<tr><td class=n>4201</td><td class=n>46827269</td><td class=n>148805032</td><td class=n>68.53%</td><td>add1</td><td class=ev>CAN(6,4200,10)=33659459 + 10x(10-1)xCAN(4,4199,10)=146309</td></tr>
+<tr><td class=n>4202</td><td class=n>59995079</td><td class=n>148805032</td><td class=n>59.68%</td><td>add1</td><td class=ev>CAN(6,4201,10)=46827269 + 10x(10-1)xCAN(4,4200,10)=146309</td></tr>
+<tr><td class=n>4203</td><td class=n>73162889</td><td class=n>148805032</td><td class=n>50.83%</td><td>add1</td><td class=ev>CAN(6,4202,10)=59995079 + 10x(10-1)xCAN(4,4201,10)=146309</td></tr>
+<tr><td class=n>4204</td><td class=n>86330699</td><td class=n>148805032</td><td class=n>41.98%</td><td>add1</td><td class=ev>CAN(6,4203,10)=73162889 + 10x(10-1)xCAN(4,4202,10)=146309</td></tr>
 <tr><td class=n>4400</td><td class=n>86882335</td><td class=n>148808992</td><td class=n>41.61%</td><td>fuse</td><td class=ev>CAN(6,4400,11)=86882337 - 2x1</td></tr>
+<tr><td class=n>4401</td><td class=n>100050145</td><td class=n>148808992</td><td class=n>32.77%</td><td>add1</td><td class=ev>CAN(6,4400,10)=86882335 + 10x(10-1)xCAN(4,4399,10)=146309</td></tr>
+<tr><td class=n>4402</td><td class=n>113217955</td><td class=n>148808992</td><td class=n>23.92%</td><td>add1</td><td class=ev>CAN(6,4401,10)=100050145 + 10x(10-1)xCAN(4,4400,10)=146309</td></tr>
+<tr><td class=n>4403</td><td class=n>126385765</td><td class=n>148808992</td><td class=n>15.07%</td><td>add1</td><td class=ev>CAN(6,4402,10)=113217955 + 10x(10-1)xCAN(4,4401,10)=146309</td></tr>
 <tr><td class=n>11000</td><td class=n>219028608</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,10)=13689289 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>25000</td><td class=n>219669038</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,31,10)=7086099 - 1), q=31, e=3, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>219673378</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,10)=7086239 - 1), q=32, e=3, p=0</td></tr>
@@ -977,8 +1094,15 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>274136968</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,10)=8843129 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>274591738</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,10)=8857799 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 11 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 11 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>209</td><td class=n>23991671</td><td class=n>23996071</td><td class=n>0.02%</td><td>add1</td><td class=ev>CAN(6,208,11)=15943961 + 11x(11-1)xCAN(4,207,11)=73161</td></tr>
+<tr><td class=n>4201</td><td class=n>49753671</td><td class=n>148805060</td><td class=n>66.56%</td><td>add1</td><td class=ev>CAN(6,4200,11)=33659461 + 11x(11-1)xCAN(4,4199,11)=146311</td></tr>
+<tr><td class=n>4202</td><td class=n>65847881</td><td class=n>148805060</td><td class=n>55.75%</td><td>add1</td><td class=ev>CAN(6,4201,11)=49753671 + 11x(11-1)xCAN(4,4200,11)=146311</td></tr>
+<tr><td class=n>4203</td><td class=n>81942091</td><td class=n>148805060</td><td class=n>44.93%</td><td>add1</td><td class=ev>CAN(6,4202,11)=65847881 + 11x(11-1)xCAN(4,4201,11)=146311</td></tr>
 <tr><td class=n>4400</td><td class=n>86882337</td><td class=n>148809020</td><td class=n>41.61%</td><td>fuse</td><td class=ev>CAN(6,4400,12)=86882339 - 2x1</td></tr>
+<tr><td class=n>4401</td><td class=n>102976547</td><td class=n>148809020</td><td class=n>30.80%</td><td>add1</td><td class=ev>CAN(6,4400,11)=86882337 + 11x(11-1)xCAN(4,4399,11)=146311</td></tr>
+<tr><td class=n>4402</td><td class=n>119070757</td><td class=n>148809020</td><td class=n>19.98%</td><td>add1</td><td class=ev>CAN(6,4401,11)=102976547 + 11x(11-1)xCAN(4,4400,11)=146311</td></tr>
+<tr><td class=n>4403</td><td class=n>135164967</td><td class=n>148809020</td><td class=n>9.17%</td><td>add1</td><td class=ev>CAN(6,4402,11)=119070757 + 11x(11-1)xCAN(4,4401,11)=146311</td></tr>
 <tr><td class=n>11000</td><td class=n>219028640</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,11)=13689291 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>25000</td><td class=n>219669100</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,31,11)=7086101 - 1), q=31, e=3, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>219673440</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,11)=7086241 - 1), q=32, e=3, p=0</td></tr>
@@ -986,11 +1110,16 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>274137030</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,11)=8843131 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>274591800</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,11)=8857801 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 12 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 12 (15)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>22</td><td class=n>9653603</td><td class=n>14451851</td><td class=n>33.20%</td><td>fuse</td><td class=ev>CAN(6,22,13)=9653605 - 2x1</td></tr>
 <tr><td class=n>2000</td><td class=n>72401951</td><td class=n>332677940</td><td class=n>78.24%</td><td>fuse</td><td class=ev>CAN(6,2000,13)=72401953 - 2x1</td></tr>
 <tr><td class=n>4400</td><td class=n>86882339</td><td class=n>371637262</td><td class=n>76.62%</td><td>fuse</td><td class=ev>CAN(6,4400,13)=86882341 - 2x1</td></tr>
+<tr><td class=n>4401</td><td class=n>124567151</td><td class=n>371637262</td><td class=n>66.48%</td><td>add1</td><td class=ev>CAN(6,4400,12)=86882339 + 12x(12-1)xCAN(4,4399,12)=285491</td></tr>
+<tr><td class=n>4402</td><td class=n>162251963</td><td class=n>371637262</td><td class=n>56.34%</td><td>add1</td><td class=ev>CAN(6,4401,12)=124567151 + 12x(12-1)xCAN(4,4400,12)=285491</td></tr>
+<tr><td class=n>4403</td><td class=n>199936775</td><td class=n>371637262</td><td class=n>46.20%</td><td>add1</td><td class=ev>CAN(6,4402,12)=162251963 + 12x(12-1)xCAN(4,4401,12)=285491</td></tr>
 <tr><td class=n>4800</td><td class=n>285212408</td><td class=n>372775858</td><td class=n>23.49%</td><td>fuse</td><td class=ev>CAN(6,4800,13)=285212410 - 2x1</td></tr>
+<tr><td class=n>4801</td><td class=n>322897220</td><td class=n>372775858</td><td class=n>13.38%</td><td>add1</td><td class=ev>CAN(6,4800,12)=285212408 + 12x(12-1)xCAN(4,4799,12)=285491</td></tr>
+<tr><td class=n>4802</td><td class=n>360582032</td><td class=n>372775858</td><td class=n>3.27%</td><td>add1</td><td class=ev>CAN(6,4801,12)=322897220 + 12x(12-1)xCAN(4,4800,12)=285491</td></tr>
 <tr><td class=n>11000</td><td class=n>534660832</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,12)=33416303 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>12500</td><td class=n>540144544</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,113,12)=33759035 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>597638026</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,12)=19278647 - 1), q=32, e=3, p=0</td></tr>
@@ -998,8 +1127,13 @@ a { color: inherit; }
 <tr><td class=n>60000</td><td class=n>725134330</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,12)=23391431 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>736644010</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,12)=23762711 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 13 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 13 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>4401</td><td class=n>131419249</td><td class=n>371637288</td><td class=n>64.64%</td><td>add1</td><td class=ev>CAN(6,4400,13)=86882341 + 13x(13-1)xCAN(4,4399,13)=285493</td></tr>
+<tr><td class=n>4402</td><td class=n>175956157</td><td class=n>371637288</td><td class=n>52.65%</td><td>add1</td><td class=ev>CAN(6,4401,13)=131419249 + 13x(13-1)xCAN(4,4400,13)=285493</td></tr>
+<tr><td class=n>4403</td><td class=n>220493065</td><td class=n>371637288</td><td class=n>40.67%</td><td>add1</td><td class=ev>CAN(6,4402,13)=175956157 + 13x(13-1)xCAN(4,4401,13)=285493</td></tr>
+<tr><td class=n>4404</td><td class=n>265029973</td><td class=n>371637288</td><td class=n>28.69%</td><td>add1</td><td class=ev>CAN(6,4403,13)=220493065 + 13x(13-1)xCAN(4,4402,13)=285493</td></tr>
 <tr><td class=n>4800</td><td class=n>285212410</td><td class=n>372775884</td><td class=n>23.49%</td><td>fuse</td><td class=ev>CAN(6,4800,14)=285212412 - 2x1</td></tr>
+<tr><td class=n>4801</td><td class=n>329749318</td><td class=n>372775884</td><td class=n>11.54%</td><td>add1</td><td class=ev>CAN(6,4800,13)=285212410 + 13x(13-1)xCAN(4,4799,13)=285493</td></tr>
 <tr><td class=n>11000</td><td class=n>534660864</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,13)=33416305 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>12500</td><td class=n>540144576</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,113,13)=33759037 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>597638088</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,13)=19278649 - 1), q=32, e=3, p=0</td></tr>
@@ -1007,14 +1141,20 @@ a { color: inherit; }
 <tr><td class=n>60000</td><td class=n>725134392</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,13)=23391433 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>736644072</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,13)=23762713 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 14 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 14 (19)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>23</td><td class=n>33554412</td><td class=n>50266092</td><td class=n>33.25%</td><td>fuse</td><td class=ev>CAN(6,23,15)=33554414 - 2x1</td></tr>
 <tr><td class=n>25</td><td class=n>33554427</td><td class=n>50266092</td><td class=n>33.25%</td><td>fuse</td><td class=ev>CAN(6,25,15)=33554429 - 2x1</td></tr>
 <tr><td class=n>26</td><td class=n>48275115</td><td class=n>50331612</td><td class=n>4.09%</td><td>fuse</td><td class=ev>CAN(6,26,15)=48275117 - 2x1</td></tr>
 <tr><td class=n>2000</td><td class=n>234880812</td><td class=n>1086324334</td><td class=n>78.38%</td><td>fuse</td><td class=ev>CAN(6,2000,15)=234880814 - 2x1</td></tr>
 <tr><td class=n>4800</td><td class=n>285212412</td><td class=n>1254096383</td><td class=n>77.26%</td><td>fuse</td><td class=ev>CAN(6,4800,15)=285212414 - 2x1</td></tr>
 <tr><td class=n>4900</td><td class=n>386200843</td><td class=n>1266675023</td><td class=n>69.51%</td><td>fuse</td><td class=ev>CAN(6,4900,15)=386200845 - 2x1</td></tr>
+<tr><td class=n>4901</td><td class=n>493524787</td><td class=n>1266675023</td><td class=n>61.04%</td><td>add1</td><td class=ev>CAN(6,4900,14)=386200843 + 14x(14-1)xCAN(4,4899,14)=589692</td></tr>
+<tr><td class=n>4902</td><td class=n>600848731</td><td class=n>1266675023</td><td class=n>52.56%</td><td>add1</td><td class=ev>CAN(6,4901,14)=493524787 + 14x(14-1)xCAN(4,4900,14)=589692</td></tr>
+<tr><td class=n>4903</td><td class=n>708172675</td><td class=n>1266675023</td><td class=n>44.09%</td><td>add1</td><td class=ev>CAN(6,4902,14)=600848731 + 14x(14-1)xCAN(4,4901,14)=589692</td></tr>
 <tr><td class=n>5000</td><td class=n>752733801</td><td class=n>1266678863</td><td class=n>40.57%</td><td>fuse</td><td class=ev>CAN(6,5000,15)=752733803 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>860057745</td><td class=n>1266678863</td><td class=n>32.10%</td><td>add1</td><td class=ev>CAN(6,5000,14)=752733801 + 14x(14-1)xCAN(4,4999,14)=589692</td></tr>
+<tr><td class=n>5002</td><td class=n>967381689</td><td class=n>1266678863</td><td class=n>23.63%</td><td>add1</td><td class=ev>CAN(6,5001,14)=860057745 + 14x(14-1)xCAN(4,5000,14)=589692</td></tr>
+<tr><td class=n>5003</td><td class=n>1074705633</td><td class=n>1266678863</td><td class=n>15.16%</td><td>add1</td><td class=ev>CAN(6,5002,14)=967381689 + 14x(14-1)xCAN(4,5001,14)=589692</td></tr>
 <tr><td class=n>12500</td><td class=n>1828715696</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,113,14)=114294732 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>1845492656</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,14)=115343292 - 1), q=125, e=2, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>2015362421</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,14)=65011692 - 1), q=32, e=3, p=0</td></tr>
@@ -1022,14 +1162,19 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>2080374536</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,14)=67108857 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>2535455621</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,14)=81788892 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 15 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 15 (18)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>23</td><td class=n>33554414</td><td class=n>50266094</td><td class=n>33.25%</td><td>fuse</td><td class=ev>CAN(6,23,16)=33554416 - 2x1</td></tr>
 <tr><td class=n>25</td><td class=n>33554429</td><td class=n>50266094</td><td class=n>33.25%</td><td>fuse</td><td class=ev>CAN(6,25,16)=33554431 - 2x1</td></tr>
 <tr><td class=n>26</td><td class=n>48275117</td><td class=n>50331614</td><td class=n>4.09%</td><td>fuse</td><td class=ev>CAN(6,26,16)=48275119 - 2x1</td></tr>
 <tr><td class=n>2000</td><td class=n>234880814</td><td class=n>1086324362</td><td class=n>78.38%</td><td>fuse</td><td class=ev>CAN(6,2000,16)=234880816 - 2x1</td></tr>
 <tr><td class=n>4800</td><td class=n>285212414</td><td class=n>1254096409</td><td class=n>77.26%</td><td>fuse</td><td class=ev>CAN(6,4800,16)=285212416 - 2x1</td></tr>
 <tr><td class=n>4900</td><td class=n>386200845</td><td class=n>1266675049</td><td class=n>69.51%</td><td>fuse</td><td class=ev>CAN(6,4900,16)=386200847 - 2x1</td></tr>
+<tr><td class=n>4901</td><td class=n>510036585</td><td class=n>1266675049</td><td class=n>59.73%</td><td>add1</td><td class=ev>CAN(6,4900,15)=386200845 + 15x(15-1)xCAN(4,4899,15)=589694</td></tr>
+<tr><td class=n>4902</td><td class=n>633872325</td><td class=n>1266675049</td><td class=n>49.96%</td><td>add1</td><td class=ev>CAN(6,4901,15)=510036585 + 15x(15-1)xCAN(4,4900,15)=589694</td></tr>
 <tr><td class=n>5000</td><td class=n>752733803</td><td class=n>1266678889</td><td class=n>40.57%</td><td>fuse</td><td class=ev>CAN(6,5000,16)=752733805 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>876569543</td><td class=n>1266678889</td><td class=n>30.80%</td><td>add1</td><td class=ev>CAN(6,5000,15)=752733803 + 15x(15-1)xCAN(4,4999,15)=589694</td></tr>
+<tr><td class=n>5002</td><td class=n>1000405283</td><td class=n>1266678889</td><td class=n>21.02%</td><td>add1</td><td class=ev>CAN(6,5001,15)=876569543 + 15x(15-1)xCAN(4,5000,15)=589694</td></tr>
+<tr><td class=n>5003</td><td class=n>1124241023</td><td class=n>1266678889</td><td class=n>11.24%</td><td>add1</td><td class=ev>CAN(6,5002,15)=1000405283 + 15x(15-1)xCAN(4,5001,15)=589694</td></tr>
 <tr><td class=n>12500</td><td class=n>1828715728</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,113,15)=114294734 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>1845492688</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,15)=115343294 - 1), q=125, e=2, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>2015362483</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,15)=65011694 - 1), q=32, e=3, p=0</td></tr>
@@ -1037,10 +1182,15 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>2080374598</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,15)=67108859 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>2535455683</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,15)=81788894 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 16 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 16 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>26</td><td class=n>48275119</td><td class=n>50331616</td><td class=n>4.09%</td><td>fuse</td><td class=ev>CAN(6,26,17)=48275121 - 2x1</td></tr>
 <tr><td class=n>4900</td><td class=n>386200847</td><td class=n>1266675075</td><td class=n>69.51%</td><td>fuse</td><td class=ev>CAN(6,4900,17)=386200849 - 2x1</td></tr>
+<tr><td class=n>4901</td><td class=n>527727887</td><td class=n>1266675075</td><td class=n>58.34%</td><td>add1</td><td class=ev>CAN(6,4900,16)=386200847 + 16x(16-1)xCAN(4,4899,16)=589696</td></tr>
+<tr><td class=n>4902</td><td class=n>669254927</td><td class=n>1266675075</td><td class=n>47.16%</td><td>add1</td><td class=ev>CAN(6,4901,16)=527727887 + 16x(16-1)xCAN(4,4900,16)=589696</td></tr>
 <tr><td class=n>5000</td><td class=n>752733805</td><td class=n>1266678915</td><td class=n>40.57%</td><td>fuse</td><td class=ev>CAN(6,5000,17)=752733807 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>894260845</td><td class=n>1266678915</td><td class=n>29.40%</td><td>add1</td><td class=ev>CAN(6,5000,16)=752733805 + 16x(16-1)xCAN(4,4999,16)=589696</td></tr>
+<tr><td class=n>5002</td><td class=n>1035787885</td><td class=n>1266678915</td><td class=n>18.23%</td><td>add1</td><td class=ev>CAN(6,5001,16)=894260845 + 16x(16-1)xCAN(4,5000,16)=589696</td></tr>
+<tr><td class=n>5003</td><td class=n>1177314925</td><td class=n>1266678915</td><td class=n>7.05%</td><td>add1</td><td class=ev>CAN(6,5002,16)=1035787885 + 16x(16-1)xCAN(4,5001,16)=589696</td></tr>
 <tr><td class=n>12500</td><td class=n>1828715760</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,113,16)=114294736 - 1), q=113, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>1845492720</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,16)=115343296 - 1), q=125, e=2, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>2015362545</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,16)=65011696 - 1), q=32, e=3, p=0</td></tr>
@@ -1048,8 +1198,12 @@ a { color: inherit; }
 <tr><td class=n>70000</td><td class=n>2080374660</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,16)=67108861 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>2535455745</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,16)=81788896 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 17 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 17 (11)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>4901</td><td class=n>590623265</td><td class=n>1821675872</td><td class=n>67.58%</td><td>add1</td><td class=ev>CAN(6,4900,17)=386200849 + 17x(17-1)xCAN(4,4899,17)=751553</td></tr>
 <tr><td class=n>5000</td><td class=n>752733807</td><td class=n>1823090816</td><td class=n>58.71%</td><td>fuse</td><td class=ev>CAN(6,5000,18)=752733809 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>957156223</td><td class=n>1823090816</td><td class=n>47.50%</td><td>add1</td><td class=ev>CAN(6,5000,17)=752733807 + 17x(17-1)xCAN(4,4999,17)=751553</td></tr>
+<tr><td class=n>5002</td><td class=n>1161578639</td><td class=n>1823090816</td><td class=n>36.29%</td><td>add1</td><td class=ev>CAN(6,5001,17)=957156223 + 17x(17-1)xCAN(4,5000,17)=751553</td></tr>
+<tr><td class=n>5003</td><td class=n>1366001055</td><td class=n>1823090816</td><td class=n>25.07%</td><td>add1</td><td class=ev>CAN(6,5002,17)=1161578639 + 17x(17-1)xCAN(4,5001,17)=751553</td></tr>
 <tr><td class=n>11000</td><td class=n>2317200896</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,107,17)=144825057 - 1), q=107, e=2, p=0</td></tr>
 <tr><td class=n>15000</td><td class=n>2635253760</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=16 x (CAN(6,125,17)=164703361 - 1), q=125, e=2, p=0</td></tr>
 <tr><td class=n>30000</td><td class=n>2905026864</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,17)=93710545 - 1), q=32, e=3, p=0</td></tr>
@@ -1057,75 +1211,113 @@ a { color: inherit; }
 <tr><td class=n>60000</td><td class=n>2990468320</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,17)=96466721 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>2993058432</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,17)=96550273 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 18 (8)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 18 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>30</td><td class=n>94091741</td><td class=n>141137639</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,30,19)=94091743 - 2x1</td></tr>
+<tr><td class=n>202</td><td class=n>488815901</td><td class=n>488832425</td><td class=n>0.00%</td><td>add1</td><td class=ev>CAN(6,201,18)=329321051 + 18x(18-1)xCAN(4,200,18)=521225</td></tr>
 <tr><td class=n>3000</td><td class=n>658642085</td><td class=n>3010476070</td><td class=n>78.12%</td><td>fuse</td><td class=ev>CAN(6,3000,19)=658642087 - 2x1</td></tr>
 <tr><td class=n>5000</td><td class=n>752733809</td><td class=n>3057768856</td><td class=n>75.38%</td><td>fuse</td><td class=ev>CAN(6,5000,19)=752733811 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>1111590719</td><td class=n>3057768856</td><td class=n>63.65%</td><td>add1</td><td class=ev>CAN(6,5000,18)=752733809 + 18x(18-1)xCAN(4,4999,18)=1172735</td></tr>
+<tr><td class=n>5002</td><td class=n>1470447629</td><td class=n>3057768856</td><td class=n>51.91%</td><td>add1</td><td class=ev>CAN(6,5001,18)=1111590719 + 18x(18-1)xCAN(4,5000,18)=1172735</td></tr>
+<tr><td class=n>5003</td><td class=n>1829304539</td><td class=n>3057768856</td><td class=n>40.18%</td><td>add1</td><td class=ev>CAN(6,5002,18)=1470447629 + 18x(18-1)xCAN(4,5001,18)=1172735</td></tr>
+<tr><td class=n>5333</td><td class=n>3416839084</td><td class=n>3454150762</td><td class=n>1.08%</td><td>add1</td><td class=ev>CAN(6,5332,18)=3057982174 + 18x(18-1)xCAN(4,5331,18)=1172735</td></tr>
 <tr><td class=n>25000</td><td class=n>4375266778</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,31,18)=141137639 - 1), q=31, e=3, p=0</td></tr>
 <tr><td class=n>50000</td><td class=n>5680170424</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,37,18)=183231305 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>5756928904</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,18)=185707385 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>5829648022</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,18)=188053163 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>7138592146</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,18)=230277167 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 19 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 19 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>202</td><td class=n>507580687</td><td class=n>507599155</td><td class=n>0.00%</td><td>add1</td><td class=ev>CAN(6,201,19)=329321053 + 19x(19-1)xCAN(4,200,19)=521227</td></tr>
+<tr><td class=n>5001</td><td class=n>1153809865</td><td class=n>3057768882</td><td class=n>62.27%</td><td>add1</td><td class=ev>CAN(6,5000,19)=752733811 + 19x(19-1)xCAN(4,4999,19)=1172737</td></tr>
+<tr><td class=n>5002</td><td class=n>1554885919</td><td class=n>3057768882</td><td class=n>49.15%</td><td>add1</td><td class=ev>CAN(6,5001,19)=1153809865 + 19x(19-1)xCAN(4,5000,19)=1172737</td></tr>
+<tr><td class=n>5003</td><td class=n>1955961973</td><td class=n>3057768882</td><td class=n>36.03%</td><td>add1</td><td class=ev>CAN(6,5002,19)=1554885919 + 19x(19-1)xCAN(4,5001,19)=1172737</td></tr>
+<tr><td class=n>5004</td><td class=n>2357038027</td><td class=n>3057768882</td><td class=n>22.92%</td><td>add1</td><td class=ev>CAN(6,5003,19)=1955961973 + 19x(19-1)xCAN(4,5002,19)=1172737</td></tr>
 <tr><td class=n>25000</td><td class=n>4375266840</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,31,19)=141137641 - 1), q=31, e=3, p=0</td></tr>
 <tr><td class=n>50000</td><td class=n>5680170486</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,37,19)=183231307 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>5756928966</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,19)=185707387 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>5829648084</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,19)=188053165 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>7138592208</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,19)=230277169 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 20 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 20 (14)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>32</td><td class=n>296071749</td><td class=n>444107659</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,32,21)=296071751 - 2x1</td></tr>
 <tr><td class=n>33</td><td class=n>296071771</td><td class=n>444107659</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,33,21)=296071773 - 2x1</td></tr>
 <tr><td class=n>36</td><td class=n>488281239</td><td class=n>564544850</td><td class=n>13.51%</td><td>fuse</td><td class=ev>CAN(6,36,21)=488281241 - 2x1</td></tr>
+<tr><td class=n>250</td><td class=n>1461580899</td><td class=n>1461605979</td><td class=n>0.00%</td><td>add1</td><td class=ev>CAN(6,249,20)=1036251079 + 20x(20-1)xCAN(4,248,20)=1119289</td></tr>
 <tr><td class=n>3000</td><td class=n>1924466275</td><td class=n>9377750832</td><td class=n>79.48%</td><td>fuse</td><td class=ev>CAN(6,3000,21)=1924466277 - 2x1</td></tr>
 <tr><td class=n>5000</td><td class=n>2220538007</td><td class=n>9532223018</td><td class=n>76.70%</td><td>fuse</td><td class=ev>CAN(6,5000,21)=2220538009 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>3071191187</td><td class=n>9532223018</td><td class=n>67.78%</td><td>add1</td><td class=ev>CAN(6,5000,20)=2220538007 + 20x(20-1)xCAN(4,4999,20)=2238561</td></tr>
+<tr><td class=n>5002</td><td class=n>3921844367</td><td class=n>9532223018</td><td class=n>58.86%</td><td>add1</td><td class=ev>CAN(6,5001,20)=3071191187 + 20x(20-1)xCAN(4,5000,20)=2238561</td></tr>
+<tr><td class=n>5003</td><td class=n>4772497547</td><td class=n>9532223018</td><td class=n>49.93%</td><td>add1</td><td class=ev>CAN(6,5002,20)=3921844367 + 20x(20-1)xCAN(4,5001,20)=2238561</td></tr>
 <tr><td class=n>30000</td><td class=n>9178224188</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,20)=296071749 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>50000</td><td class=n>17860150156</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,37,20)=576133877 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>17957396040</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,20)=579270841 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>18156921960</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,20)=585707161 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>18347773522</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,20)=591863663 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 21 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 21 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>32</td><td class=n>296071751</td><td class=n>444107661</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,32,22)=296071753 - 2x1</td></tr>
 <tr><td class=n>33</td><td class=n>296071773</td><td class=n>444107661</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,33,22)=296071775 - 2x1</td></tr>
 <tr><td class=n>36</td><td class=n>488281241</td><td class=n>579270843</td><td class=n>15.71%</td><td>fuse</td><td class=ev>CAN(6,36,22)=488281243 - 2x1</td></tr>
+<tr><td class=n>250</td><td class=n>1506353301</td><td class=n>1506381021</td><td class=n>0.00%</td><td>add1</td><td class=ev>CAN(6,249,21)=1036251081 + 21x(21-1)xCAN(4,248,21)=1119291</td></tr>
 <tr><td class=n>3000</td><td class=n>1924466277</td><td class=n>9377750858</td><td class=n>79.48%</td><td>fuse</td><td class=ev>CAN(6,3000,22)=1924466279 - 2x1</td></tr>
 <tr><td class=n>5000</td><td class=n>2220538009</td><td class=n>9532223044</td><td class=n>76.70%</td><td>fuse</td><td class=ev>CAN(6,5000,22)=2220538011 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>3160734469</td><td class=n>9532223044</td><td class=n>66.84%</td><td>add1</td><td class=ev>CAN(6,5000,21)=2220538009 + 21x(21-1)xCAN(4,4999,21)=2238563</td></tr>
+<tr><td class=n>5002</td><td class=n>4100930929</td><td class=n>9532223044</td><td class=n>56.98%</td><td>add1</td><td class=ev>CAN(6,5001,21)=3160734469 + 21x(21-1)xCAN(4,5000,21)=2238563</td></tr>
+<tr><td class=n>5003</td><td class=n>5041127389</td><td class=n>9532223044</td><td class=n>47.11%</td><td>add1</td><td class=ev>CAN(6,5002,21)=4100930929 + 21x(21-1)xCAN(4,5001,21)=2238563</td></tr>
 <tr><td class=n>30000</td><td class=n>9178224250</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,21)=296071751 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>17957396102</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,21)=579270843 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>18156922022</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,21)=585707163 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>18347773584</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,21)=591863665 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 22 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 22 (13)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>32</td><td class=n>296071753</td><td class=n>444107663</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,32,23)=296071755 - 2x1</td></tr>
 <tr><td class=n>33</td><td class=n>296071775</td><td class=n>444107663</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,33,23)=296071777 - 2x1</td></tr>
 <tr><td class=n>36</td><td class=n>488281243</td><td class=n>579270845</td><td class=n>15.71%</td><td>fuse</td><td class=ev>CAN(6,36,23)=488281245 - 2x1</td></tr>
+<tr><td class=n>250</td><td class=n>1553364449</td><td class=n>1553394941</td><td class=n>0.00%</td><td>add1</td><td class=ev>CAN(6,249,22)=1036251083 + 22x(22-1)xCAN(4,248,22)=1119293</td></tr>
 <tr><td class=n>3000</td><td class=n>1924466279</td><td class=n>9377750884</td><td class=n>79.48%</td><td>fuse</td><td class=ev>CAN(6,3000,23)=1924466281 - 2x1</td></tr>
 <tr><td class=n>5000</td><td class=n>2220538011</td><td class=n>9532223070</td><td class=n>76.70%</td><td>fuse</td><td class=ev>CAN(6,5000,23)=2220538013 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>3254755041</td><td class=n>9532223070</td><td class=n>65.86%</td><td>add1</td><td class=ev>CAN(6,5000,22)=2220538011 + 22x(22-1)xCAN(4,4999,22)=2238565</td></tr>
+<tr><td class=n>5002</td><td class=n>4288972071</td><td class=n>9532223070</td><td class=n>55.01%</td><td>add1</td><td class=ev>CAN(6,5001,22)=3254755041 + 22x(22-1)xCAN(4,5000,22)=2238565</td></tr>
+<tr><td class=n>5003</td><td class=n>5323189101</td><td class=n>9532223070</td><td class=n>44.16%</td><td>add1</td><td class=ev>CAN(6,5002,22)=4288972071 + 22x(22-1)xCAN(4,5001,22)=2238565</td></tr>
 <tr><td class=n>30000</td><td class=n>9178224312</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,22)=296071753 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>17957396164</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,22)=579270845 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>18156922084</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,22)=585707165 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>18347773646</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,22)=591863667 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 23 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 23 (10)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>36</td><td class=n>488281245</td><td class=n>579270847</td><td class=n>15.71%</td><td>fuse</td><td class=ev>CAN(6,36,24)=488281247 - 2x1</td></tr>
+<tr><td class=n>250</td><td class=n>1602614355</td><td class=n>1602647751</td><td class=n>0.00%</td><td>add1</td><td class=ev>CAN(6,249,23)=1036251085 + 23x(23-1)xCAN(4,248,23)=1119295</td></tr>
+<tr><td class=n>5001</td><td class=n>3353252915</td><td class=n>9532223096</td><td class=n>64.82%</td><td>add1</td><td class=ev>CAN(6,5000,23)=2220538013 + 23x(23-1)xCAN(4,4999,23)=2238567</td></tr>
+<tr><td class=n>5002</td><td class=n>4485967817</td><td class=n>9532223096</td><td class=n>52.94%</td><td>add1</td><td class=ev>CAN(6,5001,23)=3353252915 + 23x(23-1)xCAN(4,5000,23)=2238567</td></tr>
+<tr><td class=n>5003</td><td class=n>5618682719</td><td class=n>9532223096</td><td class=n>41.06%</td><td>add1</td><td class=ev>CAN(6,5002,23)=4485967817 + 23x(23-1)xCAN(4,5001,23)=2238567</td></tr>
+<tr><td class=n>5004</td><td class=n>6751397621</td><td class=n>9532223096</td><td class=n>29.17%</td><td>add1</td><td class=ev>CAN(6,5003,23)=5618682719 + 23x(23-1)xCAN(4,5002,23)=2238567</td></tr>
 <tr><td class=n>30000</td><td class=n>9178224374</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,23)=296071755 - 1), q=32, e=3, p=0</td></tr>
 <tr><td class=n>60000</td><td class=n>17957396226</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,41,23)=579270847 - 1), q=41, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>18156922146</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,23)=585707167 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>18347773708</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,23)=591863669 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 24 (7)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 24 (12)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>34</td><td class=n>488281223</td><td class=n>732421871</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,34,25)=488281225 - 2x1</td></tr>
 <tr><td class=n>36</td><td class=n>488281247</td><td class=n>732421871</td><td class=n>33.33%</td><td>fuse</td><td class=ev>CAN(6,36,25)=488281249 - 2x1</td></tr>
+<tr><td class=n>37</td><td class=n>910905143</td><td class=n>957031223</td><td class=n>4.82%</td><td>add1</td><td class=ev>CAN(6,36,24)=488281247 + 24x(24-1)xCAN(4,35,24)=765623</td></tr>
 <tr><td class=n>3000</td><td class=n>3173827823</td><td class=n>15165624286</td><td class=n>79.07%</td><td>fuse</td><td class=ev>CAN(6,3000,25)=3173827825 - 2x1</td></tr>
 <tr><td class=n>5000</td><td class=n>3662109023</td><td class=n>15615233686</td><td class=n>76.55%</td><td>fuse</td><td class=ev>CAN(6,5000,25)=3662109025 - 2x1</td></tr>
+<tr><td class=n>5001</td><td class=n>5387011319</td><td class=n>15615233686</td><td class=n>65.50%</td><td>add1</td><td class=ev>CAN(6,5000,24)=3662109023 + 24x(24-1)xCAN(4,4999,24)=3124823</td></tr>
+<tr><td class=n>5002</td><td class=n>7111913615</td><td class=n>15615233686</td><td class=n>54.46%</td><td>add1</td><td class=ev>CAN(6,5001,24)=5387011319 + 24x(24-1)xCAN(4,5000,24)=3124823</td></tr>
+<tr><td class=n>5003</td><td class=n>8836815911</td><td class=n>15615233686</td><td class=n>43.41%</td><td>add1</td><td class=ev>CAN(6,5002,24)=7111913615 + 24x(24-1)xCAN(4,5001,24)=3124823</td></tr>
 <tr><td class=n>30000</td><td class=n>15136717882</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,24)=488281223 - 1), q=32, e=3, p=0</td></tr>
+<tr><td class=n>50000</td><td class=n>28238059402</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,37,24)=910905143 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>29667967882</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,24)=957031223 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>29970701482</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,24)=966796823 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 6, v = 25 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<details class=sub><summary>t = 6, v = 25 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>37</td><td class=n>947656249</td><td class=n>957031225</td><td class=n>0.98%</td><td>add1</td><td class=ev>CAN(6,36,25)=488281249 + 25x(25-1)xCAN(4,35,25)=765625</td></tr>
+<tr><td class=n>5001</td><td class=n>5537004025</td><td class=n>15615233712</td><td class=n>64.54%</td><td>add1</td><td class=ev>CAN(6,5000,25)=3662109025 + 25x(25-1)xCAN(4,4999,25)=3124825</td></tr>
+<tr><td class=n>5002</td><td class=n>7411899025</td><td class=n>15615233712</td><td class=n>52.53%</td><td>add1</td><td class=ev>CAN(6,5001,25)=5537004025 + 25x(25-1)xCAN(4,5000,25)=3124825</td></tr>
+<tr><td class=n>5003</td><td class=n>9286794025</td><td class=n>15615233712</td><td class=n>40.53%</td><td>add1</td><td class=ev>CAN(6,5002,25)=7411899025 + 25x(25-1)xCAN(4,5001,25)=3124825</td></tr>
+<tr><td class=n>5004</td><td class=n>11161689025</td><td class=n>15615233712</td><td class=n>28.52%</td><td>add1</td><td class=ev>CAN(6,5003,25)=9286794025 + 25x(25-1)xCAN(4,5002,25)=3124825</td></tr>
 <tr><td class=n>30000</td><td class=n>15136717944</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,32,25)=488281225 - 1), q=32, e=3, p=0</td></tr>
+<tr><td class=n>50000</td><td class=n>29377343688</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,37,25)=947656249 - 1), q=37, e=3, p=0</td></tr>
 <tr><td class=n>70000</td><td class=n>29667967944</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,43,25)=957031225 - 1), q=43, e=3, p=0</td></tr>
 <tr><td class=n>100000</td><td class=n>29970701544</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=31 x (CAN(6,47,25)=966796825 - 1), q=47, e=3, p=0</td></tr>
 </tbody></table></details>
