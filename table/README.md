@@ -167,9 +167,12 @@ the array files and these documents agree.
   computed; it is recorded only when the construction states it.
 - `derived.csv` - generated, never edited by hand: sizes that follow from the
   counted rows by published constructions (fusing symbols, deriving a strength,
-  composition, Chateauneuf-Kreher doubling, CMTW Thm 3.4, k-ary Roux with Yin's
+  adding one column (t >= 3), composition, Chateauneuf-Kreher doubling, CMTW Thm 3.4, k-ary Roux with Yin's
   DCAN values, Power CT, direct product, ordered design, Shokri-Moura), at the
-  points where they are below the counted lookup. One line per point with the
+  points where they are below the counted lookup. Its points are those of the
+  counted lookup's grid and of up to four construction steps from it, so a longer
+  add1 chain (up to eight steps), or a fuse step past the grid of its t and v,
+  appears only in `ca_frame.csv`. One line per point with the
   construction and its arithmetic, every ingredient written CAN(t,k,v)=N.
   Recomputed from scratch by `../tools/derive_table.py` on every push to main and
   checked line by line by `../tools/consistency.py` without that program. These
@@ -354,7 +357,12 @@ v symbols". `tier` is the evidence class:
   best known, so the lookups below drop it at once. Anyone can raise a
   suspected error by opening an issue with a check that fails;
   `../tools/consistency.py` requires that a RETRACTED row matches
-  exactly one VERIFIED or SCREENED row and has notes.
+  at least one VERIFIED or SCREENED row (it retracts every row with that
+  key: a row upgraded from SCREENED has its SCREENED twin) and has notes.
+  A pull request that adds one changes the counted rows, so it also
+  regenerates `derived.csv` (`python3 tools/derive_table.py`, a few
+  minutes) and `ca_frame.csv` (`python3 tools/build_frame.py`):
+  `consistency.py --pr` checks both against the rows.
 
 `family_sha256` (added 2026-11-02, the last column) is empty except in
 rows given by a covering perfect hash family checked by `cphfcheck`: the
@@ -459,16 +467,39 @@ below counts the ones made by a proven rule, on lines of their own.
 `ca_frame.csv` is the one file to read for "what is best here, how is it
 made, and how do I get it". It counts what the counted lookup counts plus
 proven derived sizes: fuse (Colbourn, Keri, Rivas Soriano and Schlage-Puchta
-2010, Lemma 3.1) and derive (same paper, (7)), applied again and again to the
-counted rows until nothing changes. add1 is not implemented yet, so no size uses
-it. No derived size is built from the three CITED cyclotomy rows that have
-DISPUTED rows beside them. A derived size sits at the width of its source row or
-one less, so past the baseline's column range there are derived sizes only beside
-the rows entered there (for example the fused sizes of the width 100,000 arrays),
-and no ladder of widths. Past every counted row of its t and v, a derived size
-counts only when it is made by fuse alone: derive there gives sizes far above
-known values (252 at t = 2, v = 2, k = 99,999, where 21 is exact), and derived
-points beyond the counted range are left for later (`CONVENTIONS.md`, section 6).
+2010, Lemma 3.1), derive (same paper, (7)) and add1 (same paper, Theorem 3.2:
+CAN(t, k, v) <= CAN(t, k-1, v) + v(v-1) CAN(t-2, k-2, v), one added column,
+Colbourn's label "Add 1 factors"; all 133 of his rows with that label follow
+from his own rows by it), applied again and again to the counted rows until
+nothing changes. add1 is used for t >= 3. Its second input, the strength t-2
+ingredient, is for t >= 4 a row (or a row fused or derived; never a size itself
+made by add1), and for t = 3 the trivial strength 1 array CA(v; 1, k-2, v), the v
+constant rows, so a step at t = 3 adds v(v-1)v rows and names no ingredient. The
+construction is valid for every t >= 2: copy column k-1 into a new column k;
+a t-set of columns without the new column, or with it but without its copy, is
+covered by the old array; one with both is covered by the old array where the two
+symbols agree and, for each ordered pair (x, y) of distinct symbols, by the
+strength t-2 array appended with x and y in the two columns (it was also checked
+on 31 arrays built from arrays on file at t = 2 and 3, and 21 at t = 4 to 6, each
+verified exhaustively). Among ingredients of the same size a VERIFIED row is
+named before a CITED one, so a step is CITED only when it cannot be helped. No derived size is built from the three CITED cyclotomy
+rows that have DISPUTED rows beside them. A derived size sits at the width of its
+source row, less one per derive step and plus one per add1 step (a working may
+pass through a point past the counted range on its way, but is written only at
+its last point), so past the
+baseline's column range there are derived sizes only near the rows entered there
+(for example the fused sizes of the width 100,000 arrays), and no ladder of
+widths. Past every counted row of its t and v, a derived size counts only when it
+is made by fuse alone: derive there gives sizes far above known values (252 at
+t = 2, v = 2, k = 99,999, where 21 is exact), and derived points beyond the
+counted range, by derive or add1, are left for later (`CONVENTIONS.md`, section 6).
+On 2026-11-09 add1 is in the working of 225 steps of the frame (27 of them at
+t = 3, each one step from a covering perfect hash family row, for example
+CA(832; 3, 15180, 4), `Sherwood covering perfect hash family (affine):add1`,
+from CA(784; 3, 15179, 4)), for example
+CA(4257520; 6, 238, 8), `SCPHF Random Extension (CLS):add1`, below Colbourn's own
+"Add 1 factors" size 4259480 there, because its strength 4 ingredient is now a
+smaller row (`t4-v8-k274-2`).
 
 There is one line per stair step, in the sense of the page: for each t and v, a
 step (k, N) has N smallest at every k' >= k and k the largest width with that N.
@@ -476,20 +507,33 @@ Every line is CITED or VERIFIED, so no tier filter is needed. The columns are
 those of `CONVENTIONS.md`, section 7. t, v, k, N and construction keep the
 meaning they have in `ca_table.csv`. basis is row when a counted row reaches N
 there (that row is named, with its id), and derived otherwise. A derived line has
-no id, get none, the tier of its source row, and as construction its working in
-the form CAs shows in its Source column: the source row's own construction label
-followed by one `:fuse` or `:derive` per step, in the order applied (for example
-`RMScopiesCA:fuse:fuse`). CA(5289; 3, 629, 10), from the VERIFIED CA(5291; 3, 629,
+no id, get none, the tier of its weakest row (CITED when its source row or an add1
+ingredient row is CITED), the latest entry date of those rows, and as construction
+its working: the source row's own construction label followed by one `:fuse`,
+`:derive` or `:add1` per step, in the order applied (for example
+`Sherwood covering perfect hash family (affine):fuse:fuse`). This is close to the
+form CAs shows in its Source column, but not the same: CAs 0.25 writes a run of
+`:fuse` or of `:add1`, never both, and `:derive` last, while here 160 of the 575
+workings mix them (`:fuse:add1`, `:derive:fuse`, `:derive:fuse:add1`), so read
+the steps with the split below, not with CAs's own label parser. CA(5289; 3, 629, 10), from the VERIFIED CA(5291; 3, 629,
 11), reads `Sherwood covering perfect hash family (affine):fuse`. The source row's
 id (here `t3-v11-k629-1`) is in ids_all, so the author stays traceable, and
-constructions_all lists every working in the same label form. A label may contain
+constructions_all lists every working in the same label form. An add1 step at t >= 4 has two
+inputs: its ingredient row's id follows the source row's id in ids_all after a `+`,
+one per add1 step at t >= 4 in order (for the example above
+`t6-v8-k237-1+t4-v8-k274-2`); the ingredient's own fuse or derive steps are not
+written. An add1 step at t = 3 names no ingredient (its ingredient is the trivial
+array above). A label may contain
 commas and colons: the file quotes such fields as CSV does, so `read.csv` reads
-them whole. To split a working into label and steps, remove the trailing `:fuse`
-and `:derive` pieces; no source label ends in one (`../tools/consistency.py`
-checks this, and that there are exactly v of the source - v fuse steps and t of the
-source - t derive steps). In R:
+them whole. To split a working into label and steps, remove the trailing `:fuse`,
+`:derive` and `:add1` pieces; no source label ends in one (a row whose label is
+empty, ends in one of them or contains " || " is written by its id instead, in
+construction of a derived line and in constructions_all; `../tools/consistency.py`
+checks this, that there are exactly v of the source - v fuse steps, t of the
+source - t derive steps and k - k of the source + t of the source - t add1 steps,
+and that the steps applied to the named rows give N). In R:
 
-    m <- regmatches(w, regexpr("(:(fuse|derive))+$", w))
+    m <- regmatches(w, regexpr("(:(fuse|derive|add1))+$", w))
     label <- substr(w, 1, nchar(w) - nchar(m)); steps <- strsplit(sub("^:", "", m), ":")[[1]]
 
 get and get_ref say
@@ -504,9 +548,17 @@ root, which is shipped as C source: build it first with
 `gcc -O3 -fopenmp -o tools/cphf/cphfcheck tools/cphf/cphfcheck.c` (on macOS,
 clang with libomp, as in `../tools/cphf/README.md`).
 constructions_all and ids_all list every counted row (or, on a derived line,
-every working) that reaches N, separated by " || " and ";". Ties are named in the
-order of `CONVENTIONS.md`, section 9: a CITED row first, then more constant rows,
-the earlier entry date, the wider array, the id.
+every working) that reaches N, separated by " || " and ";" (with "+" inside an
+ids_all entry before each add1 ingredient). Ties are named in the
+order of `CONVENTIONS.md`, section 9: a CITED row first, then more constant rows
+(an unknown count, an empty constant_rows, ranks below every known count, so a
+row with a counted array is named before an equal row whose array was never
+counted, even an earlier one), the earlier entry date, the wider array, the id.
+get is none on every CITED line, on every derived line, and on a VERIFIED row
+whose array the table cannot point to; that includes 34 lines whose arrays ship
+inside CAs itself (`tjCA`, `CAEX_CAs`), which the table does not reference.
+family is empty on every line for now, so `read.csv` reads it as logical NA;
+test it with `is.na(fr$family) | fr$family == ""`.
 
 Ids are t<t>-v<v>-k<k>-<n>, n the row's number at its point (t, v, k) in file
 order, so they never change as rows are appended. They are computed by

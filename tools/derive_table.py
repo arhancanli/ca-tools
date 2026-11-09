@@ -13,8 +13,8 @@ lookup is unchanged, and derived.csv is regenerated from scratch on every run, s
 always follows the current table (a derived size moves whenever an ingredient improves,
 which is why it is not an append-only row). The page shows them as a second lookup.
 
-Constructions (published): fuse (CKRS 2010 Lemma 3.1), derive (CKRS 2010 (7)),
-composition (CKRS 2010 (3)), Chateauneuf-Kreher doubling (CCL 2008 Thm 2), CMTW 2006
+Constructions (published): fuse (CKRS 2010 Lemma 3.1), derive (CKRS 2010 (7)), add1
+(CKRS 2010 Theorem 3.2, inequality (8), one column added, t >= 3; at t = 3 the strength 1 ingredient is v constant rows), composition (CKRS 2010 (3)), Chateauneuf-Kreher doubling (CCL 2008 Thm 2), CMTW 2006
 Thm 3.4, k-ary Roux (CMTW 2006 Thm 3.3 with Yin 2003 DCAN values), Power CT (CZ 2012
 Thm 2.1 with Lemma 2.4, one constant row per copy, CTJ 2013 Obs 3.2), direct product
 (CTJ 2013 Cor 4.3), ordered design (CCL 2008 Construction 1), Shokri-Moura (JCD 2025).
@@ -57,7 +57,7 @@ def baseline_kmax():
     return out
 
 
-LAWS = [("fuse", L.law_fuse), ("derive", L.law_derive), ("comp", L.law_comp), ("CK", L.law_ck),
+LAWS = [("fuse", L.law_fuse), ("derive", L.law_derive), ("add1", L.law_add1), ("comp", L.law_comp), ("CK", L.law_ck),
         ("CMTW34", L.law_cmtw34), ("kRoux", L.law_kroux), ("PCT", None), ("DP2", L.law_dp2),
         ("OD", L.law_od), ("SM", L.law_sm)]
 
@@ -67,7 +67,10 @@ def compute(log=sys.stderr):
     grid = L.grid_of(look)
     e0 = L.mk_ecan(look)
     # add the points the constructions land on: fusing keeps k (from t, v' > v), deriving
-    # gives k - 1 (from t + 1, v); repeated so that chains (derive then fuse) are covered
+    # gives k - 1 (from t + 1, v), add1 gives k + 1 (from t, v, t >= 3); repeated four times, so
+    # chains of up to four steps (derive then fuse, add1 up to four times in a row) get a point here.
+    # Longer add1 chains (the frame has up to eight) and fuse steps past the grid of a (t, v) have no
+    # point of their own in derived.csv; the frame (tools/build_frame.py) still counts them.
     for _ in range(4):
         add = {}
         for (t, v), ks in grid.items():
@@ -76,6 +79,8 @@ def compute(log=sys.stderr):
                     add.setdefault((t, v2), set()).update(k for k in ks if k > t)
             if t >= 3 and (t - 1, v) in grid:
                 add.setdefault((t - 1, v), set()).update(k - 1 for k in ks if k - 1 > t - 1)
+            if t >= L.ADD1_TMIN:
+                add.setdefault((t, v), set()).update(k + 1 for k in ks)
         grown = 0
         for tv, s in add.items():
             new = s - set(grid[tv])

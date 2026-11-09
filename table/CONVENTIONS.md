@@ -1,4 +1,4 @@
-# Conventions of the covering array table (version 1.1, November 2026)
+# Conventions of the covering array table (version 1.2, November 2026)
 
 Parts that describe files not built yet say "will" or "planned". Anything that changes what the CAs package
 reads is announced to its author before it goes live (section 5).
@@ -41,8 +41,8 @@ line in the change log at the end.
 - Size rule: one construction's rule for the size of its result as a function of its ingredients'
   sizes.
 - Derived size: a size obtained by applying a size rule to sizes in the table. It is not an array in
-  hand. A derived size made by a proven rule (fuse and derive, and add1 once implemented) from a
-  counted row is as reliable as that row and counts in the frame file (section 6). It is never a row
+  hand. A derived size made by a proven rule (fuse, derive and add1) from counted rows is as
+  reliable as the weakest of those rows and counts in the frame file (section 6). It is never a row
   of `ca_table.csv`.
 - Working: the list of lookups a derived size used, followed back to rows.
 - Derived-sizes program: `tools/derive_table.py`, which writes `table/derived.csv`.
@@ -119,7 +119,7 @@ Frame rule (for the frame file `ca_frame.csv`, section 7)
 A guarantee for programs that do not filter on tier. CAs 0.25 with frozen=FALSE takes the smallest N
 over all rows at (t, v), whatever their tier. So the table guarantees that no SCREENED,
 FAILED_PENDING_RECHECK or DISPUTED row has an N below the counted best at its point. This holds today
-for all 52 such rows, and `tools/consistency.py` checks it on every push: a pull request that adds a
+for every such row (SCREENED, FAILED_PENDING_RECHECK and DISPUTED), and `tools/consistency.py` checks it on every push: a pull request that adds a
 row breaking it fails, and a row already on main that breaks it is reported as a warning so the page
 is still regenerated. One case can break it for a short time: a SCREENED improvement entered before
 its exact check, which usually follows within one to three days. A RETRACTED row would break
@@ -174,27 +174,50 @@ This section is the promise to everyone who reads the table by program, CAs firs
   It is regenerated from scratch on every push, so a derived size moves whenever an ingredient
   improves. Past the baseline's column range it also evaluates a ladder of widths up to 100,000, and
   there lookup_N and gain_pct are empty where the table has no counted value.
-- Size rules used. The law names the program uses are fuse, derive, comp, CK, CMTW34, kRoux, PCT, DP2,
-  OD and SM. They will be renamed to the labels below, which the label list (section 8) will carry. fuse
+- Size rules used. The law names the program uses are fuse, derive, add1, comp, CK, CMTW34, kRoux, PCT,
+  DP2, OD and SM. They will be renamed to the labels below, which the label list (section 8) will carry. fuse
   (Colbourn,
-  Keri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1), derive (same paper, (7)), composit
+  Keri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1), derive (same paper, (7)), add1 (same paper,
+  Theorem 3.2, t >= 3), composit
   (composition, same paper, (3)), CK_doubling (Chateauneuf-Kreher doubling, as in Cohen, Colbourn
   and Ling 2008, Theorem 2), CMTW34 (Colbourn, Martirosyan, Tran Van Trung, Walker 2006, Theorem
   3.4), kRoux (k-ary Roux, same paper, Theorem 3.3, with Yin 2003), powerCT (Power CT, Colbourn and
   Zhou 2012, Theorem 2.1 with Lemma 2.4), dp (direct product with the constant-row credit of Colbourn
   and Torres-Jimenez 2013, Corollary 4.3), OD (ordered designs, Cohen, Colbourn and Ling 2008,
   Construction 1), SM (Shokri and Moura 2025).
-- Proven derived sizes. A size made from a CITED or VERIFIED row by fuse or derive (and add1 once it
-  is implemented) rests on a proven construction, so it is as reliable as the row it comes from. It
-  counts in the frame file as its own step, with the tier of its weakest input and its working
-  written as CAs writes it: the source row's own construction label followed by ':fuse' or ':derive'
-  for each step (for example RMScopiesCA:fuse:fuse). The source row's id is in ids_all, so the author
-  stays traceable. The frame file builds no derived
-  size from the three CITED cyclotomy rows that have DISPUTED rows beside them. Fuse keeps the width
-  and derive lowers it by one, so past the baseline's column range a proven derived size appears only
-  beside a counted row of that width or one more. No ladder of widths is used for the frame file.
-  Past every counted row of its t and v, only sizes made by fuse alone count for now; derived points
-  beyond the counted range by derive come later. add1 is not implemented yet.
+- Proven derived sizes. A size made from CITED or VERIFIED rows by fuse, derive or add1 rests on a
+  proven construction, so it is as reliable as the weakest row it comes from. add1 is Colbourn, Keri,
+  Rivas Soriano, Schlage-Puchta 2010, Theorem 3.2, inequality (8), for one added column: CAN(t, k, v)
+  <= CAN(t, k-1, v) + v(v-1) CAN(t-2, k-2, v) (Colbourn's label "Add 1 factors"; it reproduces all 133
+  of his rows with that label from his own rows). It has two inputs, and it is used for t >= 3. The
+  construction (copy a column; for each ordered pair of distinct symbols in the two copies, append a
+  strength t-2 array on the other columns) is valid for every t >= 2, by the case analysis of the
+  three kinds of t-sets, and was checked on arrays built here from arrays on file and verified
+  exhaustively (31 at t = 2 and 3, 21 at t = 4 to 6). For t >= 4 the second input, the strength t-2
+  ingredient, is a row (or a row fused or derived); for t = 3 it is the trivial strength 1 array
+  CA(v; 1, k-2, v), the v constant rows, so a step at t = 3 adds v(v-1)v and names no ingredient. A
+  proven derived size counts in the frame file as its own step, with the tier of its weakest input
+  (CITED if one of its rows is CITED) and its working: the source row's own construction label
+  followed by ':fuse', ':derive' or ':add1' for each step, in the order applied (for example
+  Sherwood covering perfect hash family (affine):fuse:fuse, or SCPHF Random Extension (CLS):add1).
+  This is close to CAs's Source labels but not the same: CAs 0.25 writes a run of ':fuse' or of
+  ':add1', never both, and ':derive' last, while a working here may mix them (for example
+  ':fuse:add1' or ':derive:fuse'). The source
+  row's id is in ids_all, followed by '+' and the id of each add1 step's ingredient row at t >= 4, so
+  every author stays traceable. The ingredient of an add1 step at t >= 4 is the smallest size at
+  strength t-2 that fuse and derive give from the rows (never itself made by add1), and only its row
+  is named, not its own steps; among ingredients of that size a VERIFIED row is named before a CITED
+  one, so the step keeps the highest tier it can have. The frame file
+  builds no derived size from the three CITED cyclotomy rows that have DISPUTED rows beside them,
+  neither as source nor as ingredient. Fuse keeps the width, derive lowers it by one and add1 raises
+  it by one, so past the baseline's column range a proven derived size appears only near a counted
+  row (at its width, one less per derive, one more per add1). No ladder of widths is used for the
+  frame file. Past every counted row of its t and v, only sizes made by fuse alone count for now, so
+  no line there ends in an add1 or derive step (a working may pass through such a point and land
+  inside the counted range of another t or v, for example after a derive or a fuse); derived points
+  beyond the counted range by derive or add1 come later. The search for add1 chains stops a chain
+  only once no later step can land below a counted row inside the counted range of any t and v it
+  can reach, so it finds every step the rule gives.
 - The other size rules (composit, CK_doubling, CMTW34, kRoux, powerCT, dp, OD, SM) stay in
   `table/derived.csv` and on the derived page, and are not counted. Each is added to the proven list
   only after it has been checked, with a line in the change log.
@@ -253,9 +276,10 @@ Four columns will be added at the end of `table/ca_table.csv`:
 The frame file is `ca_frame.csv`, with one line per step under the frame rule (section 4)
 and the columns t, v, k, N, basis (row or derived), tier, id, constant_rows, constant_rows_basis, get,
 get_ref (the locator), construction (one label, the named row, or the working of a derived step: the
-source row's label, then ':fuse' or ':derive' for each step; the steps are the trailing ':fuse' and
-':derive' pieces, v of the source - v and t of the source - t of them, and no label ends in one, so a
-colon or comma inside a label never confuses the split; fields with commas are quoted as CSV quotes them),
+source row's label, then ':fuse', ':derive' or ':add1' for each step; the steps are the trailing
+':fuse', ':derive' and ':add1' pieces, v of the source - v, t of the source - t and k - k of the source
++ t of the source - t of them, and no label ends in one, so a colon or comma inside a label never
+confuses the split; fields with commas are quoted as CSV quotes them),
 family (section 8), constructions_all and ids_all (every counted row that reaches the same N),
 prev_id (the previous best at that step: on a row line the best counted row entered before the first
 row that reached the step's N, the rows of one snapshot entered on one day counting as one entry;
@@ -286,9 +310,13 @@ A search box at the top jumps to a point by t, v and k.
   catalogue descriptions get basis "from the catalogue".
 - Family appears in the frame file and the machine files, not (yet) in `ca_table.csv`, because the
   list will change while it is being agreed.
-- Working grammar: unary steps as CAs writes them, FAMILY:step:step (for example
-  CYCLOTOMY:fuse:fuse, with fuse, derive and add1). Binary size rules as LAW(id1,id2) with the ids of
-  section 7 (for example dp(t2-v3-k20-1,t2-v3-k7-2)). Machine files also carry the working as a list.
+- Working grammar: unary steps after the source label, LABEL:step:step in the order applied (for
+  example Sherwood covering perfect hash family (affine):fuse:fuse, with fuse, derive and add1; the
+  order may mix them, which CAs's own labels do not, section 6). add1 has a second input but is
+  written as a step, as CAs writes it; its second input is named in ids_all (section 6). A source
+  row whose label is empty, contains " || " or ends in ':fuse', ':derive' or ':add1' is written by
+  its id instead, in a working and in constructions_all, so a working always splits. Binary size rules as
+  LAW(id1,id2) with the ids of section 7 (for example dp(t2-v3-k20-1,t2-v3-k7-2)). Machine files also carry the working as a list.
   The binary form is shown to the author of CAs before its first use.
 - "Direct product generalized" in Colbourn's labels (1,573 rows, plus one with a post-optimization
   suffix): Colbourn and Torres-Jimenez 2013
@@ -302,7 +330,8 @@ A search box at the top jumps to a point by t, v and k.
 - When several counted rows reach the same N at a point, the frame file lists all of them in
   constructions_all and ids_all. The construction column of `ca_table.csv` keeps one label per row.
   The headline (the named row) is chosen in this order: a CITED row stays named, then more constant
-  rows, then the earlier priority date, then the wider array, then the id.
+  rows (a row whose count is unknown ranks below every row with a known count, even an earlier one),
+  then the earlier priority date, then the wider array, then the id.
 - An array that only equals a value already in the table is not an improvement and does not take the
   headline from a CITED row. It is still listed and credited.
 - Credit is recorded today in the notes column, starting "credit: ". It moves, as roles are needed,
@@ -355,4 +384,12 @@ A search box at the top jumps to a point by t, v and k.
   label followed by ':fuse' or ':derive' for each step, and its source row's id is in ids_all. A step
   whose named row has no array takes get and get_ref from a tied VERIFIED row that has one (section 7).
   The guarantee of section 4 is checked on every push.
-
+- Version 1.2 (November 2026). add1 now counts in the frame file (sections 1, 4, 6, 7, 8 and 9): Colbourn,
+  Keri, Rivas Soriano, Schlage-Puchta 2010, Theorem 3.2, one added column, CAN(t, k, v) <= CAN(t, k-1,
+  v) + v(v-1) CAN(t-2, k-2, v), for t >= 3 (at t = 3 the ingredient is the trivial strength 1 array,
+  v constant rows, and no ingredient row is named). A step made with add1 has the tier of its weakest
+  row (a VERIFIED ingredient named before a CITED one of the same size), its working ends in ':add1'
+  once per added column, and ids_all names the source row, then '+' and each add1 ingredient row at
+  t >= 4. Workings are written in the order applied, which may mix steps in ways CAs's labels do not
+  (sections 6 and 8). `tools/derive_table.py` uses the same rule for `table/derived.csv`. Section 9
+  says how an unknown constant-row count ranks.

@@ -107,6 +107,18 @@ def law_derive(e, t, v, k):
     if not x: return None
     return (x // v, ())
 
+ADD1_TMIN = 3   # at t = 3 the strength 1 ingredient is the trivial CAN(1, k, v) = v (v constant rows)
+
+def law_add1(e, t, v, k):
+    """CKRS 2010 Theorem 3.2, inequality (8), one column added: CAN(t,k,v) <= CAN(t,k-1,v) + v(v-1) CAN(t-2,k-2,v)
+    (duplicate the last column; for each ordered pair of distinct symbols in the two copies, a strength t-2 array on
+    the other k-2 columns). Colbourn's label "Add 1 factors". Used for t >= ADD1_TMIN; at t = 3 the strength 1
+    array is the trivial one, v constant rows, so CAN(1, k-2, v) = v."""
+    if t < ADD1_TMIN or k - 1 <= t: return None
+    a = e(t, k - 1, v); b = v if t == 3 else e(t - 2, k - 2, v)
+    if not a or not b: return None
+    return (a + v * (v - 1) * b, ())
+
 def law_comp(e, t, v, k):
     """CKRS 2010 (3), composition: CAN(t,k,v1 v2) <= CAN(t,k,v1) CAN(t,k,v2); free: the factorisation"""
     best = None
@@ -231,6 +243,7 @@ def explain(e, law, t, v, k, params):
     def C(tt, kk, vv): return f'CAN({tt},{kk},{vv})={e(tt, kk, vv)}'
     if law == 'fuse': return C(t, k, v + p[1]) + f' - 2x{p[1]}'
     if law == 'derive': return 'floor(' + C(t + 1, k + 1, v) + f' / {v})'
+    if law == 'add1': return C(t, k - 1, v) + f' + {v}x({v}-1)x' + (str(v) if t == 3 else C(t - 2, k - 2, v))
     if law == 'comp': return C(t, k, p[1]) + ' x ' + C(t, k, p[2])
     if law == 'CK': return C(3, p[1], v) + f' + ({v}-1)x' + C(2, p[1], v)
     if law == 'CMTW34': return C(3, p[1], v) + f' + ({v}-1)x' + C(2, p[1], v) + f' + {v}^3-{v}^2'

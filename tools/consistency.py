@@ -53,7 +53,7 @@ DERIVED = "table/derived.csv"
 FRAME = "table/ca_frame.csv"
 TABLE_GZ = "table/ca_table.csv.gz"
 DERIVED_HEADER = ["t", "v", "k", "N", "lookup_N", "gain_pct", "law", "arithmetic", "round"]
-DERIVED_LAWS = {"fuse", "derive", "comp", "CK", "CMTW34", "kRoux", "PCT", "DP2", "OD", "SM"}
+DERIVED_LAWS = {"fuse", "derive", "add1", "comp", "CK", "CMTW34", "kRoux", "PCT", "DP2", "OD", "SM"}
 EXTERNAL = "table/EXTERNAL.csv"
 EXTERNAL_HEADER = ["sha256", "t", "v", "k", "N", "bytes", "location", "status",
                    "source_detail", "verify_stamp"]
@@ -383,9 +383,10 @@ def check_disputed(rows, man):
 
 
 def check_retracted(rows):
-    """A RETRACTED row names exactly one VERIFIED or SCREENED row by t, v, k, N, array_sha256 and
+    """A RETRACTED row names at least one VERIFIED or SCREENED row by t, v, k, N, array_sha256 and
     family_sha256 (a row identified by its family alone has an empty array_sha256), is not from the
-    baseline, and says in its notes what was found."""
+    baseline, and says in its notes what was found. It retracts every row with that key: a VERIFIED row
+    upgraded from SCREENED has its SCREENED twin, and the same array entered twice is one array."""
     targets = collections.Counter((r["t"], r["v"], r["k"], r["N"], r["array_sha256"], r.get("family_sha256") or "")
                                   for r in rows if r["tier"] in ("VERIFIED", "SCREENED"))
     seen = collections.Counter()
@@ -398,9 +399,9 @@ def check_retracted(rows):
         if not HEX64.match(r["array_sha256"]) and not (not r["array_sha256"] and HEX64.match(key[5])):
             problem("%s: RETRACTED row %s must give the array_sha256 (or, for a row identified by its "
                     "family, the family_sha256) of the row it retracts" % (TABLE, name))
-        elif targets[key] != 1:
-            problem("%s: RETRACTED row %s matches %d VERIFIED or SCREENED rows; it must match exactly one"
-                    % (TABLE, name, targets[key]))
+        elif targets[key] < 1:
+            problem("%s: RETRACTED row %s matches no VERIFIED or SCREENED row; it must match at least one"
+                    % (TABLE, name))
         if r["source_id"] == "S1":
             problem("%s: RETRACTED row %s has source S1" % (TABLE, name))
         if not r["notes"].strip():
@@ -835,26 +836,90 @@ def warning(msg):
     print("::warning::" + msg)
 
 
+def _fd_min(n, t, v, k, nd, nf):
+    """the smallest size reached from a row (t, v, k, N = n) by nd derive and nf fuse steps in any order (the
+    closure under fuse and derive keeps the smallest), or None when no order is allowed (derive needs k - 1 > t
+    after the step)"""
+    # best[(a, b)]: the smallest size after a derive and b fuse steps
+    best = {(0, 0): n}
+    for a in range(nd + 1):
+        for b in range(nf + 1):
+            if (a, b) == (0, 0):
+                continue
+            tc, vc, kc = t - a, v - b, k - a
+            c = []
+            if a > 0 and (a - 1, b) in best and kc > tc:
+                c.append(best[(a - 1, b)] // vc)                  # derive from strength tc + 1 at width kc + 1
+            if b > 0 and (a, b - 1) in best:
+                c.append(best[(a, b - 1)] - 2)                    # fuse from vc + 1 symbols
+            if c:
+                best[(a, b)] = min(c)
+    return best.get((nd, nf))
+
+
 def frame_workings_ok(d, ids):
-    """a derived frame line: each working of constructions_all is the construction label of the source row
-    named at the same place in ids_all, then ':fuse' (v of the source - v times) and ':derive' (t of the
-    source - t times); no label ends in ':fuse' or ':derive', so the steps split off unambiguously"""
+    """a derived frame line: each working of constructions_all is the construction label of the source row named
+    first at the same place in ids_all, then its steps: ':fuse' (one symbol), ':derive' (one strength, one column
+    less) and ':add1' (one column more, CKRS 2010 Theorem 3.2, t >= 3), v of the source - v fuse steps, t of the
+    source - t derive steps and k - k of the source + (t of the source - t) add1 steps; no label ends in one of
+    them, so the steps split off unambiguously. Each add1 step at t >= 4 names its ingredient row after a '+' in
+    ids_all, in step order; an add1 step at t = 3 names none (its ingredient is the trivial CA(v; 1, k - 1, v), v
+    constant rows, so it adds v(v-1)v). Walking the steps from the source row's N (fuse: - 2; derive: floor division by v; add1: + v(v-1)
+    times the ingredient, which is the ingredient row fused and derived to strength t - 2 and the step's v, the
+    smallest over the orders, at a width of at least k - 1 before the step) gives the line's N; the line's tier is
+    CITED when a row of its first working is CITED, else VERIFIED, and its entered date is the latest of them."""
     works = d["constructions_all"].split(build_frame.ALL_SEP)
     srcs = d["ids_all"].split(";")
     if len(works) != len(srcs) or not works or d["construction"] != works[0]:
         return False
-    for w, sid in zip(works, srcs):
-        r = ids.get(sid)
-        if r is None:
+    t, v, k, N = int(d["t"]), int(d["v"]), int(d["k"]), int(d["N"])
+    for wi, (w, spec) in enumerate(zip(works, srcs)):
+        named = spec.split("+")
+        if any(x not in ids for x in named):
             return False
-        nd, nf = int(r["t"]) - int(d["t"]), int(r["v"]) - int(d["v"])
-        if nd < 0 or nf < 0 or nd + nf == 0:
+        r = ids[named[0]]
+        ings = [ids[x] for x in named[1:]]
+        nd, nf = int(r["t"]) - t, int(r["v"]) - v
+        na = k - int(r["k"]) + nd
+        if nd < 0 or nf < 0 or na < len(ings) or nd + nf + na == 0:
             return False
-        parts = w.rsplit(":", nd + nf)
-        label = build_frame.frame_label(r, sid)
-        if len(parts) != nd + nf + 1 or parts[0] != label or re.search(r":(fuse|derive)$", label) \
-                or parts[1:].count("fuse") != nf or parts[1:].count("derive") != nd:
+        parts = w.rsplit(":", nd + nf + na)
+        label = build_frame.frame_label(r, named[0])
+        steps = parts[1:]
+        if len(parts) != nd + nf + na + 1 or parts[0] != label or re.search(r":(fuse|derive|add1)$", label) \
+                or steps.count("fuse") != nf or steps.count("derive") != nd or steps.count("add1") != na:
             return False
+        tc, vc, kc, n = int(r["t"]), int(r["v"]), int(r["k"]), int(r["N"])
+        it = iter(ings)
+        for s in steps:
+            if s == "fuse":
+                vc, n = vc - 1, n - 2
+            elif s == "derive":
+                if kc - 1 <= tc - 1:
+                    return False
+                tc, kc, n = tc - 1, kc - 1, n // vc
+            elif tc == 3:
+                if kc <= tc:
+                    return False
+                kc, n = kc + 1, n + vc * (vc - 1) * vc                # the trivial CA(v; 1, k - 1, v), no row
+            else:
+                g = next(it, None)
+                if g is None:
+                    return False
+                gt, gv, gk = int(g["t"]), int(g["v"]), int(g["k"])
+                if tc < build_frame.ADD1_TMIN or gt < tc - 2 or gv < vc or gk - (gt - (tc - 2)) < kc - 1 or kc <= tc:
+                    return False
+                b = _fd_min(int(g["N"]), gt, gv, gk, gt - (tc - 2), gv - vc)
+                if b is None:
+                    return False
+                kc, n = kc + 1, n + vc * (vc - 1) * b
+        if next(it, None) is not None or (tc, vc, kc, n) != (t, v, k, N):
+            return False
+        if wi == 0:
+            head = [r] + ings
+            tier = "CITED" if any(x["tier"] == "CITED" for x in head) else "VERIFIED"
+            if d["tier"] != tier or d["entered"] != max(x.get("entered") or "" for x in head):
+                return False
     return True
 
 
@@ -891,7 +956,7 @@ def check_frame(rows, pr):
         for c in ("id", "prev_id"):
             if d[c] and (not build_frame.ID_RE.match(d[c]) or d[c] not in ids):
                 problem("%s: %s %r names no row of the table" % (where, c, d[c]))
-        for c in d["ids_all"].split(";"):
+        for c in re.split(r"[;+]", d["ids_all"]):
             if not build_frame.ID_RE.match(c) or c not in ids:
                 problem("%s: ids_all names %r, no row of the table" % (where, c))
         if d["basis"] == "row":
@@ -901,7 +966,9 @@ def check_frame(rows, pr):
                 problem("%s: the row %s is not a counted row with this t, v, k, N and tier" % (where, d["id"]))
         elif d["id"] or d["get"] != "none" or not frame_workings_ok(d, ids):
             problem("%s: a derived line has an id, an array, or a working that is not its source row's label "
-                    "followed by one ':fuse' per symbol and one ':derive' per strength it lowers" % where)
+                    "followed by one ':fuse' per symbol, one ':derive' per strength it lowers and one ':add1' per "
+                    "column it adds, with an ingredient row per add1 step, that gives its N, tier and entry date"
+                    % where)
     if not pr:
         lines, _, _ = build_frame.build(os.path.dirname(TABLE))
         if raw.decode("utf-8") != build_frame.frame_text(lines):
@@ -998,7 +1065,7 @@ def resolves(doc, ref):
         base = os.path.dirname(base)
 
 
-PLAIN = re.compile(r"(?<![\w/.`-])((?:\.\./)?(?:table|tools|submissions|results|r|docs)/[A-Za-z0-9_./-]*[A-Za-z0-9_-]\.(?:md|csv|py|R|c|txt|yml|rda|html))(?![\w/])")
+PLAIN = re.compile(r"(?<![\w/.`-])((?:\.\./)?(?:table|tools|submissions|results|r|docs)/[A-Za-z0-9_./-]*[A-Za-z0-9_-]\.(?:md|csv|py|R|c|txt|yml|rda|html)(?:\.gz)?)(?![\w/])")
 
 
 def check_links():

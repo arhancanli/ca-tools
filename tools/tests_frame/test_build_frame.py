@@ -8,8 +8,13 @@ derived step, no derived size from a CITED row with a DISPUTED row beside it or 
 row, ids stable when rows are appended, prev_id for row steps and derived steps, the stair steps
 (one line per step, dominated rows dropped), the headline among ties, get from MANIFEST and
 withdrawn files, get lent by a tied VERIFIED row when the named row has none, workings in the
-label form (source label, then :fuse/:derive; labels with colons and commas), the live
-withdrawn_files.csv against withdrawn_fingerprints.csv, and --check.
+label form (source label, then :fuse/:derive/:add1; labels with colons and commas), add1 (CKRS 2010
+Theorem 3.2: two inputs, the weaker tier, both rows in ids_all, chains, t = 3 with the trivial strength 1
+ingredient, inside the counted range only, fuse before add1, a sound chain cut, a VERIFIED ingredient before
+a CITED one of the same size, the consistency check of add1 workings), a .txt.gz path in a document and a
+RETRACTED row with a SCREENED twin (consistency.py), Colbourn's 133 "Add 1 factors"
+rows reproduced from their ingredients in the live table, the live withdrawn_files.csv against
+withdrawn_fingerprints.csv, and --check.
 
 Usage: test_build_frame.py   (prints PASS/FAIL lines and a summary; exit 1 on a failure)
 """
@@ -252,6 +257,175 @@ def test_label_with_colon_and_comma():
     check(not consistency.frame_workings_ok(bad, ids), "consistency.py refuses a wrong number of steps")
 
 
+def test_add1():
+    import consistency
+    rows = [row(4, 3, 20, 200, "VERIFIED", "S7", "", "a1" * 32, "2026-11-01", con="mainlab"),
+            row(2, 3, 30, 15, entered="2026-08-23", con="inglab"), row(4, 3, 25, 2000)]
+    fr, st = frame(rows)
+    l = one(fr, 4, 3, 21)
+    check(l and l["N"] == "290" and l["basis"] == "derived" and l["construction"] == "mainlab:add1"
+          and l["ids_all"] == "t4-v3-k20-1+t2-v3-k30-1",
+          "add1: CA(200; 4, 20, 3) and CA(15; 2, 30, 3) give 200 + 3 x 2 x 15 = 290 at k = 21, both rows in ids_all")
+    check(l and l["tier"] == "CITED" and l["entered"] == "2026-11-01" and l["get"] == "none" and l["id"] == "",
+          "an add1 step has the weaker tier of its two inputs (CITED) and the later entry date")
+    l = one(fr, 4, 3, 23)
+    check(l and l["N"] == "470" and l["construction"] == "mainlab:add1:add1:add1"
+          and l["ids_all"] == "t4-v3-k20-1+t2-v3-k30-1+t2-v3-k30-1+t2-v3-k30-1",
+          "add1 repeated: one ':add1' and one ingredient id per added column")
+    l = one(fr, 4, 3, 25)
+    check(l and l["N"] == "650" and l["prev_id"] == "t4-v3-k25-1", "a chain may end below a row at its width")
+    check(st["derived_add1"] == 5, "five add1 steps (k = 21 to 25)")
+    ids = dict(zip(bf.row_ids(rows), rows))
+    l = one(fr, 4, 3, 22)
+    check(consistency.frame_workings_ok(l, ids), "consistency.py accepts the add1 working, its N, tier and date")
+    for what, bad in (("a wrong N", dict(l, N="381")),
+                      ("a missing ingredient id", dict(l, ids_all="t4-v3-k20-1+t2-v3-k30-1")),
+                      ("a wrong tier", dict(l, tier="VERIFIED")),
+                      ("an ingredient that is too narrow", dict(l, ids_all="t4-v3-k20-1+t2-v3-k30-1+t4-v3-k25-1")),
+                      ("a step missing from the working", dict(l, construction="mainlab:add1",
+                                                                constructions_all="mainlab:add1"))):
+        check(not consistency.frame_workings_ok(bad, ids), "consistency.py refuses an add1 working with " + what)
+
+
+def test_add1_t3():
+    """t = 3: the strength 1 ingredient is the trivial CA(v; 1, k - 1, v) (v constant rows), so a step adds v(v-1)v
+    and names no ingredient row"""
+    import consistency
+    rows = [row(3, 3, 20, 100, "VERIFIED", "S7", "", "c3" * 32, "2026-11-01", con="m3"), row(3, 3, 25, 900)]
+    fr, st = frame(rows)
+    l = one(fr, 3, 3, 21)
+    check(l and l["N"] == "118" and l["basis"] == "derived" and l["construction"] == "m3:add1"
+          and l["ids_all"] == "t3-v3-k20-1" and l["tier"] == "VERIFIED" and l["entered"] == "2026-11-01",
+          "add1 at t = 3: CA(100; 3, 20, 3) + 3 x 2 x 3 (the trivial CA(3; 1, 19, 3)) = 118 at k = 21; no ingredient id")
+    l = one(fr, 3, 3, 25)
+    check(l and l["N"] == "190" and l["construction"] == "m3" + ":add1" * 5 and l["ids_all"] == "t3-v3-k20-1"
+          and l["prev_id"] == "t3-v3-k25-1", "five t = 3 steps: 100 + 5 x 18 = 190 below the row 900 at k = 25")
+    ids = dict(zip(bf.row_ids(rows), rows))
+    check(consistency.frame_workings_ok(l, ids), "consistency.py accepts a t = 3 add1 working (adds v(v-1)v per step)")
+    for what, bad in (("a wrong N", dict(l, N="191")),
+                      ("an ingredient row named", dict(l, ids_all="t3-v3-k20-1+t3-v3-k25-1"))):
+        check(not consistency.frame_workings_ok(bad, ids), "consistency.py refuses a t = 3 add1 working with " + what)
+    # a t = 3 add1 step after a derive: (4, 3, 21, 330) -> (3, 3, 20, 110) -> 128 at k = 21
+    rows = [row(4, 3, 21, 330, con="m4"), row(3, 3, 25, 900)]
+    fr, _ = frame(rows)
+    l = one(fr, 3, 3, 21)
+    check(l and l["N"] == "128" and l["construction"] == "m4:derive:add1"
+          and consistency.frame_workings_ok(l, dict(zip(bf.row_ids(rows), rows))),
+          "derive then a t = 3 add1 step: floor(330 / 3) + 18 = 128, accepted by consistency.py")
+    # past every counted row of (3, v) no t = 3 add1 step counts (fuse alone counts there)
+    fr, _ = frame([row(3, 3, 20, 100)])
+    check(one(fr, 3, 3, 21) is None, "no t = 3 add1 step past every counted row of its t and v")
+
+
+def test_add1_chain_cut_sound():
+    """the add1 chain cut keeps every chain that can still land below a row (red team repros A and B)"""
+    def r(t, v, k, n, tier="CITED", entered="2026-08-23", con="x"):
+        return row(t, v, k, n, tier, "S1" if tier == "CITED" else "S7", SNAP if tier == "CITED" else "", "",
+                   entered, con)
+    # with t = 3 steps these tables go lower still (A: 14, B: 10 at (2, 2, 8)); they test the cut at t >= 4 alone
+    tmin, bf.ADD1_TMIN = bf.ADD1_TMIN, 4
+    try:
+        _chain_cut_cases(r)
+    finally:
+        bf.ADD1_TMIN = tmin
+    fr, _ = frame([r(2, 2, 8, 4, con="A"), r(2, 2, 9, 26, "VERIFIED", "2026-11-01", "B"), r(4, 2, 6, 16, con="C")])
+    l = one(fr, 2, 2, 9)
+    check(l and l["N"] == "14" and l["construction"] == "C:add1:add1:add1:add1:derive:add1:derive",
+          "with t = 3 steps: 48 at (4, 2, 10), derived to 24, + 2 x 1 x 2 = 28 at (3, 2, 10), derived to 14 at (2, 2, 9)")
+
+
+def _chain_cut_cases(r):
+    # A: (4, 2, 6, 16) + add1 x 5 (ingredients (2, 2, 8, 4), then (2, 2, 9, 26)) = 100 at k = 11, derived twice
+    # = 25 at (2, 2, 9), below the row 26; the chain passes widths where the stair at k - 2 is lower
+    fr, _ = frame([r(2, 2, 8, 4, con="A"), r(2, 2, 9, 26, "VERIFIED", "2026-11-01", "B"), r(4, 2, 6, 16, con="C")])
+    l = one(fr, 2, 2, 9)
+    check(l and l["N"] == "25" and l["construction"] == "C:add1:add1:add1:add1:add1:derive:derive",
+          "a chain is not cut while it can still land below a row at a wider point (repro A: 25 < 26 at (2, 2, 9))")
+    # B: (4, 2, 8, 74) -> 90 -> 122 at k = 10 is above the row 66 at k = 15 of its own (t, v), yet derived twice it
+    # gives 30 at (2, 2, 8), below the row 38 (the row 66 derives past the counted range of (2, 2))
+    fr, _ = frame([r(4, 2, 8, 74, con="P"), r(4, 2, 15, 66, "VERIFIED", "2026-10-15", "Q"),
+                   r(3, 2, 8, 17, "VERIFIED", con="R"), r(2, 2, 9, 38, con="S")])
+    l = one(fr, 2, 2, 8)
+    check(l and l["N"] == "30" and l["construction"] == "P:add1:add1:derive:derive",
+          "a size above a wider value of its own (t, v) still continues its chain (repro B: 30 at (2, 2, 8))")
+
+
+def test_add1_ingredient_tier():
+    """among add1 ingredients of equal size a VERIFIED row is named first (red team repro C)"""
+    rows = [row(4, 3, 20, 200, "VERIFIED", "S7", "", "d4" * 32, "2026-10-01", con="main"),
+            row(2, 3, 30, 15, "VERIFIED", "S7", "", "d2" * 32, "2026-09-01", con="ingV"),
+            row(2, 3, 30, 15, "CITED", "S1", "", "", "2026-11-01", con="ingC"), row(4, 3, 25, 2000)]
+    fr, _ = frame(rows)
+    l = one(fr, 4, 3, 21)
+    check(l and l["tier"] == "VERIFIED" and l["entered"] == "2026-10-01" and l["ids_all"] == "t4-v3-k20-1+t2-v3-k30-1",
+          "a VERIFIED ingredient beats a CITED one of the same size: the step stays VERIFIED")
+
+
+def test_ci_checks():
+    """consistency.py: a plain path to a gzipped array resolves; a RETRACTED row may retract a VERIFIED row and
+    its SCREENED twin together"""
+    import consistency as cc
+    m = cc.PLAIN.search("see table/arrays/CA_8176_3_258_16.txt.gz for the array")
+    check(m and m.group(1) == "table/arrays/CA_8176_3_258_16.txt.gz", "a plain path ending in .txt.gz is read whole")
+    sha = "e" * 64
+    def srow(*a):
+        return {c: str(x) for c, x in row(*a).items()}
+    scr = srow(3, 4, 10, 60, "SCREENED", "S7", "", sha, "2026-11-01")
+    ver = srow(3, 4, 10, 60, "VERIFIED", "S7", "", sha, "2026-11-02")
+    ret = dict(srow(3, 4, 10, 60, "RETRACTED", "S7", "", sha, "2026-11-05"), notes="found not covering")
+    del cc.problems[:]
+    cc.check_retracted([scr, ver, ret])
+    check(not cc.problems, "a RETRACTED row matching a VERIFIED row and its SCREENED twin is accepted")
+    del cc.problems[:]
+    cc.check_retracted([scr, ver, dict(ret, N="61")])
+    check(len(cc.problems) == 1 and "matches no" in cc.problems[0], "a RETRACTED row matching no row is refused")
+    del cc.problems[:]
+
+
+def test_add1_scope():
+    # past every counted row of its t and v an add1 step does not count
+    fr, _ = frame([row(4, 3, 20, 200), row(2, 3, 30, 15)])
+    check(one(fr, 4, 3, 21) is None, "past every counted row of its t and v, an add1 step is left out")
+    # no ingredient wide enough: no add1 (the row at k = 25, derived twice, gives (2, 3, 23, 55), but
+    # 200 + 6 x 55 = 530 is not below the 500 of that row)
+    fr, _ = frame([row(4, 3, 20, 200), row(2, 3, 18, 15), row(4, 3, 25, 500)])
+    check(one(fr, 4, 3, 21) is None, "no add1 step without an ingredient of width k - 2 or more")
+    fr, _ = frame([row(4, 3, 20, 200), row(2, 3, 18, 15), row(4, 3, 25, 2000)])
+    l = one(fr, 4, 3, 21)
+    check(l and l["N"] == str(200 + 6 * 222) and l["ids_all"] == "t4-v3-k20-1+t4-v3-k25-1",
+          "a derived ingredient: (4, 3, 25, 2000) derived twice gives (2, 3, 23, 222), credited by its row")
+    # fuse, then add1 with a fused ingredient: (4,4,20,200) -> (4,3,20,198); ingredient (2,4,30,20) -> 18
+    rows = [row(4, 4, 20, 200, con="m4"), row(2, 4, 30, 20, con="i4"), row(4, 3, 30, 5000)]
+    fr, _ = frame(rows)
+    l = one(fr, 4, 3, 21)
+    check(l and l["N"] == str(198 + 6 * 18) and l["construction"] == "m4:fuse:add1"
+          and l["ids_all"] == "t4-v4-k20-1+t2-v4-k30-1",
+          "fuse then add1, the ingredient itself fused: 198 + 3 x 2 x 18 = 306, ingredient credited by its row")
+    check(one(fr, 4, 4, 21) is None, "and no add1 step at (4, 4, 21), past every counted row of (4, 4)")
+    import consistency
+    check(consistency.frame_workings_ok(l, dict(zip(bf.row_ids(rows), rows))),
+          "consistency.py accepts it (the ingredient's own fuse steps recomputed from its row)")
+    # a CITED row with a DISPUTED row beside it is neither the main input nor the ingredient of add1
+    rows = [row(4, 3, 20, 200), row(2, 3, 30, 15, con="cyclotomy"),
+            dict(row(2, 3, 30, 15, "DISPUTED", "S6", ""), notes="fails"), row(4, 3, 25, 500)]
+    fr, _ = frame(rows)
+    check(one(fr, 4, 3, 21) is None, "no add1 step with a disputed-partner row as ingredient")
+
+
+def test_colbourn_add1_rows():
+    """Colbourn's "Add 1 factors" rows (CKRS 2010 Theorem 3.2) from their ingredients in his own rows (S1)"""
+    import derive_laws as L
+    look = L.load(sources={"S1"})
+    e = L.mk_ecan(look)
+    a1 = [r for r in L.rows if r["source_id"] == "S1" and r["construction"] == "Add 1 factors"]
+    ok = [r for r in a1 if L.law_add1(e, int(r["t"]), int(r["v"]), int(r["k"]))
+          == (int(r["N"]), ())]
+    check(len(a1) == 133 and len(ok) == 133,
+          "the 133 'Add 1 factors' rows are CAN(t, k-1, v) + v(v-1) CAN(t-2, k-2, v) over Colbourn's rows (%d of %d)"
+          % (len(ok), len(a1)))
+    check(all(r["t"] in ("5", "6") for r in a1), "all of them have t = 5 or 6")
+
+
 def test_get_from_tied_verified():
     sha = "8" * 64
     rows = [row(2, 5, 12, 40, con="cited label"), row(2, 5, 12, 40, "VERIFIED", "S7", "", sha, "2026-11-02", con="ours"),
@@ -347,7 +521,9 @@ def test_guarantee():
 def main():
     for fn in (test_guarantee, test_fuse_chain, test_derive_chain, test_tier_of_weakest_and_ties, test_equal_is_row,
                test_disputed_excluded, test_retracted_excluded, test_steps, test_ids_stable, test_prev_id, test_past_range_fuse_only,
-               test_label_with_colon_and_comma, test_get_from_tied_verified, test_live_withdrawn_list,
+               test_label_with_colon_and_comma, test_add1, test_add1_t3, test_add1_chain_cut_sound,
+               test_add1_ingredient_tier, test_ci_checks, test_add1_scope, test_colbourn_add1_rows,
+               test_get_from_tied_verified, test_live_withdrawn_list,
                test_get, test_text_and_check):
         fn()
     print("%d passed, %d failed" % (RESULTS["pass"], RESULTS["fail"]))

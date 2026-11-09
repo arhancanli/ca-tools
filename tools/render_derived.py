@@ -19,6 +19,7 @@ from render_table import CSS, REPO_URL  # noqa: E402
 LAWS = {
     "fuse": "fusing symbols (Colbourn, Kéri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1)",
     "derive": "deriving a strength (CKRS 2010, (7))",
+    "add1": "adding one column (CKRS 2010, Theorem 3.2)",
     "comp": "composition (CKRS 2010, (3))",
     "CK": "Chateauneuf-Kreher doubling (Cohen, Colbourn, Ling 2008, Thm 2)",
     "CMTW34": "Colbourn, Martirosyan, Trung, Walker 2006, Thm 3.4",
