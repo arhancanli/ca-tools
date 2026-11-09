@@ -532,6 +532,91 @@ def int_field(row, name, lo, hi=None):
     return val
 
 
+def above_rule_flag(ctx, t, v, k, N):
+    """(N', k', law) of the smallest line of table/derived.csv at (t, v) and a width k' >= k when the claim is past
+    the baseline's column range of (t, v) and N is above it, else None (CONVENTIONS.md section 6, version 1.4)"""
+    import build_frame
+    if "baseline_kmax" not in ctx:
+        ctx["baseline_kmax"] = build_frame.baseline_kmax(ctx["table_rows"])
+        ctx["derived_floor"] = build_frame.derived_floor(ctx["table_dir"])
+    if k <= ctx["baseline_kmax"][(t, v)] or build_frame.above_rule(ctx["derived_floor"], t, v, k, N) is None:
+        return None
+    return build_frame.derived_witness(ctx["table_dir"], t, v, k)
+
+
+def above_rule_text(c):
+    """(the flag, what follows from it) for a claim above a published size rule"""
+    w = c["above_rule"]
+    return ("above a published size rule: %d vs %s value %d at k' = %d" % (c["N"], w[2], w[0], w[1]),
+            "(table/derived.csv, the smallest line at the same t and v and a width k' >= k). The row counts, but "
+            "does not widen the counted range of the frame (CONVENTIONS.md section 6); the maintainer decides this "
+            "row, and lists it in table/above_rule_rows.csv if it is accepted")
+
+
+FRAME_EFFECT_MAX = 20    # frame builds per submission for frame_effect (each about 8 s)
+
+
+def frame_effect(claims, ctx):
+    """For each passed claim past the counted range of its t and v (no counted row at k' >= k), the frame lines it
+    would let in: the frame is built with and without that one row (tools/build_frame.py) and the derived lines that
+    appear are compared with table/derived.csv at k' >= k. Fills c["frame_effect"]; never fails the check."""
+    import build_frame
+    todo = [c for c in claims if c["passed"] and c.get("comparison") == "exceeds_table"
+            and c.get("previous_best") is None]
+    for c in todo[FRAME_EFFECT_MAX:]:
+        c["frame_effect"] = dict(error="more than %d claims past the counted range, about 8 s each"
+                                 % FRAME_EFFECT_MAX)
+    todo = todo[:FRAME_EFFECT_MAX]
+    if not todo:
+        return
+    src = os.path.abspath(ctx["table_dir"])     # the links must not depend on the current directory
+    def build_with(extra):
+        with tempfile.TemporaryDirectory(prefix="caframe-") as d:
+            for f in os.listdir(src):
+                if f != "ca_table.csv":
+                    os.symlink(os.path.join(src, f), os.path.join(d, f))
+            with open(os.path.join(d, "ca_table.csv"), "w", newline="", encoding="utf-8") as f:
+                w = csv.DictWriter(f, TABLE_HEADER, lineterminator="\n")
+                w.writeheader()
+                w.writerows(ctx["table_rows"] + extra)
+            return build_frame.build(d)[0]
+    try:
+        floor = build_frame.derived_floor(src)
+        base = {tuple(l[:4]) for l in build_with([])}
+        for c in todo:
+            new = {h: "" for h in TABLE_HEADER}
+            new.update(t=str(c["t"]), v=str(c["v"]), k=str(c["k"]), N=str(c["N"]), tier="VERIFIED",
+                       source_id=SOURCE_ID, source_detail="submission " + ctx["slug"], array_sha256=c["sha256"],
+                       verify_stamp=ctx["stamp"], entered=ctx["date"],
+                       construction=c["raw"]["construction"].strip() or "submission")
+            added = [tuple(int(x) for x in l[:4]) for l in build_with([new])
+                     if l[4] == "derived" and tuple(l[:4]) not in base]
+            low = [build_frame.floor_at(floor, (t, v), k) for t, v, k, n in added]
+            c["frame_effect"] = dict(
+                lines=len(added), tv=sorted({(t, v) for t, v, k, n in added}),
+                N=(min(x[3] for x in added), max(x[3] for x in added)) if added else None,
+                derived=(min(low), max(low)) if added and max(low) < build_frame.INF else None,
+                above=sum(1 for x, m in zip(added, low) if m < x[3]))
+    except Exception as e:                     # never let this break the check
+        for c in todo:
+            c.setdefault("frame_effect", dict(error="%s: %s" % (type(e).__name__, e)))
+
+
+def frame_effect_text(c):
+    fe = c["frame_effect"]
+    if "error" in fe:
+        return "frame lines it would let in: not computed (%s); the maintainer checks by hand" % fe["error"]
+    s = ("past every counted row of t = %d, v = %d: with this row the frame gains %d derived line%s"
+         % (c["t"], c["v"], fe["lines"], "" if fe["lines"] == 1 else "s"))
+    if fe["lines"]:
+        s += (" (N %d to %d at %s), %d of them above a line of table/derived.csv at k' >= k (%s)"
+              % (fe["N"][0], fe["N"][1], ", ".join("t = %d, v = %d" % x for x in fe["tv"]), fe["above"],
+                 "derived.csv gives %d to %d there" % fe["derived"] if fe["derived"] else "derived.csv has none there"))
+    if c.get("above_rule"):
+        s += "; as the row is above a size rule, the counted range is not widened by it"
+    return s
+
+
 def check_claim(cl, ctx, deadline):
     """Fill cl (a dict) with the outcome of checking one claim."""
     sub = ctx["subdir"]
@@ -654,6 +739,9 @@ def check_claim(cl, ctx, deadline):
             cl["comparison"] = "above_table"
             cl["notes_out"].append("verified size is above the current best "
                                    "%d, recorded but not an improvement" % prev)
+        # past the baseline's column range, a new counted value above a published size rule at k' >= k
+        # (CONVENTIONS.md section 6, version 1.4): a flag for the maintainer, never a failure
+        cl["above_rule"] = above_rule_flag(ctx, t, v, k, N) if cl["comparison"] == "exceeds_table" else None
 
         # verification
         with tempfile.TemporaryDirectory(prefix="casub-") as tmp:
@@ -939,7 +1027,11 @@ def render_report(claims, ctx, all_pass, elapsed):
     L.append("")
     n_pass = sum(1 for c in claims if c["passed"])
     if all_pass:
-        L.append("**Result: PASS.** %d of %d claims passed." % (len(claims), len(claims)))
+        n_flag = sum(1 for c in claims if c.get("above_rule"))
+        L.append("**Result: PASS.** %d of %d claims passed.%s" % (len(claims), len(claims),
+                 " %d claim%s flagged: above a published size rule; the maintainer decides %s (CONVENTIONS.md "
+                 "section 6)." % (n_flag, "" if n_flag == 1 else "s", "it" if n_flag == 1 else "each one")
+                 if n_flag else ""))
     else:
         L.append("**Result: FAIL.** %d of %d claims passed; nothing is applied "
                  "to the table until every claim passes." % (n_pass, len(claims)))
@@ -959,7 +1051,8 @@ def render_report(claims, ctx, all_pass, elapsed):
         L.append("| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |" % (
             i, md_cell(c["raw"].get("file", "")), c.get("t", "?"), c.get("v", "?"),
             c.get("k", "?"), c.get("N", "?"), "PASS" if c["passed"] else "FAIL",
-            c["status"], c["comparison"] or "", "" if c.get("previous_best") is None
+            c["status"], (c["comparison"] or "") + (", **above a size rule**" if c.get("above_rule") else ""),
+            "" if c.get("previous_best") is None
             else c["previous_best"], fmt_secs(c["seconds"].get("total", 0))))
     L.append("")
     L.append("### Details")
@@ -1000,6 +1093,10 @@ def render_report(claims, ctx, all_pass, elapsed):
             L.append("- table: %s; %s" % (c["comparison"] or "not compared",
                                           md_cell(previous_text(c)) if "previous_best" in c
                                           else "not looked up"))
+        if c.get("above_rule"):
+            L.append("- **%s**, flagged for the maintainer %s" % tuple(md_cell(x) for x in above_rule_text(c)))
+        if c.get("frame_effect"):
+            L.append("- frame: %s" % md_cell(frame_effect_text(c)))
         if c.get("similar_checked"):
             if c.get("similar"):
                 L.append("- **similarity: flagged for the maintainer.** Same structure, up to "
@@ -1119,11 +1216,16 @@ def route_light(module, sub, a, out, name):
         return False, "## %s\n\n**Result: FAIL.** the check stopped without a report\n" % name
 
 
-def credit_section(sub, slug, ctx, online=True):
+def credit_section(sub, slug, ctx, online=True, claims=()):
     """The "Credit check" section of the report (tools/credit_check.py): flags for the
     maintainer's review of credit, over every row of claims.csv, certificates.csv,
-    external.csv and constructions.csv. Flags never change the result; a failure of the
+    external.csv and constructions.csv, and a claim above a published size rule (claims, from
+    check_claim). Flags never change the result; a failure of the
     credit check itself is reported and never fails the submission."""
+    extra = [("claims.csv row %d, CA(%s; %s, %s, %s) `%s`" % (c["line"] - 1, c["N"], c["t"], c["k"], c["v"],
+                                                              md_cell(c["raw"].get("file", ""))),
+              [("above a published size rule", md_cell(" ".join(above_rule_text(c))))])
+             for c in claims if c.get("above_rule")]
     try:
         import credit_check
         refs = ctx["references"]
@@ -1148,11 +1250,13 @@ def credit_section(sub, slug, ctx, online=True):
                                 % (name, i, r.get("N", "?"), r.get("t", "?"), r.get("k", "?"),
                                    r.get("v", "?"), (" `%s`" % md_cell(what)) if what else ""),
                                 [(k, md_cell(t)) for k, t in flags]))
-        md, _ = credit_check.render(ck.submission_flags(credits), per)
+        md, _ = credit_check.render(ck.submission_flags(credits), per + extra)
         return md
     except Exception as e:                     # never let the credit check break the check
         return ("### Credit check\n\nThe credit check could not run (%s: %s); the maintainer "
-                "reviews the credit by hand.\n\n" % (type(e).__name__, md_cell(str(e))))
+                "reviews the credit by hand.\n\n%s" % (type(e).__name__, md_cell(str(e)),
+                                                    "".join("- %s, **%s**: %s\n" % (lab, f[0][0], f[0][1])
+                                                            for lab, f in extra)))
 
 
 def main(argv=None):
@@ -1322,6 +1426,7 @@ def main(argv=None):
               file=sys.stderr, flush=True)
 
     all_pass = bool(claims) and not problems and all(c["passed"] for c in claims)
+    frame_effect(claims, ctx)
     rows = None
     if all_pass:
         rows = build_rows(claims, ctx)
@@ -1329,7 +1434,7 @@ def main(argv=None):
     report = render_report(claims, ctx, all_pass, elapsed)
     if claims:
         report = report.replace("### Details", credit_section(sub, slug, ctx,
-                                online=not a.credit_offline) + "### Details", 1)
+                                online=not a.credit_offline, claims=claims) + "### Details", 1)
     if problems:
         # the list goes once, ahead of the per-claim details
         report = report.replace("### Details", "### Submission problems\n\n" +
@@ -1362,6 +1467,8 @@ def main(argv=None):
                      v=c.get("v"), k=c.get("k"), N=c.get("N"), passed=c["passed"],
                      status=c["status"], comparison=c["comparison"],
                      previous_best=c.get("previous_best"), sha256=c.get("sha256"),
+                     above_rule=list(c["above_rule"]) if c.get("above_rule") else None,
+                     frame_effect=c.get("frame_effect"),
                      canonical_name=c.get("canonical_name"), reasons=c["reasons"],
                      uncovered=c["uncovered"], notes=c["notes_out"],
                      seconds={k2: round(v2, 2) for k2, v2 in c["seconds"].items()},

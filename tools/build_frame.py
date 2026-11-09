@@ -24,7 +24,11 @@ only when it is made by fuse alone, so no line there ends in an add1 or derive s
 through such a point on its way to a point inside the counted range of another t or v), and only when
 no line of table/derived.csv at the same t and v, at a width k' >= k, by any size rule counted or not,
 has a smaller N (section 6, version 1.3). An uncounted rule there only withholds a size, never gives
-one; without a derived.csv beside the table nothing is withheld. So past the baseline's column range
+one; without a derived.csv beside the table nothing is withheld. The counted range of a t and v ends at its
+widest counted row, except that a row past the baseline's column range whose N is above a line of derived.csv at
+a width k' >= k does not widen it (version 1.4): the row counts, but the derived sizes between the range and that
+row are judged as past the range, so a weak row does not let in sizes that derived.csv beats (a CA(1000; 3,
+100000, 2) would have let in 231 lines of 80 to 996 against PCT 77 to 99). So past the baseline's column range
 a derived size appears only near the counted rows entered there (at a row's width, one less per derive
 step, one more per add1 step), and no ladder of widths is evaluated (tools/derive_table.py does that
 for table/derived.csv). A CITED row that has a DISPUTED
@@ -104,7 +108,7 @@ F at k' >= k, empty when there is none (so every step set by the baseline has an
 For a derived step: prev_id is the named row of the Colbourn-rule value at the step (what the
 step improves on, as lookup_N in table/derived.csv). Past every counted row of its t and v it is the
 named row at the widest counted width when the step's N is below the counted value there (for example
-CA(13115; 3, 11288, 12) below 13,151 at k = 10,000), else empty. Past every counted row of its t and v,
+CA(13115; 3, 11288, 12) below 13,151 at k = 10,000), else empty. Past the counted range of its t and v,
 a derived step is kept only when its working uses fuse alone and derived.csv has nothing smaller at
 k' >= k (above). prev_id names rows only; derived sizes have no id.
 
@@ -113,7 +117,8 @@ Usage: build_frame.py [--table-dir DIR] [--check] [--stats]
   --check    build in memory and fail if ca_frame.csv differs or ca_table.csv.gz does not
              decompress to ca_table.csv
   --stats    also print the counts (lines, derived steps, steps that differ from the Colbourn rule,
-             derived_vetoed: steps past the counted range withheld because derived.csv has less)
+             derived_vetoed: steps past the counted range withheld because derived.csv has less,
+             range_rows_left_out: counted rows that do not widen the counted range)
 Standard library only.
 """
 import bisect
@@ -437,11 +442,57 @@ def derived_floor(table_dir):
     return out
 
 
+def derived_witness(table_dir, t, v, k):
+    """the line of table/derived.csv at (t, v) and a width k' >= k with the smallest N (the narrowest among equals),
+    as (N, k', law), or None"""
+    best = None
+    for d in read_csv(os.path.join(table_dir, "derived.csv")):
+        if (int(d["t"]), int(d["v"])) == (t, v) and int(d["k"]) >= k:
+            x = (int(d["N"]), int(d["k"]), d["law"])
+            if best is None or x < best:
+                best = x
+    return best
+
+
 def floor_at(floor, tv, k):
     """the smallest N of derived.csv at (t, v) and any width k' >= k, or INF"""
     ks, suf = floor.get(tv, ((), ()))
     x = bisect.bisect_left(ks, k)
     return suf[x] if x < len(ks) else INF
+
+
+def baseline_kmax(rows):
+    """the baseline's column range: the largest k of Colbourn's rows (source S1) per (t, v), as in
+    tools/derive_table.py"""
+    out = collections.defaultdict(int)
+    for r in rows:
+        if r["source_id"] == "S1":
+            tv = (int(r["t"]), int(r["v"]))
+            out[tv] = max(out[tv], int(r["k"]))
+    return out
+
+
+def above_rule(floor, t, v, k, n):
+    """the smallest N of derived.csv at (t, v) and a width k' >= k when it is below n (the row is above a published
+    size rule at its own width), else None"""
+    low = floor_at(floor, (t, v), k)
+    return low if low < n else None
+
+
+def counted_range(rows, cnt, floor):
+    """{(t, v): the widest width of the counted range} and the counted rows left out of it (section 6, version 1.4):
+    the range of (t, v) ends at its widest counted row, except that a row past the baseline's column range whose N is
+    above a line of derived.csv at a width k' >= k does not widen it (the row itself still counts). cnt: the counted
+    rows; floor: derived_floor()."""
+    bk = baseline_kmax(rows)
+    kmax, left_out = collections.defaultdict(int), []
+    for r in cnt:
+        t, v, k, n = int(r["t"]), int(r["v"]), int(r["k"]), int(r["N"])
+        if k > bk[(t, v)] and above_rule(floor, t, v, k, n) is not None:
+            left_out.append(r)
+            continue
+        kmax[(t, v)] = max(kmax[(t, v)], k)
+    return kmax, left_out
 
 
 def build(table_dir):
@@ -459,6 +510,7 @@ def build(table_dir):
         if i not in excl:
             inputs[p].append((int(r["N"]), i))
     hk = {}
+    stats = collections.Counter()
 
     def hkey(i):
         if i not in hk:
@@ -469,9 +521,11 @@ def build(table_dir):
         """derived workings: by their source row in headline order, then the shorter working"""
         return (hkey(o[0]), len(o[1]), o[1])
     clo_fd = closure(inputs)                                   # fuse and derive: the add1 ingredients
-    kmax_tv = collections.defaultdict(int)
-    for (t, v, k) in rowpts:
-        kmax_tv[(t, v)] = max(kmax_tv[(t, v)], k)
+    veto = derived_floor(table_dir)
+    # the counted range of each (t, v): a row past the baseline's column range that derived.csv beats at its own
+    # width does not widen it, so the derived sizes it would let in stay under the comparison below (version 1.4)
+    kmax_tv, left_out = counted_range(rows, [rows[i] for i in cnt], veto)
+    stats["range_rows_left_out"] = len(left_out)
     def ikey(o):
         """add1 ingredients of equal size: a VERIFIED row first (so the step keeps the weakest tier as high as
         it can be), then headline order"""
@@ -483,19 +537,19 @@ def build(table_dir):
     for (t, v, k), lst in rowpts.items():
         by_tv[(t, v)][k] = min(x[0] for x in lst)
         rows_tv[(t, v)].extend(i for _, i in lst)
-    lines, stats = [], collections.Counter()
+    lines = []
 
     def best_row(cands):
         """the named row among (N, index) candidates: smallest N, then headline order"""
         return min(cands, key=lambda x: (x[0], hkey(x[1]))) if cands else None
 
-    veto = derived_floor(table_dir)
     for tv in sorted(set(by_tv) | set(clo)):
         t, v = tv
         rmin = by_tv.get(tv, {})
         dmin = {}
-        kmax = max(rmin, default=0)
-        # past every counted row of (t, v) only fuse counts (CONVENTIONS.md section 6); derive there gives
+        kmax = kmax_tv.get(tv, 0)
+        # past the counted range of (t, v) (counted_range: every counted row, less a row past the baseline's range
+        # that derived.csv beats at its own width) only fuse counts (CONVENTIONS.md section 6); derive there gives
         # sizes far above known values (t = 2, v = 2 at k = 99,999: 252 against the exact 21). The fuse-only
         # closure gives those, so no add1 step lands there either. A fused size there counts only if no line
         # of table/derived.csv at (t, v) and a width k' >= k, by any size rule counted or not, has a smaller N
@@ -504,7 +558,7 @@ def build(table_dir):
         pts = {k: x for k, x in clo.get(tv, {}).items() if k <= kmax}
         vetoed = set()
         for k, x in clo_fuse.get(tv, {}).items():
-            if k > kmax:
+            if k > kmax and not (k in rmin and rmin[k] <= x[0]):     # a row is never withheld, only derived sizes
                 if floor_at(veto, tv, k) < x[0]:
                     vetoed.add(k)
                 else:

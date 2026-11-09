@@ -74,6 +74,9 @@ fusing a symbol, the derived array, the direct product of strength-2
 arrays) can be submitted as its construction certificate
 (constructions.csv), which tools/construction_cert.py checks exactly
 from the recipe. submissions/README.md says which route to use.
+A new row past the baseline's column range whose size is above a size rule
+in table/derived.csv at its width or wider is flagged in the report for the
+maintainer, who decides each one (table/CONVENTIONS.md, section 6).
 Every new row records the published work its construction builds on
 (the builds_on field), so the table credits earlier authors and records new methods under the
 names of the people who found them. The

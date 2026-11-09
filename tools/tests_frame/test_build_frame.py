@@ -11,7 +11,9 @@ withdrawn files, get lent by a tied VERIFIED row when the named row has none, wo
 label form (source label, then :fuse/:derive/:add1; labels with colons and commas), the comparison with
 derived.csv past the counted range (issue #62: a fused size withheld where any size rule gives less, kept
 where none does, the consistency.py check of it, prev_id of a past-range step below the widest counted
-value, the live frame at (3, 2), (3, 3) and (3, 10), a strength-2 row CA(2425; 2, 100000, 25)), add1 (CKRS 2010
+value, the live frame at (3, 2), (3, 3) and (3, 10), a strength-2 row CA(2425; 2, 100000, 25)), a row past the
+baseline's range that derived.csv beats at its own width does not widen the counted range (version 1.4: on the
+live table a CA(1000; 3, 100000, 2) lets in no derived line), add1 (CKRS 2010
 Theorem 3.2: two inputs, the weaker tier, both rows in ids_all, chains, t = 3 with the trivial strength 1
 ingredient, inside the counted range only, fuse before add1, a sound chain cut, a VERIFIED ingredient before
 a CITED one of the same size, the consistency check of add1 workings), a .txt.gz path in a document and a
@@ -364,6 +366,44 @@ def test_strength2_row_past_range():
           "derived.csv gives less at all 23 alphabets v = 2 to 24, and none of the fused sizes is in the frame")
 
 
+def test_weak_row_range():
+    """CONVENTIONS.md section 6 (version 1.4): a counted row past the baseline's column range that derived.csv beats at
+    its own width counts, but does not widen the counted range, so the add1 sizes it would let in stay out"""
+    base = [row(3, 2, 4, 8), row(3, 2, 10, 12)]
+    weak = row(3, 2, 12, 64, "VERIFIED", "S7", "", "c4" * 32, "2026-11-09")
+    fr, st = frame(base + [weak], derived=[(3, 2, 15, 30, "PCT")])
+    check([(l["k"], l["N"], l["basis"]) for l in at(fr, 3, 2) if int(l["k"]) > 10] == [("12", "64", "row")]
+          and st["range_rows_left_out"] == 1,
+          "a row above PCT 30 at k' = 15 counts at k = 12, and the add1 sizes 16 and 20 at k = 11 and 12 stay out")
+    fr, st = frame(base + [weak], derived=[(3, 2, 15, 70, "PCT")])
+    check([(l["k"], l["N"]) for l in at(fr, 3, 2) if int(l["k"]) > 10] == [("11", "16"), ("12", "20")]
+          and st["range_rows_left_out"] == 0,
+          "a row not beaten at k' >= k widens the range: CA(16; 3, 11, 2) and CA(20; 3, 12, 2) by add1 count")
+    inside = row(3, 2, 9, 64, "VERIFIED", "S7", "", "c5" * 32, "2026-11-09")
+    fr, st = frame(base + [inside, row(3, 3, 12, 300)], derived=[(3, 2, 15, 5, "PCT")])
+    check(st["range_rows_left_out"] == 0, "a row inside the baseline's column range always widens it")
+    # the live table with a VERIFIED CA(1000; 3, 100000, 2) (the gap left by version 1.3: 231 lines of 80 to 996)
+    live = os.path.join(REPO, "table")
+    rows = list(csv.DictReader(open(os.path.join(live, "ca_table.csv"), newline="", encoding="utf-8")))
+    new = {c: "" for c in rows[0]}
+    new.update(t="3", v="2", k="100000", N="1000", tier="VERIFIED", source_id="S7", source_detail="test row",
+               array_sha256="ab" * 32, verify_stamp="ca_verify test 2026-11-09 Linux", entered="2026-11-09",
+               construction="test weak row")
+    with tempfile.TemporaryDirectory() as d:
+        for f in ("MANIFEST.csv", "EXTERNAL.csv", "withdrawn_files.csv", "derived.csv", "certificates", "constructions"):
+            os.symlink(os.path.join(live, f), os.path.join(d, f))
+        with open(os.path.join(d, "ca_table.csv"), "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, list(rows[0]), lineterminator="\n")
+            w.writeheader()
+            w.writerows(rows + [new])
+        lines, st, _ = bf.build(d)
+    fr = [dict(zip(bf.FRAME_HEADER, l)) for l in lines]
+    past = [l for l in at(fr, 3, 2) if int(l["k"]) > 10000]
+    check([(l["k"], l["N"], l["basis"]) for l in past] == [("100000", "1000", "row")] and st["range_rows_left_out"] == 2,
+          "live: CA(1000; 3, 100000, 2) counts as a row, and no derived line at (3, 2) past k = 10,000 enters "
+          "(left out of the range: it and t6-v2-k10051-1)")
+
+
 def test_label_with_colon_and_comma():
     lab = "CPHF(2; 32, 23, 6): affine expansion, deleted columns"
     rows = [row(4, 7, 40, 5000, "VERIFIED", "S7", "", "7" * 64, con=lab), row(3, 6, 60, 900), row(3, 7, 39, 9000)]
@@ -656,6 +696,7 @@ def main():
     for fn in (test_guarantee, test_fuse_chain, test_derive_chain, test_tier_of_weakest_and_ties, test_equal_is_row,
                test_disputed_excluded, test_retracted_excluded, test_steps, test_ids_stable, test_prev_id, test_past_range_fuse_only,
                test_past_range_veto, test_past_range_prev_id, test_live_past_range, test_strength2_row_past_range,
+               test_weak_row_range,
                test_label_with_colon_and_comma, test_add1, test_add1_t3, test_add1_chain_cut_sound,
                test_add1_ingredient_tier, test_ci_checks, test_add1_scope, test_colbourn_add1_rows,
                test_get_from_tied_verified, test_live_withdrawn_list,

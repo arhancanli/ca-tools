@@ -187,6 +187,10 @@ the array files and these documents agree.
   frame rule (`CONVENTIONS.md`, section 4), one line per stair step, described
   below under "The frame file". Rebuilt by `../tools/build_frame.py` on every push to
   main and compared with a fresh build by `../tools/consistency.py`.
+- `above_rule_rows.csv` (since 2026-11-09) - edited by the maintainer: counted rows past the
+  baseline's column range whose N is above a line of `derived.csv` at a width k' >= k, accepted
+  knowingly (id, reason, decided_by, date). Such a row without a line here is reported as a
+  warning by `../tools/consistency.py` on every run (`CONVENTIONS.md`, section 6, version 1.4).
 - `ca_table.csv.gz` - `ca_table.csv` gzipped (about 300 KB instead of 2.8 MB), written
   by `../tools/build_frame.py` beside the frame file, without a file name or time in
   its header, so the same table always gives the same bytes. In R (read.csv cannot read
@@ -496,7 +500,9 @@ counted range, by derive or add1, are left for later (`CONVENTIONS.md`, section 
 A fused size there counts only if no line of `derived.csv` at the same t and v and
 a width k' >= k, by any size rule counted or not, has a smaller N (version 1.3,
 issue #62), so the fused sizes at t = 3 with 2 and 3 symbols past 10,000 columns
-are withheld.
+are withheld. A row past the baseline's column range that `derived.csv` beats at
+its own width counts, but does not widen the counted range (version 1.4); such
+rows accepted knowingly are listed in `above_rule_rows.csv`.
 On 2026-11-09 add1 is in the working of 225 steps of the frame (27 of them at
 t = 3, each one step from a covering perfect hash family row, for example
 CA(832; 3, 15180, 4), `Sherwood covering perfect hash family (affine):add1`,

@@ -1,4 +1,4 @@
-# Conventions of the covering array table (version 1.3, November 2026)
+# Conventions of the covering array table (version 1.4, November 2026)
 
 Parts that describe files not built yet say "will" or "planned". Anything that changes what the CAs package
 reads is announced to its author before it goes live (section 5).
@@ -114,8 +114,9 @@ Frame rule (for the frame file `ca_frame.csv`, section 7)
 - It counts what the Colbourn rule counts, plus proven derived sizes (section 6), each with the
   tier of its weakest input.
 - The frame holds only counted steps, so a program reading it needs no tier filter.
-- Past every counted row of its t and v it counts a derived step only where section 6's comparison
-  with `derived.csv` allows.
+- Past the counted range of its t and v it counts a derived step only where section 6's comparison
+  with `derived.csv` allows. The counted range ends at the widest counted row, except that a row past
+  the baseline's column range that `derived.csv` beats at its own width does not widen it (section 6).
 - `ca_table.csv` itself is not changed by this rule.
 
 A guarantee for programs that do not filter on tier. CAs 0.25 with frozen=FALSE takes the smallest N
@@ -225,7 +226,21 @@ This section is the promise to everyone who reads the table by program, CAs firs
   the counted range (CA(11295781276; 6, 10000, 20) against 9,178,224,188 by PCT at k = 30,000). As only
   fuse counts there, no line there ends in an add1 or derive step (a working may pass through such a
   point and land inside the counted range of another t or v, for example after a derive or a fuse);
-  derived points beyond the counted range by derive or add1 come later. The search for add1 chains
+  derived points beyond the counted range by derive or add1 come later. The counted range of a t and v
+  ends at its widest counted row, with one exception (version 1.4): a row past the baseline's column
+  range whose N is above a line of `derived.csv` at the same t and v and a width k' >= k (by any size
+  rule) counts as a row, but does not widen the range, so the derived sizes between the range and that
+  row are judged as above. Without it a weak row would let derived sizes in unchecked: a VERIFIED
+  CA(1000; 3, 100000, 2), against PCT 99, would have let in 231 lines of 80 to 996 against
+  `derived.csv` values of 77 to 99. Such a row is flagged for the maintainer, who decides each one:
+  `tools/check_submission.py` shows "above a published size rule" with the `derived.csv` value and
+  width (and the number of flagged claims in its result line), and how many frame lines a row past
+  the counted range lets in, and `tools/consistency.py` reports every such row as a warning on every
+  run, so also a row that a regenerated `derived.csv` comes to beat, unless
+  `table/above_rule_rows.csv` lists it as accepted knowingly (id, reason, decided_by, date). It
+  is a flag, not a refusal: the array is correct, and the uncounted rules in `derived.csv` are not
+  checked enough to refuse an array. Today one row is such a row and is listed:
+  CA(6580; 6, 10051, 2) (Power CZ), against PCT 6555 at k = 11,000; the frame is unchanged by it. The search for add1 chains
   stops a chain only once no later step can land below a counted row inside the counted range of any
   t and v it can reach, so it finds every step the rule gives.
 - The other size rules (composit, CK_doubling, CMTW34, kRoux, powerCT, dp, OD, SM) stay in
@@ -406,3 +421,7 @@ A search box at the top jumps to a point by t, v and k.
 - Version 1.3 (November 2026). Past the counted range a fused size counts only where no size rule in
   derived.csv gives less (sections 4 and 6); 10 lines at t = 3, v = 2 and 3 removed, reported by
   Arhan Canli (#62).
+- Version 1.4 (November 2026). A counted row past the baseline's column range that derived.csv beats
+  at its own width counts, but does not widen the counted range of the frame, and is flagged for the
+  maintainer by tools/check_submission.py and, on every run, tools/consistency.py, with a list of rows accepted
+  knowingly, table/above_rule_rows.csv (sections 4 and 6). The frame file is unchanged by it.

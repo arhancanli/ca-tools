@@ -27,9 +27,11 @@ matched to each other, the table's structure is checked, the generated counts
 are compared with the data, table/ca_frame.csv is compared with a fresh build of
 tools/build_frame.py (not with --pr: it is regenerated after merge, like the counts), no
 SCREENED, FAILED_PENDING_RECHECK or DISPUTED row is below the counted best at its point
-(table/CONVENTIONS.md, section 4), no derived line of table/ca_frame.csv past every counted row
+(table/CONVENTIONS.md, section 4), no derived line of table/ca_frame.csv past the counted range
 of its t and v has a line of table/derived.csv at a width k' >= k with a smaller N (section 6),
-and every relative link and repository path named
+a counted row past the baseline's column range that sets a new counted value above a line of
+derived.csv at a width k' >= k is reported as a ::warning:: on every run unless
+table/above_rule_rows.csv lists it (section 6, version 1.4), and every relative link and repository path named
 in the Markdown documents is checked to exist.
 """
 import bisect
@@ -840,8 +842,78 @@ def warning(msg):
     print("::warning::" + msg)
 
 
+ABOVE_RULE = "table/above_rule_rows.csv"
+ABOVE_RULE_HEADER = ["id", "reason", "decided_by", "date"]
+
+
+def above_rule_rows(rows, table_dir=os.path.dirname(FRAME)):
+    """the counted rows past the baseline's column range of their t and v that set a new counted value (no other
+    counted row at k' >= k has N or less) while a line of derived.csv at the same t and v and a width k' >= k is
+    smaller: [(position, id, (N, k', law))] (CONVENTIONS.md section 6, version 1.4)"""
+    ids = build_frame.row_ids(rows)
+    cnt = counted(rows)
+    cpos = {id(r) for r in cnt}
+    bk = build_frame.baseline_kmax(rows)
+    floor = build_frame.derived_floor(table_dir)
+    pts = collections.defaultdict(list)
+    for r in cnt:
+        pts[(int(r["t"]), int(r["v"]))].append((int(r["k"]), int(r["N"]), id(r)))
+    out = []
+    for pos, r in enumerate(rows):
+        if id(r) not in cpos:
+            continue
+        t, v, k, n = int(r["t"]), int(r["v"]), int(r["k"]), int(r["N"])
+        if k <= bk[(t, v)] or build_frame.above_rule(floor, t, v, k, n) is None:
+            continue
+        if any(k2 >= k and n2 <= n and x != id(r) for k2, n2, x in pts[(t, v)]):
+            continue                                  # not a new counted value: the frame does not show it
+        out.append((pos, ids[pos], build_frame.derived_witness(table_dir, t, v, k)))
+    return out
+
+
+def check_above_rule(rows, old_count, table_dir=os.path.dirname(FRAME)):
+    """CONVENTIONS.md section 6 (version 1.4): every counted row past the baseline's column range that sets a new
+    counted value above a line of derived.csv at a width k' >= k is a ::warning:: for the maintainer, never a
+    problem, unless table/above_rule_rows.csv lists its id (accepted knowingly). It is checked on every run, so a
+    row that a regenerated derived.csv comes to beat is reported too; a row added since the base (position
+    old_count or later) is named as added. The list itself is checked: its header, one line per id, every id a row
+    of the table. Returns (rows reported, rows allowed by the list)."""
+    path = os.path.join(table_dir, os.path.basename(ABOVE_RULE))
+    allowed = {}
+    if os.path.exists(path):
+        with open(path, newline="", encoding="utf-8") as f:
+            rd = csv.DictReader(f)
+            if rd.fieldnames != ABOVE_RULE_HEADER:
+                problem("%s: header must be %s" % (ABOVE_RULE, ",".join(ABOVE_RULE_HEADER)))
+            known = set(build_frame.row_ids(rows))
+            for i, a in enumerate(rd, 2):
+                rid = (a.get("id") or "").strip()
+                if rid not in known:
+                    problem("%s line %d: %r is not the id of a row of %s" % (ABOVE_RULE, i, rid, TABLE))
+                elif rid in allowed:
+                    problem("%s line %d: %s is listed twice" % (ABOVE_RULE, i, rid))
+                if not (a.get("reason") or "").strip() or not (a.get("decided_by") or "").strip() \
+                        or not DATE.match(a.get("date") or ""):
+                    problem("%s line %d: reason, decided_by and a date YYYY-MM-DD are required" % (ABOVE_RULE, i))
+                allowed[rid] = a
+    n = ok = 0
+    for pos, rid, w in above_rule_rows(rows, table_dir):
+        if rid in allowed:
+            ok += 1
+            continue
+        n += 1
+        r = rows[pos]
+        added = old_count is not None and pos >= old_count
+        warning("%s: %s %s, CA(%s; %s, %s, %s), is above a published size rule: %s vs %s value %d at k' = %d "
+                "(%s); it counts, but does not widen the counted range of the frame (CONVENTIONS.md section 6). "
+                "The maintainer decides: accept it knowingly with a line in %s"
+                % (TABLE, "added row" if added else "row", rid, r["N"], r["t"], r["k"], r["v"], r["N"], w[2], w[0], w[1], DERIVED, ABOVE_RULE))
+    return n, ok
+
+
 def check_frame_veto(rows, warn=False, table_dir=os.path.dirname(FRAME)):
-    """CONVENTIONS.md section 6 (version 1.3): past every counted row of its t and v, a derived line of the
+    """CONVENTIONS.md section 6 (versions 1.3 and 1.4): past the counted range of its t and v (its widest counted row,
+    less a row past the baseline's range that derived.csv beats at its own width), a derived line of the
     committed frame has no line of the committed derived.csv at the same t and v and a width k' >= k, by any size
     rule counted or not, with a smaller N. With warn (the table-page workflow, after merge) a break is a GitHub
     ::warning:: line, not a problem, like the section 4 guarantee. Returns (lines checked, lines that break it)."""
@@ -849,11 +921,8 @@ def check_frame_veto(rows, warn=False, table_dir=os.path.dirname(FRAME)):
     derived = os.path.join(table_dir, "derived.csv")
     if not os.path.exists(frame):
         return 0, 0
-    kmax = collections.defaultdict(int)
-    for r in counted(rows):
-        tv = (int(r["t"]), int(r["v"]))
-        kmax[tv] = max(kmax[tv], int(r["k"]))
     floor = build_frame.derived_floor(table_dir)
+    kmax, _ = build_frame.counted_range(rows, counted(rows), floor)     # the counted range, as the frame has it
     n = bad = 0
     for d in csv.DictReader(open(frame, newline="", encoding="utf-8")):
         if d.get("basis") != "derived" or not all((d.get(c) or "").isdigit() for c in ("t", "v", "k", "N")):
@@ -866,7 +935,7 @@ def check_frame_veto(rows, warn=False, table_dir=os.path.dirname(FRAME)):
         if low < size:
             bad += 1
             (warning if warn else problem)(
-                "%s: derived line %d,%d,%d,%d is past every counted row of its t and v, but %s has %d at a width "
+                "%s: derived line %d,%d,%d,%d is past the counted range of its t and v, but %s has %d at a width "
                 "k' >= k; CONVENTIONS.md section 6 withholds it (run python3 tools/derive_table.py, then "
                 "python3 tools/build_frame.py)" % (frame, tv[0], tv[1], k, size, derived, low))
     return n, bad
@@ -1155,6 +1224,7 @@ def main():
         if "--base" in args and args.index("--base") + 1 < len(args) else None
     nguar, nbad = check_guarantee(rows, "--guarantee-warn" in args, old_count)
     check_frame_veto(rows, "--guarantee-warn" in args)
+    nabove, _ = check_above_rule(rows, old_count)
     check_certificates(rows)
     check_constructions(rows, man)
     check_builds_on(rows)
@@ -1183,8 +1253,8 @@ def main():
     for p in problems:
         print("PROBLEM  " + p)
     print("consistency: %d rows, %d arrays, %.0f MB stored, %d derived points, %d frame steps, "
-          "%d uncounted rows not below the counted best, %d problems"
-          % (c["rows"], c["arrays"], store / 1e6, nder, nframe, nguar - nbad,
+          "%d uncounted rows not below the counted best, %d unlisted rows above a size rule, %d problems"
+          % (c["rows"], c["arrays"], store / 1e6, nder, nframe, nguar - nbad, nabove,
              len(problems)))
     return 1 if problems else 0
 
