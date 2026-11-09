@@ -110,7 +110,7 @@ Colbourn rule (current default)
 - It keeps Colbourn's record as the base and adds arrays verified here. Colbourn's record alone is the
   CITED-only lookup.
 
-Frame rule (planned, for the frame file `table/ca_frame.csv`, section 7)
+Frame rule (planned, for the frame file `ca_frame.csv`, section 7)
 - It will count what the Colbourn rule counts, plus proven derived sizes (section 6), each with the
   tier of its weakest input.
 - The frame will hold only counted steps, so a program reading it needs no tier filter.
@@ -138,7 +138,7 @@ This section is the promise to everyone who reads the table by program, CAs firs
   value of the fixed grammar of section 7. Never free text,
   because R's read.table types a whole column from its values.
 - Closed lists (tier, get, constant_rows_basis, and later family) only grow. A new value is announced
-  at least 30 days before its first use, in `table/CHANGES.md`, in the release notes, and by email to
+  at least 30 days before its first use, in `CHANGES.md`, in the release notes, and by email to
   the maintainer of the CAs package. `tools/consistency.py` refuses any value not in its list (tier
   today, the others once their columns exist).
 - The construction text of a row is corrected only to fix credit, through `tools/correct_credit.py`,
@@ -146,11 +146,11 @@ This section is the promise to everyone who reads the table by program, CAs firs
   text as Source, so such corrections are mentioned to its maintainer.
 - Rows are never deleted. A wrong row is superseded or disputed by an added row.
 - The legend of every column (meaning, allowed values, who fills it, since when) will be
-  `table/schema.json`, with a readable copy `table/SCHEMA.md` generated from it, and its version
+  `schema.json`, with a readable copy `SCHEMA.md` generated from it, and its version
   number. Additions raise the minor version. A breaking change is never made to an existing file.
   If one were ever needed it would go to a new file name, and the old file would keep being written
   for at least 12 months.
-- The table will also be offered gzipped as `table/ca_table.csv.gz` (about 300 KB instead of
+- The table will also be offered gzipped as `ca_table.csv.gz` (about 300 KB instead of
   2.8 MB), readable in R through gzcon(url(...)).
 - Frozen releases: a dated tag table-YYYY.MM with the CSV, the gzipped CSV, the frame file, the label
   list, the legend, the R data file and a SHA256SUMS file, archived on Zenodo with a DOI through
@@ -232,7 +232,7 @@ Four columns will be added at the end of `table/ca_table.csv`:
 - The exact locator (file path, deposit link, URL, R call or rebuild command) is in the frame file,
   not in `ca_table.csv`, to keep the file CAs downloads small.
 
-The frame file will be `table/ca_frame.csv`, with one line per step under the frame rule (section 4)
+The frame file will be `ca_frame.csv`, with one line per step under the frame rule (section 4)
 and the columns t, v, k, N, basis (row or derived), tier, id, constant_rows, constant_rows_basis, get,
 get_ref (the locator), construction (one label, the named row, or the working of a derived step),
 family (section 8), constructions_all and ids_all (every counted row that reaches the same N),
@@ -247,11 +247,11 @@ A search box at the top jumps to a point by t, v and k.
 
 ## 8. Labels and workings
 
-- `table/lexicon.csv` will map every construction text to a short family label, with columns label
+- `lexicon.csv` will map every construction text to a short family label, with columns label
   (a pattern over the construction text), family, cas_label (the CAs spelling where one exists),
   builds_on, meaning, basis. It is built from the keyword patterns already in
   `table/references.csv`, so the two cannot drift apart. Corrections are welcome by issue or email.
-- `table/families.csv` will be the closed list of family labels. It starts from the 31 CAs labels
+- `families.csv` will be the closed list of family labels. It starts from the 31 CAs labels
   with the CAs spellings (KSK, PALEY, CAEX, CYCLOTOMY, CKRS, powerCT, DWYER, NIST, WKS, CK_doublingCA,
   dpCA, ODbasedCA, pcaCA, cphfCA, scphfCA and the others), and adds the families that list does
   not cover (for example powerCZ, power N-CT, Roux-type, perfect hash family,
@@ -280,7 +280,7 @@ A search box at the top jumps to a point by t, v and k.
 - An array that only equals a value already in the table is not an improvement and does not take the
   headline from a CITED row. It is still listed and credited.
 - Credit is recorded today in the notes column, starting "credit: ". It moves, as roles are needed,
-  to `table/credits.csv` (id, role, name, reference) with the roles method, ingredient, first reached
+  to `credits.csv` (id, role, name, reference) with the roles method, ingredient, first reached
   and verified. Comparison phrases written at entry stay in notes as history, with one spelling from
   now on: "at entry: previous best N (k=..., tier, provenance class)".
 
@@ -288,8 +288,8 @@ A search box at the top jumps to a point by t, v and k.
 
 ## 10. A machine view for programs and AI [planned, nothing of this exists yet]
 
-- `docs/api/v1/` on the project's GitHub page will be a view of the table for programs, generated
-  from `table/ca_table.csv` and the files it names by `tools/render_api.py`, never edited by hand,
+- `api/v1/` (in docs/) on the project's GitHub page will be a view of the table for programs, generated
+  from `table/ca_table.csv` and the files it names by `render_api.py` (in tools/), never edited by hand,
   and checked byte for byte by `tools/consistency.py`. It will never be a second source. Every value in
   it will be computed from the CSV.
 - Files: manifest.json (schema version, the commit it was built from, the licence text, the SHA-256 of
