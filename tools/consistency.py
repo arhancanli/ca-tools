@@ -12,9 +12,11 @@
                                                   against the git revision REF: every row
                                                   there is still present, in the same
                                                   place, with its claim unchanged
-    --guarantee-warn (with --check)               report a break of the section 4 guarantee
-                                                  as a GitHub ::warning:: instead of a
-                                                  problem (the table-page workflow, so a
+    --guarantee-warn (with --check)               report a break of the section 4 guarantee,
+                                                  or of the section 6 comparison of the
+                                                  frame with derived.csv past the counted
+                                                  range, as a GitHub ::warning:: instead of
+                                                  a problem (the table-page workflow, so a
                                                   row already on main is still committed;
                                                   consistency.yml keeps it a problem)
 
@@ -25,7 +27,9 @@ matched to each other, the table's structure is checked, the generated counts
 are compared with the data, table/ca_frame.csv is compared with a fresh build of
 tools/build_frame.py (not with --pr: it is regenerated after merge, like the counts), no
 SCREENED, FAILED_PENDING_RECHECK or DISPUTED row is below the counted best at its point
-(table/CONVENTIONS.md, section 4), and every relative link and repository path named
+(table/CONVENTIONS.md, section 4), no derived line of table/ca_frame.csv past every counted row
+of its t and v has a line of table/derived.csv at a width k' >= k with a smaller N (section 6),
+and every relative link and repository path named
 in the Markdown documents is checked to exist.
 """
 import bisect
@@ -836,6 +840,38 @@ def warning(msg):
     print("::warning::" + msg)
 
 
+def check_frame_veto(rows, warn=False, table_dir=os.path.dirname(FRAME)):
+    """CONVENTIONS.md section 6 (version 1.3): past every counted row of its t and v, a derived line of the
+    committed frame has no line of the committed derived.csv at the same t and v and a width k' >= k, by any size
+    rule counted or not, with a smaller N. With warn (the table-page workflow, after merge) a break is a GitHub
+    ::warning:: line, not a problem, like the section 4 guarantee. Returns (lines checked, lines that break it)."""
+    frame = os.path.join(table_dir, "ca_frame.csv")
+    derived = os.path.join(table_dir, "derived.csv")
+    if not os.path.exists(frame):
+        return 0, 0
+    kmax = collections.defaultdict(int)
+    for r in counted(rows):
+        tv = (int(r["t"]), int(r["v"]))
+        kmax[tv] = max(kmax[tv], int(r["k"]))
+    floor = build_frame.derived_floor(table_dir)
+    n = bad = 0
+    for d in csv.DictReader(open(frame, newline="", encoding="utf-8")):
+        if d.get("basis") != "derived" or not all((d.get(c) or "").isdigit() for c in ("t", "v", "k", "N")):
+            continue
+        tv, k, size = (int(d["t"]), int(d["v"])), int(d["k"]), int(d["N"])
+        if k <= kmax[tv]:
+            continue
+        n += 1
+        low = build_frame.floor_at(floor, tv, k)
+        if low < size:
+            bad += 1
+            (warning if warn else problem)(
+                "%s: derived line %d,%d,%d,%d is past every counted row of its t and v, but %s has %d at a width "
+                "k' >= k; CONVENTIONS.md section 6 withholds it (run python3 tools/derive_table.py, then "
+                "python3 tools/build_frame.py)" % (frame, tv[0], tv[1], k, size, derived, low))
+    return n, bad
+
+
 def _fd_min(n, t, v, k, nd, nf):
     """the smallest size reached from a row (t, v, k, N = n) by nd derive and nf fuse steps in any order (the
     closure under fuse and derive keeps the smallest), or None when no order is allowed (derive needs k - 1 > t
@@ -1118,6 +1154,7 @@ def main():
     old_count = base_row_count(args[args.index("--base") + 1]) \
         if "--base" in args and args.index("--base") + 1 < len(args) else None
     nguar, nbad = check_guarantee(rows, "--guarantee-warn" in args, old_count)
+    check_frame_veto(rows, "--guarantee-warn" in args)
     check_certificates(rows)
     check_constructions(rows, man)
     check_builds_on(rows)

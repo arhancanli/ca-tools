@@ -493,6 +493,10 @@ widths. Past every counted row of its t and v, a derived size counts only when i
 is made by fuse alone: derive there gives sizes far above known values (252 at
 t = 2, v = 2, k = 99,999, where 21 is exact), and derived points beyond the
 counted range, by derive or add1, are left for later (`CONVENTIONS.md`, section 6).
+A fused size there counts only if no line of `derived.csv` at the same t and v and
+a width k' >= k, by any size rule counted or not, has a smaller N (version 1.3,
+issue #62), so the fused sizes at t = 3 with 2 and 3 symbols past 10,000 columns
+are withheld.
 On 2026-11-09 add1 is in the working of 225 steps of the frame (27 of them at
 t = 3, each one step from a covering perfect hash family row, for example
 CA(832; 3, 15180, 4), `Sherwood covering perfect hash family (affine):add1`,
@@ -513,7 +517,7 @@ its working: the source row's own construction label followed by one `:fuse`,
 `:derive` or `:add1` per step, in the order applied (for example
 `Sherwood covering perfect hash family (affine):fuse:fuse`). This is close to the
 form CAs shows in its Source column, but not the same: CAs 0.25 writes a run of
-`:fuse` or of `:add1`, never both, and `:derive` last, while here 160 of the 575
+`:fuse` or of `:add1`, never both, and `:derive` last, while here 152 of the 554
 workings mix them (`:fuse:add1`, `:derive:fuse`, `:derive:fuse:add1`), so read
 the steps with the split below, not with CAs's own label parser. CA(5289; 3, 629, 10), from the VERIFIED CA(5291; 3, 629,
 11), reads `Sherwood covering perfect hash family (affine):fuse`. The source row's
@@ -570,7 +574,10 @@ entered on one day as one entry (so the 13,641 baseline rows have no order among
 them). prev_id is the named row of the best value over the counted rows entered
 before it, at k' >= k, and is empty when there is none, as on every step set by
 the baseline. On a derived line, prev_id is the named row of the counted lookup
-at the step, the value it improves on, and is empty past every counted row.
+at the step, the value it improves on. Past every counted row of its t and v it
+names the row at the widest counted width when the step's N is below that row's
+(for example CA(13115; 3, 11288, 12) and the 13,151 at k = 10,000), and is
+otherwise empty.
 prev_id names rows only. generated is the latest entry date in `ca_table.csv`, so
 rebuilding an unchanged table gives the same file.
 

@@ -3307,11 +3307,6 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 3,2,6655,74,row,CITED,t3-v2-k6655-1,,,none,,"Power CT11^4,T6c",,"Power CT11^4,T6c",t3-v2-k6655-1,,2026-08-23,2026-11-09
 3,2,7744,75,row,CITED,t3-v2-k7744-1,,,none,,Power CT11^4T3T3c,,Power CT11^4T3T3c,t3-v2-k7744-1,,2026-08-23,2026-11-09
 3,2,10000,76,row,CITED,t3-v2-k10000-1,,,none,,"Power CT11^4,T3c",,"Power CT11^4,T3c",t3-v2-k10000-1,,2026-08-23,2026-11-09
-3,2,15179,780,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse:fuse,,Sherwood covering perfect hash family (affine):fuse:fuse,t3-v4-k15179-1,,2026-11-04,2026-11-09
-3,2,27461,840,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse:fuse,,Sherwood covering perfect hash family (affine):fuse:fuse,t3-v4-k27461-1,,2026-11-04,2026-11-09
-3,2,49763,900,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse:fuse,,Sherwood covering perfect hash family (affine):fuse:fuse,t3-v4-k49763-1,,2026-11-04,2026-11-09
-3,2,90723,960,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse:fuse,,Sherwood covering perfect hash family (affine):fuse:fuse,t3-v4-k90723-1,,2026-11-08,2026-11-09
-3,2,100000,1020,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse:fuse,,Sherwood covering perfect hash family (affine):fuse:fuse,t3-v4-k100000-1,,2026-11-04,2026-11-09
 3,3,4,27,row,CITED,t3-v3-k4-1,,,file,table/arrays/CA_27_3_4_3.txt,orthogonal array,,"orthogonal array || Dwyer CA_Database source code ""OA"" (Aaron Dwyer's abbreviation for the method; many of his arrays cite personal communication with Colbourn)",t3-v3-k4-1;t3-v3-k4-2,,2026-08-23,2026-11-09
 3,3,6,33,row,CITED,t3-v3-k6-1,,,none,,Chateauneuf-Kreher NRB,,Chateauneuf-Kreher NRB,t3-v3-k6-1,,2026-08-23,2026-11-09
 3,3,7,39,row,CITED,t3-v3-k7-1,,,file,table/arrays/CA_39_3_7_3.txt,SAT Local Search (Hnich et al.),,"SAT Local Search (Hnich et al.) || Dwyer CA_Database source code ""Hnich"" (Aaron Dwyer's abbreviation for the method; many of his arrays cite personal communication with Colbourn)",t3-v3-k7-1;t3-v3-k7-2,,2026-08-23,2026-11-09
@@ -3438,11 +3433,6 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 3,3,9680,364,row,CITED,t3-v3-k9680-1,,,none,,Power CZ3-23.3-22.2-20.1,,Power CZ3-23.3-22.2-20.1,t3-v3-k9680-1,,2026-08-23,2026-11-09
 3,3,9746,365,row,CITED,t3-v3-k9746-1,,,none,,Power CZ3-23.1-22.5,,Power CZ3-23.1-22.5,t3-v3-k9746-1,,2026-08-23,2026-11-09
 3,3,10000,366,row,CITED,t3-v3-k10000-1,,,none,,Colbourn-Martirosyan-TVT-Walker,,Colbourn-Martirosyan-TVT-Walker,t3-v3-k10000-1,,2026-08-23,2026-11-09
-3,3,15179,782,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v4-k15179-1,,2026-11-04,2026-11-09
-3,3,27461,842,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v4-k27461-1,,2026-11-04,2026-11-09
-3,3,49763,902,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v4-k49763-1,,2026-11-04,2026-11-09
-3,3,90723,962,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v4-k90723-1,,2026-11-08,2026-11-09
-3,3,100000,1022,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v4-k100000-1,,2026-11-04,2026-11-09
 3,4,6,64,row,CITED,t3-v4-k6-1,,,file,table/arrays/CA_64_3_6_4.txt,orthogonal array,,"orthogonal array || Dwyer CA_Database source code ""OA"" (Aaron Dwyer's abbreviation for the method; many of his arrays cite personal communication with Colbourn)",t3-v4-k6-1;t3-v4-k6-2,,2026-08-23,2026-11-09
 3,4,8,88,row,CITED,t3-v4-k8-1,,,none,,Chateauneuf-Kreher NRB,,Chateauneuf-Kreher NRB,t3-v4-k8-1,,2026-08-23,2026-11-09
 3,4,10,100,row,CITED,t3-v4-k10-1,,,none,,Torres Jimenez,,Torres Jimenez,t3-v4-k10-1,,2026-08-23,2026-11-09
@@ -4200,7 +4190,7 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 3,12,7396,12983,row,CITED,t3-v12-k7396-1,,,none,,"Restricted CPHF Ext  6( 1, 4) WCS fuse",,"Restricted CPHF Ext  6( 1, 4) WCS fuse",t3-v12-k7396-1,,2026-08-23,2026-11-09
 3,12,7461,12995,row,CITED,t3-v12-k7461-1,,,none,,"Restricted CPHF Ext  6( 1, 3) WCS fuse",,"Restricted CPHF Ext  6( 1, 3) WCS fuse",t3-v12-k7461-1,,2026-08-23,2026-11-09
 3,12,7469,13007,row,CITED,t3-v12-k7469-1,,,none,,"Restricted CPHF Ext  6( 1, 2) WCS fuse",,"Restricted CPHF Ext  6( 1, 2) WCS fuse",t3-v12-k7469-1,,2026-08-23,2026-11-09
-3,12,11288,13115,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v13-k11288-1,,2026-11-08,2026-11-09
+3,12,11288,13115,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v13-k11288-1,t3-v12-k10000-1,2026-11-08,2026-11-09
 3,12,38415,15299,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v13-k38415-1,,2026-11-04,2026-11-09
 3,12,100000,17483,derived,VERIFIED,,,,none,,Sherwood covering perfect hash family (affine):fuse,,Sherwood covering perfect hash family (affine):fuse,t3-v13-k100000-1,,2026-11-04,2026-11-09
 3,13,14,2197,row,CITED,t3-v13-k14-1,,,none,,orthogonal array,,orthogonal array,t3-v13-k14-1,,2026-08-23,2026-11-09

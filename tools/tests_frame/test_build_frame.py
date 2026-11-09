@@ -8,7 +8,10 @@ derived step, no derived size from a CITED row with a DISPUTED row beside it or 
 row, ids stable when rows are appended, prev_id for row steps and derived steps, the stair steps
 (one line per step, dominated rows dropped), the headline among ties, get from MANIFEST and
 withdrawn files, get lent by a tied VERIFIED row when the named row has none, workings in the
-label form (source label, then :fuse/:derive/:add1; labels with colons and commas), add1 (CKRS 2010
+label form (source label, then :fuse/:derive/:add1; labels with colons and commas), the comparison with
+derived.csv past the counted range (issue #62: a fused size withheld where any size rule gives less, kept
+where none does, the consistency.py check of it, prev_id of a past-range step below the widest counted
+value, the live frame at (3, 2), (3, 3) and (3, 10), a strength-2 row CA(2425; 2, 100000, 25)), add1 (CKRS 2010
 Theorem 3.2: two inputs, the weaker tier, both rows in ids_all, chains, t = 3 with the trivial strength 1
 ingredient, inside the counted range only, fuse before add1, a sound chain cut, a VERIFIED ingredient before
 a CITED one of the same size, the consistency check of add1 workings), a .txt.gz path in a document and a
@@ -53,7 +56,15 @@ def row(t, v, k, n, tier="CITED", src="S1", snap=SNAP, sha="", entered="2026-08-
             "family_sha256": ""}
 
 
-def write_table(d, rows, manifest=(), withdrawn=()):
+DERIVED_HEADER = ["t", "v", "k", "N", "lookup_N", "gain_pct", "law", "arithmetic", "round"]
+
+
+def write_table(d, rows, manifest=(), withdrawn=(), derived=()):
+    if derived:
+        with open(os.path.join(d, "derived.csv"), "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f, lineterminator="\n")
+            w.writerow(DERIVED_HEADER)
+            w.writerows([t, v, k, n, "", "", law, "test", 1] for t, v, k, n, law in derived)
     with open(os.path.join(d, "ca_table.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, HEADER, lineterminator="\n")
         w.writeheader()
@@ -228,6 +239,129 @@ def test_past_range_fuse_only():
     check(l and l["N"] == "98" and l["construction"].endswith(":fuse"),
           "past every counted row of its t and v, a fuse step counts")
     check(one(fr, 2, 3, 39) is None and one(fr, 2, 4, 39) is None, "and its derive steps there do not")
+
+
+def test_past_range_veto():
+    """issue #62, CONVENTIONS.md section 6 (version 1.3): past every counted row of its t and v a fused size counts
+    only if no line of derived.csv at that t and v and a width k' >= k has a smaller N, whatever its rule"""
+    import consistency as cc
+    rows = [row(3, 4, 40, 100, "VERIFIED", "S7", "", "a4" * 32, "2026-11-01", con="S4"), row(3, 3, 10, 30)]
+    fr, st = frame(rows)
+    l = one(fr, 3, 3, 40)
+    check(l and l["N"] == "98" and st["derived_vetoed"] == 0, "without a derived.csv nothing is withheld")
+    fr, st = frame(rows, derived=[(3, 3, 50, 90, "PCT")])
+    check(one(fr, 3, 3, 40) is None and st["derived_vetoed"] == 1 and [l["k"] for l in at(fr, 3, 3)] == ["10"],
+          "beaten: an uncounted rule gives 90 at k' = 50 >= 40, so the fused 98 is withheld (derived_vetoed 1)")
+    fr, st = frame(rows, derived=[(3, 3, 40, 97, "fuse")])
+    check(one(fr, 3, 3, 40) is None, "a counted rule in derived.csv at the same width withholds it too")
+    fr, st = frame(rows, derived=[(3, 3, 50, 98, "PCT"), (3, 3, 30, 50, "CK"), (3, 2, 60, 10, "DP2"),
+                                  (2, 3, 60, 10, "DP2")])
+    l = one(fr, 3, 3, 40)
+    check(l and l["N"] == "98" and l["basis"] == "derived",
+          "not beaten: an equal N at k' >= k, a smaller N only at k' < k, or a line at another t or v does not "
+          "withhold it")
+    check(at(fr, 3, 2) == [] and st["derived_vetoed"] == 2,
+          "the fused 28 and 96 at (3, 2), with no counted row there, are withheld by DP2 10 at k' = 60")
+    # inside the counted range nothing is withheld, however small the derived.csv line
+    rows2 = rows + [row(3, 3, 60, 200)]
+    fr, st = frame(rows2, derived=[(3, 3, 50, 5, "PCT")])
+    check(one(fr, 3, 3, 40) and one(fr, 3, 3, 40)["N"] == "98" and st["derived_vetoed"] == 0,
+          "inside the counted range a derived step is never withheld by derived.csv")
+    # the consistency.py check on the committed files
+    with tempfile.TemporaryDirectory() as d:
+        write_table(d, rows, derived=[(3, 3, 50, 99, "PCT")])
+        with contextlib.redirect_stdout(io.StringIO()):
+            bf.main(["--table-dir", d])
+        del cc.problems[:]
+        n, bad = cc.check_frame_veto(rows, table_dir=d)
+        check(n == 3 and bad == 0 and not cc.problems, "consistency.py: a frame built against derived.csv obeys it")
+        write_table(d, rows, derived=[(3, 3, 50, 90, "PCT")])
+        n, bad = cc.check_frame_veto(rows, table_dir=d)
+        check(bad == 1 and len(cc.problems) == 1 and "3,3,40,98" in cc.problems[0],
+              "consistency.py: a past-range line above a derived.csv line at k' >= k is a problem")
+        del cc.problems[:]
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            n, bad = cc.check_frame_veto(rows, warn=True, table_dir=d)
+        check(bad == 1 and not cc.problems and out.getvalue().count("::warning::") == 1,
+              "with --guarantee-warn (table-page, after merge) it is a ::warning:: line")
+    del cc.problems[:]
+
+
+def test_past_range_prev_id():
+    """a past-range step below the counted value at the widest counted width names that row as prev_id"""
+    fr, _ = frame([row(3, 13, 30, 500, "VERIFIED", "S7", "", "d3" * 32, "2026-11-08"), row(3, 12, 20, 600),
+                   row(3, 12, 20, 650)])
+    l = one(fr, 3, 12, 30)
+    check(l and l["N"] == "498" and l["prev_id"] == "t3-v12-k20-1",
+          "CA(498; 3, 30, 12) past the counted range lowers the 600 at k = 20: prev_id names that row")
+    fr, _ = frame([row(3, 13, 30, 500, "VERIFIED", "S7", "", "d3" * 32, "2026-11-08"), row(3, 12, 20, 400)])
+    l = one(fr, 3, 12, 30)
+    check(l and l["N"] == "498" and l["prev_id"] == "", "one not below the widest counted value: prev_id empty")
+
+
+def _live_counted_kmax():
+    sys.path.insert(0, os.path.join(REPO, "table"))
+    from ca_table import counted
+    rows = list(csv.DictReader(open(os.path.join(REPO, "table", "ca_table.csv"), newline="", encoding="utf-8")))
+    kmax = {}
+    for r in counted(rows):
+        tv = (int(r["t"]), int(r["v"]))
+        kmax[tv] = max(kmax.get(tv, 0), int(r["k"]))
+    return rows, kmax
+
+
+def test_live_past_range():
+    """the committed frame (issue #62): no (3, 2) or (3, 3) line past the counted range, the ten #54 alphabets
+    kept (CA(11889; 3, 100000, 10)), the prev_id of CA(13115; 3, 11288, 12)"""
+    rows, kmax = _live_counted_kmax()
+    fr = list(csv.DictReader(open(os.path.join(REPO, "table", "ca_frame.csv"), newline="", encoding="utf-8")))
+    past = [l for l in fr if (l["t"], l["v"]) in (("3", "2"), ("3", "3"))
+            and int(l["k"]) > kmax[(3, int(l["v"]))]]
+    check(kmax[(3, 2)] == kmax[(3, 3)] == 10000 and not past,
+          "no frame line at (3, 2) or (3, 3) past the counted range (k > 10,000; got %d)" % len(past))
+    l = one(fr, 3, 10, 100000)
+    check(l and l["N"] == "11889" and l["basis"] == "derived", "CA(11889; 3, 100000, 10) is in the frame")
+    kept = sorted({int(l["v"]) for l in fr if l["t"] == "3" and l["basis"] == "derived"
+                   and int(l["k"]) > kmax.get((3, int(l["v"])), 0)})
+    check(kept == [6, 10, 12, 14, 15, 18, 20, 21, 22, 24],
+          "past the counted range at t = 3 the frame keeps exactly the ten #54 alphabets (got %s)" % kept)
+    l = one(fr, 3, 12, 11288)
+    check(l and l["N"] == "13115" and l["prev_id"] == "t3-v12-k10000-1",
+          "CA(13115; 3, 11288, 12) lowers the 13,151 at k = 10,000 and names that row as prev_id")
+    import consistency as cc
+    del cc.problems[:]
+    n, bad = cc.check_frame_veto(rows, table_dir=os.path.join(REPO, "table"))
+    check(n > 0 and bad == 0 and not cc.problems,
+          "consistency.py: the committed frame obeys the comparison with the committed derived.csv (%d lines)" % n)
+
+
+def test_strength2_row_past_range():
+    """a synthetic VERIFIED CA(2425; 2, 100000, 25) on the live table and derived.csv: the row counts at v = 25,
+    its 23 fused sizes at v = 2 to 24 are withheld wherever DP2 or another rule in derived.csv gives less"""
+    live = os.path.join(REPO, "table")
+    rows = list(csv.DictReader(open(os.path.join(live, "ca_table.csv"), newline="", encoding="utf-8")))
+    new = {c: "" for c in rows[0]}
+    new.update(t="2", v="25", k="100000", N="2425", tier="VERIFIED", source_id="S7", source_detail="test row",
+               array_sha256="ab" * 32, verify_stamp="ca_verify test 2026-11-09 Linux", entered="2026-11-09",
+               construction="test strength-2 row")
+    with tempfile.TemporaryDirectory() as d:
+        for f in ("MANIFEST.csv", "EXTERNAL.csv", "withdrawn_files.csv", "derived.csv", "certificates", "constructions"):
+            os.symlink(os.path.join(live, f), os.path.join(d, f))
+        with open(os.path.join(d, "ca_table.csv"), "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, list(rows[0]), lineterminator="\n")
+            w.writeheader()
+            w.writerows(rows + [new])
+        lines, st, _ = bf.build(d)
+        floor = bf.derived_floor(d)
+    fr = [dict(zip(bf.FRAME_HEADER, l)) for l in lines]
+    l = one(fr, 2, 25, 100000)
+    check(l and l["basis"] == "row" and l["N"] == "2425" and bf.floor_at(floor, (2, 25), 100000) == 2448,
+          "the row counts at v = 25 (a row is never withheld; DP2 gives 2448 there)")
+    beaten = [v for v in range(2, 25) if bf.floor_at(floor, (2, v), 100000) < 2425 - 2 * (25 - v)]
+    fused = [v for v in range(2, 25) if any(x["construction"].startswith("test strength-2 row:") for x in at(fr, 2, v))]
+    check(beaten == list(range(2, 25)) and not fused,
+          "derived.csv gives less at all 23 alphabets v = 2 to 24, and none of the fused sizes is in the frame")
 
 
 def test_label_with_colon_and_comma():
@@ -521,6 +655,7 @@ def test_guarantee():
 def main():
     for fn in (test_guarantee, test_fuse_chain, test_derive_chain, test_tier_of_weakest_and_ties, test_equal_is_row,
                test_disputed_excluded, test_retracted_excluded, test_steps, test_ids_stable, test_prev_id, test_past_range_fuse_only,
+               test_past_range_veto, test_past_range_prev_id, test_live_past_range, test_strength2_row_past_range,
                test_label_with_colon_and_comma, test_add1, test_add1_t3, test_add1_chain_cut_sound,
                test_add1_ingredient_tier, test_ci_checks, test_add1_scope, test_colbourn_add1_rows,
                test_get_from_tied_verified, test_live_withdrawn_list,

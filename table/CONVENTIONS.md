@@ -1,4 +1,4 @@
-# Conventions of the covering array table (version 1.2, November 2026)
+# Conventions of the covering array table (version 1.3, November 2026)
 
 Parts that describe files not built yet say "will" or "planned". Anything that changes what the CAs package
 reads is announced to its author before it goes live (section 5).
@@ -114,6 +114,8 @@ Frame rule (for the frame file `ca_frame.csv`, section 7)
 - It counts what the Colbourn rule counts, plus proven derived sizes (section 6), each with the
   tier of its weakest input.
 - The frame holds only counted steps, so a program reading it needs no tier filter.
+- Past every counted row of its t and v it counts a derived step only where section 6's comparison
+  with `derived.csv` allows.
 - `ca_table.csv` itself is not changed by this rule.
 
 A guarantee for programs that do not filter on tier. CAs 0.25 with frozen=FALSE takes the smallest N
@@ -212,12 +214,20 @@ This section is the promise to everyone who reads the table by program, CAs firs
   neither as source nor as ingredient. Fuse keeps the width, derive lowers it by one and add1 raises
   it by one, so past the baseline's column range a proven derived size appears only near a counted
   row (at its width, one less per derive, one more per add1). No ladder of widths is used for the
-  frame file. Past every counted row of its t and v, only sizes made by fuse alone count for now, so
-  no line there ends in an add1 or derive step (a working may pass through such a point and land
-  inside the counted range of another t or v, for example after a derive or a fuse); derived points
-  beyond the counted range by derive or add1 come later. The search for add1 chains stops a chain
-  only once no later step can land below a counted row inside the counted range of any t and v it
-  can reach, so it finds every step the rule gives.
+  frame file. Past every counted row of its t and v, only sizes made by fuse alone count for now, and
+  such a size counts only if no line of `table/derived.csv` at the same t and v, at a width k' >= k,
+  by any size rule counted or not, has a smaller N. An uncounted rule is used there only to withhold a
+  line, never to give a value, so a line withheld today returns if its size drops to the derived.csv
+  value or below, if that value rises, or once a counted row at that width or wider puts it inside
+  the counted range. Between two steps the frame line speaks for every narrower width down to the
+  previous step, and there an uncounted rule may give less: today the frame line is up to 10 percent
+  above it (93,623 against 84,909 at t = 3, v = 24, k = 17,500), and up to 23 percent above it inside
+  the counted range (CA(11295781276; 6, 10000, 20) against 9,178,224,188 by PCT at k = 30,000). As only
+  fuse counts there, no line there ends in an add1 or derive step (a working may pass through such a
+  point and land inside the counted range of another t or v, for example after a derive or a fuse);
+  derived points beyond the counted range by derive or add1 come later. The search for add1 chains
+  stops a chain only once no later step can land below a counted row inside the counted range of any
+  t and v it can reach, so it finds every step the rule gives.
 - The other size rules (composit, CK_doubling, CMTW34, kRoux, powerCT, dp, OD, SM) stay in
   `table/derived.csv` and on the derived page, and are not counted. Each is added to the proven list
   only after it has been checked, with a line in the change log.
@@ -393,3 +403,6 @@ A search box at the top jumps to a point by t, v and k.
   t >= 4. Workings are written in the order applied, which may mix steps in ways CAs's labels do not
   (sections 6 and 8). `tools/derive_table.py` uses the same rule for `table/derived.csv`. Section 9
   says how an unknown constant-row count ranks.
+- Version 1.3 (November 2026). Past the counted range a fused size counts only where no size rule in
+  derived.csv gives less (sections 4 and 6); 10 lines at t = 3, v = 2 and 3 removed, reported by
+  Arhan Canli (#62).

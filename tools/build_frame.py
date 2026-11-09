@@ -21,7 +21,10 @@ t - 2 and width k - 1 or more (k the width before the step) under fuse and deriv
 fused or derived, never itself made by add1; among ingredients of that size a VERIFIED row comes first. Every derived size has the width of the row it comes from, less one
 per derive step, plus one per add1 step. Past every counted row of its t and v a derived size counts
 only when it is made by fuse alone, so no line there ends in an add1 or derive step (a working may pass
-through such a point on its way to a point inside the counted range of another t or v). So past the baseline's column range
+through such a point on its way to a point inside the counted range of another t or v), and only when
+no line of table/derived.csv at the same t and v, at a width k' >= k, by any size rule counted or not,
+has a smaller N (section 6, version 1.3). An uncounted rule there only withholds a size, never gives
+one; without a derived.csv beside the table nothing is withheld. So past the baseline's column range
 a derived size appears only near the counted rows entered there (at a row's width, one less per derive
 step, one more per add1 step), and no ladder of widths is evaluated (tools/derive_table.py does that
 for table/derived.csv). A CITED row that has a DISPUTED
@@ -99,15 +102,18 @@ rows of one snapshot entered on one day counting as one entry, so the 13,641 bas
 order among them). prev_id is the named row of the best value over the counted rows entered before
 F at k' >= k, empty when there is none (so every step set by the baseline has an empty prev_id).
 For a derived step: prev_id is the named row of the Colbourn-rule value at the step (what the
-step improves on, as lookup_N in table/derived.csv), empty past every counted row. Past every
-counted row of its t and v, a derived step is kept only when its working uses fuse alone. prev_id names
-rows only; derived sizes have no id.
+step improves on, as lookup_N in table/derived.csv). Past every counted row of its t and v it is the
+named row at the widest counted width when the step's N is below the counted value there (for example
+CA(13115; 3, 11288, 12) below 13,151 at k = 10,000), else empty. Past every counted row of its t and v,
+a derived step is kept only when its working uses fuse alone and derived.csv has nothing smaller at
+k' >= k (above). prev_id names rows only; derived sizes have no id.
 
 Usage: build_frame.py [--table-dir DIR] [--check] [--stats]
   (default)  write DIR/ca_frame.csv and DIR/ca_table.csv.gz (gzip without name or time, level 9)
   --check    build in memory and fail if ca_frame.csv differs or ca_table.csv.gz does not
              decompress to ca_table.csv
-  --stats    also print the counts (lines, derived steps, steps that differ from the Colbourn rule)
+  --stats    also print the counts (lines, derived steps, steps that differ from the Colbourn rule,
+             derived_vetoed: steps past the counted range withheld because derived.csv has less)
 Standard library only.
 """
 import bisect
@@ -412,6 +418,32 @@ def stair_steps(values):
     return steps[::-1]
 
 
+def derived_floor(table_dir):
+    """table/derived.csv (tools/derive_table.py) as {(t, v): (ks, suf)}: ks the widths of its lines, increasing,
+    and suf[i] the smallest N of any line at a width k' >= ks[i], whatever its size rule. Empty when the file is
+    not there (then nothing is withheld)."""
+    pts = collections.defaultdict(dict)
+    for d in read_csv(os.path.join(table_dir, "derived.csv")):
+        tv, k, n = (int(d["t"]), int(d["v"])), int(d["k"]), int(d["N"])
+        pts[tv][k] = min(n, pts[tv].get(k, INF))
+    out = {}
+    for tv, p in pts.items():
+        ks = sorted(p)
+        suf, m = [0] * len(ks), INF
+        for i in range(len(ks) - 1, -1, -1):
+            m = min(m, p[ks[i]])
+            suf[i] = m
+        out[tv] = (ks, suf)
+    return out
+
+
+def floor_at(floor, tv, k):
+    """the smallest N of derived.csv at (t, v) and any width k' >= k, or INF"""
+    ks, suf = floor.get(tv, ((), ()))
+    x = bisect.bisect_left(ks, k)
+    return suf[x] if x < len(ks) else INF
+
+
 def build(table_dir):
     """the frame lines (lists of strings, FRAME_HEADER order) and the counts"""
     ctx = Context(table_dir)
@@ -457,17 +489,31 @@ def build(table_dir):
         """the named row among (N, index) candidates: smallest N, then headline order"""
         return min(cands, key=lambda x: (x[0], hkey(x[1]))) if cands else None
 
+    veto = derived_floor(table_dir)
     for tv in sorted(set(by_tv) | set(clo)):
         t, v = tv
         rmin = by_tv.get(tv, {})
         dmin = {}
         kmax = max(rmin, default=0)
-        # past every counted row of (t, v) only fuse counts for now (CONVENTIONS.md section 6: derived
-        # points beyond the counted range come later); derive there gives sizes far above known values
-        # (t = 2, v = 2 at k = 99,999: 252 against the exact 21). The fuse-only closure gives those, so
-        # no add1 step lands there either.
+        # past every counted row of (t, v) only fuse counts (CONVENTIONS.md section 6); derive there gives
+        # sizes far above known values (t = 2, v = 2 at k = 99,999: 252 against the exact 21). The fuse-only
+        # closure gives those, so no add1 step lands there either. A fused size there counts only if no line
+        # of table/derived.csv at (t, v) and a width k' >= k, by any size rule counted or not, has a smaller N
+        # (fusing a 4-symbol array down to 2 symbols gives 780 at t = 3 where PCT gives 77, issue #62). The
+        # uncounted rules only withhold a size here, they never give one.
         pts = {k: x for k, x in clo.get(tv, {}).items() if k <= kmax}
-        pts.update((k, x) for k, x in clo_fuse.get(tv, {}).items() if k > kmax)
+        vetoed = set()
+        for k, x in clo_fuse.get(tv, {}).items():
+            if k > kmax:
+                if floor_at(veto, tv, k) < x[0]:
+                    vetoed.add(k)
+                else:
+                    pts[k] = x
+        if vetoed:
+            # withheld steps: those that would have been stair steps without the comparison
+            whole = dict(rmin)
+            whole.update((k, n) for k, (n, _) in clo_fuse[tv].items() if k > kmax)
+            stats["derived_vetoed"] += sum(1 for k, _ in stair_steps(whole) if k in vetoed)
         for k, (n, origins) in pts.items():
             der = [o for o in origins if o[1]]
             if der and (k not in rmin or n < rmin[k]):
@@ -491,6 +537,10 @@ def build(table_dir):
                 prev = best_row([(int(rows[i]["N"]), i) for i in rtv if int(rows[i]["k"]) >= k])
                 if prev is None:
                     stats["derived_no_counted"] += 1
+                    if kmax and n < rmin[kmax]:
+                        # past the counted range, yet below the counted value at the widest counted width (for
+                        # example CA(13115; 3, 11288, 12) below 13,151 at k = 10,000): it improves on that row
+                        prev = best_row([(int(rows[i]["N"]), i) for i in rtv if int(rows[i]["k"]) == kmax])
                 if tier == "VERIFIED":
                     stats["derived_verified"] += 1
                 if any(s.startswith("add1") for s in origins[0][1]):
