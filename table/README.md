@@ -75,7 +75,18 @@ the array files and these documents agree.
   stored and are no longer: one row per file with its parameters,
   MANIFEST status, SHA-256, source, stamp, constant rows, the date
   and the reason. The table rows they belonged to stay, with their
-  size, hash and verification stamp. An array file is stored when it
+  size, hash and verification stamp. Three lines dated 2026-11-09
+  are different: the Torres-Jimenez arrays CA(177; 4, 338, 2),
+  CA(178; 4, 354, 2) and CA(179; 4, 358, 2) of the CAs data
+  TJ2level_CAs were verified on 2026-08-23 but never stored (above
+  the best known size at entry), and are listed so that the frame
+  file's get none has the same reason as for the withdrawn files.
+  Their status is the one such an array would have had
+  (`above_best`), their constant rows were counted from the CAs
+  data, and their reason says that they were never stored.
+  `../tools/withdrawn_fingerprints.py` reads only the lines
+  withdrawn on 2026-10-27 (the three files are in no commit;
+  their fingerprints are in `tj_fingerprints.csv`). An array file is stored when it
   was built here, was submitted by its author, or comes from a
   public source whose author does not object to its redistribution.
   The author of the arrays of Torres-Jimenez's group in the CAs data
@@ -169,6 +180,15 @@ the array files and these documents agree.
   at a fixed ladder of widths up to k = 100,000, as a yardstick for arrays added
   there; where the table has no entry that wide, `lookup_N` and `gain_pct` are
   empty.
+- `ca_frame.csv` - generated, never edited by hand: the best known sizes under the
+  frame rule (`CONVENTIONS.md`, section 4), one line per stair step, described
+  below under "The frame file". Rebuilt by `../tools/build_frame.py` on every push to
+  main and compared with a fresh build by `../tools/consistency.py`.
+- `ca_table.csv.gz` - `ca_table.csv` gzipped (about 300 KB instead of 2.8 MB), written
+  by `../tools/build_frame.py` beside the frame file, without a file name or time in
+  its header, so the same table always gives the same bytes. In R (read.csv cannot read
+  a gzcon connection directly, so read the lines first):
+  `read.csv(text = readLines(gzcon(url("https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/ca_table.csv.gz"))))`.
 - `EXTERNAL.csv` - one row per array kept in a public deposit instead of
   `arrays/` (too large for the repository): its SHA-256, parameters, size in
   bytes, location (https URL, or zip URL `::` member), status and the stamp of
@@ -431,7 +451,87 @@ sizes at fewer symbols, for example by fusing (Colbourn, Keri, Rivas
 Soriano and Schlage-Puchta 2010, Lemma 3.1: CAN(t, k, v) <= CAN(t, k,
 v + m) - 2m). Such reductions are computed sizes, not arrays. They are
 listed in `derived.csv` and returned by `best_derived()`, and never
-mixed into the counted lookup (raised in issue #30).
+mixed into the counted lookup (raised in issue #30). The frame file
+below counts the ones made by a proven rule, on lines of their own.
+
+### The frame file (ca_frame.csv)
+
+`ca_frame.csv` is the one file to read for "what is best here, how is it
+made, and how do I get it". It counts what the counted lookup counts plus
+proven derived sizes: fuse (Colbourn, Keri, Rivas Soriano and Schlage-Puchta
+2010, Lemma 3.1) and derive (same paper, (7)), applied again and again to the
+counted rows until nothing changes. add1 is not implemented yet, so no size uses
+it. No derived size is built from the three CITED cyclotomy rows that have
+DISPUTED rows beside them. A derived size sits at the width of its source row or
+one less, so past the baseline's column range there are derived sizes only beside
+the rows entered there (for example the fused sizes of the width 100,000 arrays),
+and no ladder of widths. Past every counted row of its t and v, a derived size
+counts only when it is made by fuse alone: derive there gives sizes far above
+known values (252 at t = 2, v = 2, k = 99,999, where 21 is exact), and derived
+points beyond the counted range are left for later (`CONVENTIONS.md`, section 6).
+
+There is one line per stair step, in the sense of the page: for each t and v, a
+step (k, N) has N smallest at every k' >= k and k the largest width with that N.
+Every line is CITED or VERIFIED, so no tier filter is needed. The columns are
+those of `CONVENTIONS.md`, section 7. t, v, k, N and construction keep the
+meaning they have in `ca_table.csv`. basis is row when a counted row reaches N
+there (that row is named, with its id), and derived otherwise. A derived line has
+no id, get none, the tier of its source row, and as construction its working in
+the form CAs shows in its Source column: the source row's own construction label
+followed by one `:fuse` or `:derive` per step, in the order applied (for example
+`RMScopiesCA:fuse:fuse`). CA(5289; 3, 629, 10), from the VERIFIED CA(5291; 3, 629,
+11), reads `Sherwood covering perfect hash family (affine):fuse`. The source row's
+id (here `t3-v11-k629-1`) is in ids_all, so the author stays traceable, and
+constructions_all lists every working in the same label form. A label may contain
+commas and colons: the file quotes such fields as CSV does, so `read.csv` reads
+them whole. To split a working into label and steps, remove the trailing `:fuse`
+and `:derive` pieces; no source label ends in one (`../tools/consistency.py`
+checks this, and that there are exactly v of the source - v fuse steps and t of the
+source - t derive steps). In R:
+
+    m <- regmatches(w, regexpr("(:(fuse|derive))+$", w))
+    label <- substr(w, 1, nchar(w) - nchar(m)); steps <- strsplit(sub("^:", "", m), ":")[[1]]
+
+get and get_ref say
+where the named row's array is (file, deposit, certificate, construction, cas,
+url, none) and give its path, link, URL, R call or rebuild command. When the
+named row has none (a CITED row is named first among ties) but another counted
+VERIFIED row tied at the same step has an array, get and get_ref are those of the
+first such row in the tie order below; id, tier and construction stay those of the
+named row, and the row lending the array is in ids_all. A
+certificate's rebuild command runs the program cphfcheck from the repository
+root, which is shipped as C source: build it first with
+`gcc -O3 -fopenmp -o tools/cphf/cphfcheck tools/cphf/cphfcheck.c` (on macOS,
+clang with libomp, as in `../tools/cphf/README.md`).
+constructions_all and ids_all list every counted row (or, on a derived line,
+every working) that reaches N, separated by " || " and ";". Ties are named in the
+order of `CONVENTIONS.md`, section 9: a CITED row first, then more constant rows,
+the earlier entry date, the wider array, the id.
+
+Ids are t<t>-v<v>-k<k>-<n>, n the row's number at its point (t, v, k) in file
+order, so they never change as rows are appended. They are computed by
+`../tools/build_frame.py`, not stored in `ca_table.csv` (yet).
+
+prev_id is the previous best at the step. On a row line, take the first row in
+file order that reaches N or less at k' >= k, counting the rows of one snapshot
+entered on one day as one entry (so the 13,641 baseline rows have no order among
+them). prev_id is the named row of the best value over the counted rows entered
+before it, at k' >= k, and is empty when there is none, as on every step set by
+the baseline. On a derived line, prev_id is the named row of the counted lookup
+at the step, the value it improves on, and is empty past every counted row.
+prev_id names rows only. generated is the latest entry date in `ca_table.csv`, so
+rebuilding an unchanged table gives the same file.
+
+In R, the eCAN-style lookup over the frame file:
+
+    fr <- read.csv("https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/ca_frame.csv",
+                   stringsAsFactors = FALSE)
+    eCAN_frame <- function(fr, t, k, v) {
+        s <- fr[fr$t == t & fr$v == v & fr$k >= k, ]
+        if (nrow(s) == 0) return(data.frame(CAN = NA, Source = ""))
+        i <- which.min(s$N)
+        data.frame(CAN = s$N[i], Source = s$construction[i])
+    }
 
 In R, with no packages:
 

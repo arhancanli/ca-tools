@@ -12,12 +12,20 @@
                                                   against the git revision REF: every row
                                                   there is still present, in the same
                                                   place, with its claim unchanged
+    --guarantee-warn (with --check)               report a break of the section 4 guarantee
+                                                  as a GitHub ::warning:: instead of a
+                                                  problem (the table-page workflow, so a
+                                                  row already on main is still committed;
+                                                  consistency.yml keeps it a problem)
 
 Run from the repository root. Standard library only. The array files are
 re-hashed by `tools/check_submission.py --selftest`, which the workflows run
 beside this script; here the MANIFEST, the files and the table rows are
 matched to each other, the table's structure is checked, the generated counts
-are compared with the data, and every relative link and repository path named
+are compared with the data, table/ca_frame.csv is compared with a fresh build of
+tools/build_frame.py (not with --pr: it is regenerated after merge, like the counts), no
+SCREENED, FAILED_PENDING_RECHECK or DISPUTED row is below the counted best at its point
+(table/CONVENTIONS.md, section 4), and every relative link and repository path named
 in the Markdown documents is checked to exist.
 """
 import bisect
@@ -34,6 +42,7 @@ from ca_table import counted, check_method, METHODS  # noqa: E402  (the one defi
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cphf_cert  # noqa: E402  (family identity, expansion rules, ARRAY_HASH_MAX_ENTRIES)
 import correct_credit  # noqa: E402  (the log of credit corrections, table/CREDIT_CORRECTIONS.csv)
+import build_frame  # noqa: E402  (table/ca_frame.csv and table/ca_table.csv.gz)
 
 TABLE = "table/ca_table.csv"
 MANIFEST = "table/MANIFEST.csv"
@@ -41,6 +50,8 @@ ARRAYS = "table/arrays"
 CERTS = "table/certificates"
 CERT_LIST = "table/certificates/CERTIFICATES.csv"
 DERIVED = "table/derived.csv"
+FRAME = "table/ca_frame.csv"
+TABLE_GZ = "table/ca_table.csv.gz"
 DERIVED_HEADER = ["t", "v", "k", "N", "lookup_N", "gain_pct", "law", "arithmetic", "round"]
 DERIVED_LAWS = {"fuse", "derive", "comp", "CK", "CMTW34", "kRoux", "PCT", "DP2", "OD", "SM"}
 EXTERNAL = "table/EXTERNAL.csv"
@@ -467,6 +478,16 @@ def family_fill_ok(a, b):
                for c in certs)
 
 
+def base_row_count(base):
+    """number of table rows at git revision base (None if it cannot be read; append-only reports that)"""
+    try:
+        old = subprocess.run(["git", "show", "%s:%s" % (base, TABLE)], stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, check=True).stdout.decode("utf-8")
+    except (subprocess.CalledProcessError, OSError):
+        return None
+    return len(list(csv.DictReader(old.splitlines())))
+
+
 def check_append_only(base):
     """Every row of the table at git revision `base` is still there, in the same
     position, with the same FROZEN columns; new rows are only appended. The one exception is
@@ -783,6 +804,118 @@ def check_derived(rows):
     return len(der)
 
 
+def check_guarantee(rows, warn=False, old_count=None):
+    """CONVENTIONS.md section 4: no SCREENED, FAILED_PENDING_RECHECK or DISPUTED row has an N below the
+    counted best (the Colbourn rule) at its point, so a program that takes the smallest N over all rows
+    whatever their tier gets the counted value. A row past every counted row of its t and v (no counted
+    best at its point) is also reported, since such a program would take its N. With warn, a break is
+    printed as a GitHub ::warning:: line, not a problem. With old_count (the number of rows at the base of a
+    pull request), a break by a row that was already there is a warning too, so an unrelated pull request is
+    not failed by a SCREENED row on main waiting for its exact check; a row the pull request adds is a problem.
+    Returns (rows checked, rows that break it)."""
+    st = collections.defaultdict(list)
+    for r in counted(rows):
+        st[(r["t"], r["v"])].append((int(r["k"]), int(float(r["N"]))))
+    n = bad = 0
+    for pos, r in enumerate(rows):
+        if r["tier"] not in ("SCREENED", "FAILED_PENDING_RECHECK", "DISPUTED"):
+            continue
+        n += 1
+        b = stair_min(st[(r["t"], r["v"])], int(r["k"]))
+        if b is None or int(float(r["N"])) < b:
+            bad += 1
+            soft = warn or (old_count is not None and pos < old_count)
+            (warning if soft else problem)("%s: %s row %s,%s,%s,%s is below the counted best at its point (%s); CONVENTIONS.md "
+                    "section 4 promises it is not" % (TABLE, r["tier"], r["t"], r["v"], r["k"], r["N"],
+                                                      "none" if b is None else b))
+    return n, bad
+
+
+def warning(msg):
+    print("::warning::" + msg)
+
+
+def frame_workings_ok(d, ids):
+    """a derived frame line: each working of constructions_all is the construction label of the source row
+    named at the same place in ids_all, then ':fuse' (v of the source - v times) and ':derive' (t of the
+    source - t times); no label ends in ':fuse' or ':derive', so the steps split off unambiguously"""
+    works = d["constructions_all"].split(build_frame.ALL_SEP)
+    srcs = d["ids_all"].split(";")
+    if len(works) != len(srcs) or not works or d["construction"] != works[0]:
+        return False
+    for w, sid in zip(works, srcs):
+        r = ids.get(sid)
+        if r is None:
+            return False
+        nd, nf = int(r["t"]) - int(d["t"]), int(r["v"]) - int(d["v"])
+        if nd < 0 or nf < 0 or nd + nf == 0:
+            return False
+        parts = w.rsplit(":", nd + nf)
+        label = build_frame.frame_label(r, sid)
+        if len(parts) != nd + nf + 1 or parts[0] != label or re.search(r":(fuse|derive)$", label) \
+                or parts[1:].count("fuse") != nf or parts[1:].count("derive") != nd:
+            return False
+    return True
+
+
+def check_frame(rows, pr):
+    """table/ca_frame.csv (tools/build_frame.py): the header of CONVENTIONS.md section 7, closed lists,
+    ids of the fixed grammar naming rows of the table at the line's point and size, and (except on a
+    pull request, where it is regenerated after merge, like the counts) equal to a fresh build;
+    table/ca_table.csv.gz decompresses to table/ca_table.csv."""
+    if not os.path.exists(FRAME):
+        if not pr:
+            problem("%s is missing; run python3 tools/build_frame.py" % FRAME)
+        return 0
+    raw = open(FRAME, "rb").read()
+    if b"\r" in raw:
+        problem("%s: contains CR characters; the file is LF throughout" % FRAME)
+    fr = list(csv.reader(open(FRAME, newline="", encoding="utf-8")))
+    if not fr or fr[0] != build_frame.FRAME_HEADER:
+        problem("%s: header differs from %s" % (FRAME, ",".join(build_frame.FRAME_HEADER)))
+        return 0
+    ids = dict(zip(build_frame.row_ids(rows), rows))
+    cnt = {id(r) for r in counted(rows)}
+    for n, line in enumerate(fr[1:], 2):
+        if len(line) != len(build_frame.FRAME_HEADER):
+            problem("%s line %d: %d fields" % (FRAME, n, len(line))); continue
+        d = dict(zip(build_frame.FRAME_HEADER, line))
+        where = "%s line %d" % (FRAME, n)
+        if not all(d[c].isdigit() for c in ("t", "v", "k", "N")):
+            problem("%s: t, v, k, N are not integers" % where); continue
+        if d["basis"] not in build_frame.BASIS_VALUES or d["tier"] not in ("CITED", "VERIFIED") \
+                or d["get"] not in build_frame.GET_VALUES \
+                or d["constant_rows_basis"] not in build_frame.CR_BASIS_VALUES + ("",) \
+                or (d["constant_rows"] and not d["constant_rows"].isdigit()):
+            problem("%s: a value outside its closed list" % where); continue
+        for c in ("id", "prev_id"):
+            if d[c] and (not build_frame.ID_RE.match(d[c]) or d[c] not in ids):
+                problem("%s: %s %r names no row of the table" % (where, c, d[c]))
+        for c in d["ids_all"].split(";"):
+            if not build_frame.ID_RE.match(c) or c not in ids:
+                problem("%s: ids_all names %r, no row of the table" % (where, c))
+        if d["basis"] == "row":
+            r = ids.get(d["id"])
+            if r is None or id(r) not in cnt or (r["t"], r["v"], r["k"], r["N"], r["tier"]) != \
+                    (d["t"], d["v"], d["k"], d["N"], d["tier"]):
+                problem("%s: the row %s is not a counted row with this t, v, k, N and tier" % (where, d["id"]))
+        elif d["id"] or d["get"] != "none" or not frame_workings_ok(d, ids):
+            problem("%s: a derived line has an id, an array, or a working that is not its source row's label "
+                    "followed by one ':fuse' per symbol and one ':derive' per strength it lowers" % where)
+    if not pr:
+        lines, _, _ = build_frame.build(os.path.dirname(TABLE))
+        if raw.decode("utf-8") != build_frame.frame_text(lines):
+            problem("%s differs from a fresh build; run python3 tools/build_frame.py" % FRAME)
+        try:
+            import gzip
+            same = gzip.decompress(open(TABLE_GZ, "rb").read()) == open(TABLE, "rb").read()
+        except (OSError, EOFError):
+            same = False
+        if not same:
+            problem("%s does not decompress to %s; run python3 tools/build_frame.py" % (TABLE_GZ, TABLE))
+    return len(fr) - 1
+
+
 def check_external(rows, man):
     """table/EXTERNAL.csv: arrays kept in a public deposit (tools/external_array.py)."""
     if not os.path.exists(EXTERNAL):
@@ -914,6 +1047,10 @@ def main():
     check_arrays(rows, man)
     check_external(rows, man)
     nder = check_derived(rows)
+    nframe = check_frame(rows, "--pr" in args)
+    old_count = base_row_count(args[args.index("--base") + 1]) \
+        if "--base" in args and args.index("--base") + 1 < len(args) else None
+    nguar, nbad = check_guarantee(rows, "--guarantee-warn" in args, old_count)
     check_certificates(rows)
     check_constructions(rows, man)
     check_builds_on(rows)
@@ -941,8 +1078,10 @@ def main():
                     % README)
     for p in problems:
         print("PROBLEM  " + p)
-    print("consistency: %d rows, %d arrays, %.0f MB stored, %d derived points, %d problems"
-          % (c["rows"], c["arrays"], store / 1e6, nder, len(problems)))
+    print("consistency: %d rows, %d arrays, %.0f MB stored, %d derived points, %d frame steps, "
+          "%d uncounted rows not below the counted best, %d problems"
+          % (c["rows"], c["arrays"], store / 1e6, nder, nframe, nguar - nbad,
+             len(problems)))
     return 1 if problems else 0
 
 

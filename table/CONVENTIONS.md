@@ -1,4 +1,4 @@
-# Conventions of the covering array table (version 1, November 2026)
+# Conventions of the covering array table (version 1.1, November 2026)
 
 Parts that describe files not built yet say "will" or "planned". Anything that changes what the CAs package
 reads is announced to its author before it goes live (section 5).
@@ -42,7 +42,7 @@ line in the change log at the end.
   sizes.
 - Derived size: a size obtained by applying a size rule to sizes in the table. It is not an array in
   hand. A derived size made by a proven rule (fuse and derive, and add1 once implemented) from a
-  counted row is as reliable as that row and will count in the frame file (section 6). It is never a row
+  counted row is as reliable as that row and counts in the frame file (section 6). It is never a row
   of `ca_table.csv`.
 - Working: the list of lookups a derived size used, followed back to rows.
 - Derived-sizes program: `tools/derive_table.py`, which writes `table/derived.csv`.
@@ -110,24 +110,27 @@ Colbourn rule (current default)
 - It keeps Colbourn's record as the base and adds arrays verified here. Colbourn's record alone is the
   CITED-only lookup.
 
-Frame rule (planned, for the frame file `ca_frame.csv`, section 7)
-- It will count what the Colbourn rule counts, plus proven derived sizes (section 6), each with the
+Frame rule (for the frame file `ca_frame.csv`, section 7)
+- It counts what the Colbourn rule counts, plus proven derived sizes (section 6), each with the
   tier of its weakest input.
-- The frame will hold only counted steps, so a program reading it needs no tier filter.
+- The frame holds only counted steps, so a program reading it needs no tier filter.
 - `ca_table.csv` itself is not changed by this rule.
 
 A guarantee for programs that do not filter on tier. CAs 0.25 with frozen=FALSE takes the smallest N
 over all rows at (t, v), whatever their tier. So the table guarantees that no SCREENED,
 FAILED_PENDING_RECHECK or DISPUTED row has an N below the counted best at its point. This holds today
-for all 52 such rows, and `tools/consistency.py` will check it on every push. A RETRACTED row would break
+for all 52 such rows, and `tools/consistency.py` checks it on every push: a pull request that adds a
+row breaking it fails, and a row already on main that breaks it is reported as a warning so the page
+is still regenerated. One case can break it for a short time: a SCREENED improvement entered before
+its exact check, which usually follows within one to three days. A RETRACTED row would break
 this,
 which is why none is entered without notice. Readers are asked to filter on tier
 (tier in CITED, VERIFIED) and to ignore rows whose tier or get value they do not know.
 
 ## 5. Stability: what may be relied on
 
-The promises below hold from now on. The files they name (the legend, CHANGES.md, the gzipped
-copy, the releases) are planned and do not exist yet.
+The promises below hold from now on. Of the files they name, the gzipped copy exists. The legend,
+CHANGES.md and the releases are planned and do not exist yet.
 
 This section is the promise to everyone who reads the table by program, CAs first.
 
@@ -150,12 +153,14 @@ This section is the promise to everyone who reads the table by program, CAs firs
   number. Additions raise the minor version. A breaking change is never made to an existing file.
   If one were ever needed it would go to a new file name, and the old file would keep being written
   for at least 12 months.
-- The table will also be offered gzipped as `ca_table.csv.gz` (about 300 KB instead of
-  2.8 MB), readable in R through gzcon(url(...)).
+- The table is also offered gzipped as `ca_table.csv.gz` (about 300 KB instead of
+  2.8 MB), readable in R through read.csv(text = readLines(gzcon(url(...)))) (read.csv cannot read
+  a gzcon connection directly). It is written without a file name or time, so the same table always
+  gives the same bytes.
 - Frozen releases: a dated tag table-YYYY.MM with the CSV, the gzipped CSV, the frame file, the label
   list, the legend, the R data file and a SHA256SUMS file, archived on Zenodo with a DOI through
   GitHub's integration. This is what a paper cites and what CAs can bundle for frozen=TRUE. The first
-  is planned as table-2026.12, once the columns of section 7 and the frame file exist and are
+  is planned as table-2026.12, once the columns of section 7 exist and are
   checked.
 - If the maintainer stops, the Zenodo record and the frozen copy in CAs remain, and the repository can
   be forked under its code and data licences (section 11).
@@ -181,11 +186,15 @@ This section is the promise to everyone who reads the table by program, CAs firs
   Construction 1), SM (Shokri and Moura 2025).
 - Proven derived sizes. A size made from a CITED or VERIFIED row by fuse or derive (and add1 once it
   is implemented) rests on a proven construction, so it is as reliable as the row it comes from. It
-  will count in the frame file as its own step, with the tier of its weakest input and its working
-  written as CAs writes it (for example RMScopiesCA:fuse:fuse). The frame file will build no derived
-  size from the three CITED cyclotomy rows that have DISPUTED rows beside them. Proven derived sizes past
-  the baseline's
-  column range come later.
+  counts in the frame file as its own step, with the tier of its weakest input and its working
+  written as CAs writes it: the source row's own construction label followed by ':fuse' or ':derive'
+  for each step (for example RMScopiesCA:fuse:fuse). The source row's id is in ids_all, so the author
+  stays traceable. The frame file builds no derived
+  size from the three CITED cyclotomy rows that have DISPUTED rows beside them. Fuse keeps the width
+  and derive lowers it by one, so past the baseline's column range a proven derived size appears only
+  beside a counted row of that width or one more. No ladder of widths is used for the frame file.
+  Past every counted row of its t and v, only sizes made by fuse alone count for now; derived points
+  beyond the counted range by derive come later. add1 is not implemented yet.
 - The other size rules (composit, CK_doubling, CMTW34, kRoux, powerCT, dp, OD, SM) stay in
   `table/derived.csv` and on the derived page, and are not counted. Each is added to the proven list
   only after it has been checked, with a line in the change log.
@@ -226,19 +235,36 @@ Four columns will be added at the end of `table/ca_table.csv`:
   - construction: rebuilt from a construction certificate in `table/constructions/`.
   - none: no array is available from this table. All CITED rows, every row whose array file was
     withdrawn on 2026-10-27 (the files are listed in `table/withdrawn_files.csv`, and most of these
-    rows say "array file not stored since 2026-10-27" in their notes), and any other row whose array is
+    rows say "array file not stored since 2026-10-27" in their notes), the three Torres-Jimenez rows of
+    the CAs data TJ2level_CAs whose arrays were never stored (CA(177; 4, 338, 2), CA(178; 4, 354, 2),
+    CA(179; 4, 358, 2), listed in the same file on 2026-11-09), and any other row whose array is
     nowhere the table can
     point to.
 - The exact locator (file path, deposit link, URL, R call or rebuild command) is in the frame file,
   not in `ca_table.csv`, to keep the file CAs downloads small.
+- Until these columns are added, the frame file computes id, constant_rows, constant_rows_basis and
+  get itself (`tools/build_frame.py`), by the same rules. constant_rows is filled only where the
+  array is in `table/arrays/` with its exact count, and a derived step has get none. When the named
+  row of a step has get none but another counted VERIFIED row tied at the same step (same t, v, k
+  and N) has an array, the frame line takes get and get_ref from the first such row in the order of
+  section 9; its id, tier, constant_rows and construction stay those of the named row, and the row
+  lending the array is in ids_all.
 
-The frame file will be `ca_frame.csv`, with one line per step under the frame rule (section 4)
+The frame file is `ca_frame.csv`, with one line per step under the frame rule (section 4)
 and the columns t, v, k, N, basis (row or derived), tier, id, constant_rows, constant_rows_basis, get,
-get_ref (the locator), construction (one label, the named row, or the working of a derived step),
+get_ref (the locator), construction (one label, the named row, or the working of a derived step: the
+source row's label, then ':fuse' or ':derive' for each step; the steps are the trailing ':fuse' and
+':derive' pieces, v of the source - v and t of the source - t of them, and no label ends in one, so a
+colon or comma inside a label never confuses the split; fields with commas are quoted as CSV quotes them),
 family (section 8), constructions_all and ids_all (every counted row that reaches the same N),
-prev_id (the previous best at that step), entered, and the date it was generated. The five columns CAs
+prev_id (the previous best at that step: on a row line the best counted row entered before the first
+row that reached the step's N, the rows of one snapshot entered on one day counting as one entry;
+on a derived line the row of the Colbourn-rule value it improves on), entered, and the date it was
+generated (the latest entry date in `ca_table.csv`, so an unchanged table gives the same file). The five columns CAs
 reads (t, v, k, N, construction) keep their names and meaning here too. It is generated, never edited
-by hand, and it is the one table to read for "what is best here, how is it made, and how do I get it".
+by hand (`tools/build_frame.py`; after every merge to main, `tools/consistency.py` in table-page.yml
+compares it with a fresh build),
+and it is the one table to read for "what is best here, how is it made, and how do I get it".
 The full history stays in `ca_table.csv`, which keeps every row.
 
 On the page, every rung gets a "get" link built from get and get_ref (the raw file, the deposit, the
@@ -322,4 +348,11 @@ A search box at the top jumps to a point by t, v and k.
   and add1 once implemented) will count in the frame file with the tier of their inputs, never as rows
   (sections 4 and 6). Section 7 adds the four new columns and the frame file with a pointer to the
   previous best, and section 8 the label list.
+- Version 1.1 (November 2026). The frame file `ca_frame.csv` and the gzipped copy `ca_table.csv.gz`
+  exist (sections 4 to 7, which said "will"). The frame counts fuse and derive, not add1 yet, and its
+  derived steps past the baseline's column range come only from rows of that width (by fuse alone
+  past every counted row of the same t and v). A derived step's construction is the source row's
+  label followed by ':fuse' or ':derive' for each step, and its source row's id is in ids_all. A step
+  whose named row has no array takes get and get_ref from a tied VERIFIED row that has one (section 7).
+  The guarantee of section 4 is checked on every push.
 

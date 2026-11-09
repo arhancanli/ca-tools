@@ -49,12 +49,17 @@ fl, _ = flags(dict(t="3", v="8", k="12", N="954", construction=POSTOP % "955; 3,
                    credit=SITJAR, notes="", source_detail="deposit"))
 assert fl == [], fl
 
-# 3. ... and still flagged where it is not (CA(5522; 3, 19, 14) from Bai XunDi's CA(5568))
+# 3. ... and still flagged where it is not (CA(5522; 3, 19, 14) from Bai XunDi's CA(5568)).
+# Since the corrections of 2026-11-08 (table/CREDIT_CORRECTIONS.csv, Bai XunDi on issue #47) the
+# row CA(5568; 3, 19, 14) itself builds on oa-bush1952 and tabu-n2004 as well, so a construction
+# from it that lists neither is also flagged as inheriting them.
 fl, _ = flags(dict(t="3", v="14", k="19", N="5522", construction=POSTOP % "5568; 3, 19, 14",
                    builds_on="fuse-ckrs2010;proj-c2008;postop-nck2013",
                    credit=SITJAR, notes="", source_detail="deposit"))
-assert kinds(fl) == ["starting-array"], fl
-assert "deposit-bai2026" in fl[0][1] and "Bai XunDi" in fl[0][1], fl
+assert kinds(fl) == ["inherited", "starting-array"], fl
+fd = dict(fl)
+assert "deposit-bai2026" in fd["starting-array"] and "Bai XunDi" in fd["starting-array"], fl
+assert "oa-bush1952" in fd["inherited"] and "tabu-n2004" in fd["inherited"], fl
 
 # 4. Bai XunDi citing his own deposit as 'new' is right: no deposit-as-new flag
 fl, _ = flags(dict(t="3", v="3", k="27", N="72", construction="his own construction",
