@@ -1,0 +1,331 @@
+N=32 k=1155 free cells=0 start holes=0 T=0.7
+FOUND out/t32f_32_1155.txt t=0.0 (leg 0.0 s) it=0
+FOUND out/t32f_32_1156.txt t=3.5 (leg 3.5 s) it=200010
+FOUND out/t32f_32_1157.txt t=3.5 (leg 0.0 s) it=200012
+FOUND out/t32f_32_1158.txt t=3.5 (leg 0.0 s) it=200015
+FOUND out/t32f_32_1159.txt t=3.5 (leg 0.0 s) it=200160
+FOUND out/t32f_32_1160.txt t=3.5 (leg 0.0 s) it=200174
+FOUND out/t32f_32_1161.txt t=3.5 (leg 0.0 s) it=200193
+FOUND out/t32f_32_1162.txt t=3.6 (leg 0.0 s) it=200197
+FOUND out/t32f_32_1163.txt t=3.6 (leg 0.0 s) it=200206
+FOUND out/t32f_32_1164.txt t=3.6 (leg 0.0 s) it=201424
+FOUND out/t32f_32_1165.txt t=3.6 (leg 0.0 s) it=201451
+FOUND out/t32f_32_1166.txt t=3.6 (leg 0.0 s) it=201453
+FOUND out/t32f_32_1167.txt t=3.7 (leg 0.0 s) it=201457
+FOUND out/t32f_32_1168.txt t=3.7 (leg 0.0 s) it=201483
+FOUND out/t32f_32_1169.txt t=3.7 (leg 0.0 s) it=201487
+FOUND out/t32f_32_1170.txt t=3.7 (leg 0.0 s) it=201504
+FOUND out/t32f_32_1171.txt t=3.7 (leg 0.0 s) it=201517
+FOUND out/t32f_32_1172.txt t=3.7 (leg 0.0 s) it=201535
+FOUND out/t32f_32_1173.txt t=3.8 (leg 0.0 s) it=201545
+FOUND out/t32f_32_1174.txt t=3.8 (leg 0.0 s) it=201554
+FOUND out/t32f_32_1175.txt t=3.8 (leg 0.0 s) it=201575
+FOUND out/t32f_32_1176.txt t=3.8 (leg 0.0 s) it=202605
+FOUND out/t32f_32_1177.txt t=3.9 (leg 0.0 s) it=202626
+FOUND out/t32f_32_1178.txt t=3.9 (leg 0.0 s) it=202634
+FOUND out/t32f_32_1179.txt t=5.1 (leg 1.3 s) it=265163
+FOUND out/t32f_32_1180.txt t=5.2 (leg 0.0 s) it=265195
+FOUND out/t32f_32_1181.txt t=5.2 (leg 0.0 s) it=265204
+FOUND out/t32f_32_1182.txt t=5.2 (leg 0.0 s) it=265232
+FOUND out/t32f_32_1183.txt t=5.2 (leg 0.0 s) it=265284
+FOUND out/t32f_32_1184.txt t=5.2 (leg 0.0 s) it=265314
+FOUND out/t32f_32_1185.txt t=5.3 (leg 0.0 s) it=265351
+FOUND out/t32f_32_1186.txt t=5.3 (leg 0.0 s) it=265360
+FOUND out/t32f_32_1187.txt t=5.3 (leg 0.0 s) it=265461
+FOUND out/t32f_32_1188.txt t=5.3 (leg 0.0 s) it=265470
+FOUND out/t32f_32_1189.txt t=5.3 (leg 0.0 s) it=265500
+FOUND out/t32f_32_1190.txt t=5.4 (leg 0.0 s) it=265605
+FOUND out/t32f_32_1191.txt t=5.4 (leg 0.0 s) it=265652
+FOUND out/t32f_32_1192.txt t=5.4 (leg 0.0 s) it=265817
+FOUND out/t32f_32_1193.txt t=5.4 (leg 0.0 s) it=265856
+FOUND out/t32f_32_1194.txt t=5.4 (leg 0.0 s) it=265931
+FOUND out/t32f_32_1195.txt t=5.5 (leg 0.0 s) it=266024
+FOUND out/t32f_32_1196.txt t=5.5 (leg 0.0 s) it=266035
+FOUND out/t32f_32_1197.txt t=5.5 (leg 0.0 s) it=266054
+FOUND out/t32f_32_1198.txt t=5.5 (leg 0.0 s) it=266088
+FOUND out/t32f_32_1199.txt t=5.6 (leg 0.0 s) it=266117
+FOUND out/t32f_32_1200.txt t=5.6 (leg 0.0 s) it=266136
+FOUND out/t32f_32_1201.txt t=5.6 (leg 0.0 s) it=266145
+FOUND out/t32f_32_1202.txt t=5.6 (leg 0.0 s) it=266229
+FOUND out/t32f_32_1203.txt t=5.6 (leg 0.0 s) it=266237
+FOUND out/t32f_32_1204.txt t=5.7 (leg 0.0 s) it=266294
+FOUND out/t32f_32_1205.txt t=5.7 (leg 0.0 s) it=266337
+FOUND out/t32f_32_1206.txt t=5.7 (leg 0.0 s) it=266351
+FOUND out/t32f_32_1207.txt t=5.7 (leg 0.0 s) it=266366
+FOUND out/t32f_32_1208.txt t=5.7 (leg 0.0 s) it=266376
+FOUND out/t32f_32_1209.txt t=5.8 (leg 0.0 s) it=266554
+FOUND out/t32f_32_1210.txt t=5.8 (leg 0.0 s) it=266592
+FOUND out/t32f_32_1211.txt t=5.8 (leg 0.0 s) it=266678
+FOUND out/t32f_32_1212.txt t=5.8 (leg 0.0 s) it=266725
+FOUND out/t32f_32_1213.txt t=5.8 (leg 0.0 s) it=266760
+FOUND out/t32f_32_1214.txt t=5.9 (leg 0.0 s) it=266781
+FOUND out/t32f_32_1215.txt t=5.9 (leg 0.0 s) it=266808
+FOUND out/t32f_32_1216.txt t=5.9 (leg 0.0 s) it=266841
+FOUND out/t32f_32_1217.txt t=5.9 (leg 0.0 s) it=266882
+FOUND out/t32f_32_1218.txt t=6.0 (leg 0.0 s) it=266922
+FOUND out/t32f_32_1219.txt t=6.0 (leg 0.0 s) it=267062
+FOUND out/t32f_32_1220.txt t=6.0 (leg 0.0 s) it=267144
+FOUND out/t32f_32_1221.txt t=6.0 (leg 0.0 s) it=267427
+FOUND out/t32f_32_1222.txt t=6.1 (leg 0.0 s) it=267525
+FOUND out/t32f_32_1223.txt t=6.1 (leg 0.0 s) it=267545
+FOUND out/t32f_32_1224.txt t=6.1 (leg 0.0 s) it=267607
+FOUND out/t32f_32_1225.txt t=6.1 (leg 0.0 s) it=267792
+FOUND out/t32f_32_1226.txt t=6.1 (leg 0.0 s) it=267823
+FOUND out/t32f_32_1227.txt t=6.2 (leg 0.0 s) it=268379
+FOUND out/t32f_32_1228.txt t=6.2 (leg 0.0 s) it=269364
+FOUND out/t32f_32_1229.txt t=6.2 (leg 0.0 s) it=269417
+FOUND out/t32f_32_1230.txt t=6.3 (leg 0.0 s) it=269601
+FOUND out/t32f_32_1231.txt t=6.3 (leg 0.0 s) it=269654
+FOUND out/t32f_32_1232.txt t=6.3 (leg 0.0 s) it=269722
+FOUND out/t32f_32_1233.txt t=6.4 (leg 0.0 s) it=269761
+FOUND out/t32f_32_1234.txt t=6.4 (leg 0.0 s) it=269969
+FOUND out/t32f_32_1235.txt t=6.4 (leg 0.0 s) it=270096
+FOUND out/t32f_32_1236.txt t=6.5 (leg 0.0 s) it=270131
+FOUND out/t32f_32_1237.txt t=6.5 (leg 0.0 s) it=270217
+FOUND out/t32f_32_1238.txt t=6.5 (leg 0.0 s) it=270244
+FOUND out/t32f_32_1239.txt t=6.5 (leg 0.0 s) it=270331
+FOUND out/t32f_32_1240.txt t=6.6 (leg 0.1 s) it=274223
+FOUND out/t32f_32_1241.txt t=6.7 (leg 0.0 s) it=274685
+FOUND out/t32f_32_1242.txt t=6.7 (leg 0.1 s) it=275115
+FOUND out/t32f_32_1243.txt t=6.8 (leg 0.1 s) it=275508
+FOUND out/t32f_32_1244.txt t=6.9 (leg 0.0 s) it=275615
+FOUND out/t32f_32_1245.txt t=6.9 (leg 0.0 s) it=275665
+FOUND out/t32f_32_1246.txt t=6.9 (leg 0.0 s) it=275708
+FOUND out/t32f_32_1247.txt t=11.0 (leg 4.1 s) it=475811
+FOUND out/t32f_32_1248.txt t=11.0 (leg 0.0 s) it=475908
+FOUND out/t32f_32_1249.txt t=11.0 (leg 0.0 s) it=476038
+FOUND out/t32f_32_1250.txt t=11.0 (leg 0.0 s) it=476237
+FOUND out/t32f_32_1251.txt t=11.1 (leg 0.0 s) it=476432
+FOUND out/t32f_32_1252.txt t=11.1 (leg 0.0 s) it=476473
+FOUND out/t32f_32_1253.txt t=11.1 (leg 0.0 s) it=476761
+FOUND out/t32f_32_1254.txt t=11.2 (leg 0.0 s) it=476852
+FOUND out/t32f_32_1255.txt t=11.2 (leg 0.0 s) it=476936
+FOUND out/t32f_32_1256.txt t=11.4 (leg 0.2 s) it=483351
+FOUND out/t32f_32_1257.txt t=11.4 (leg 0.0 s) it=483430
+FOUND out/t32f_32_1258.txt t=11.4 (leg 0.0 s) it=483663
+FOUND out/t32f_32_1259.txt t=11.4 (leg 0.0 s) it=483827
+FOUND out/t32f_32_1260.txt t=11.5 (leg 0.1 s) it=484706
+FOUND out/t32f_32_1261.txt t=11.5 (leg 0.0 s) it=484861
+FOUND out/t32f_32_1262.txt t=12.2 (leg 0.7 s) it=517958
+FOUND out/t32f_32_1263.txt t=12.3 (leg 0.1 s) it=519201
+FOUND out/t32f_32_1264.txt t=12.3 (leg 0.1 s) it=520332
+FOUND out/t32f_32_1265.txt t=12.4 (leg 0.0 s) it=520956
+FOUND out/t32f_32_1266.txt t=12.4 (leg 0.0 s) it=521036
+FOUND out/t32f_32_1267.txt t=12.4 (leg 0.1 s) it=522137
+FOUND out/t32f_32_1268.txt t=12.5 (leg 0.0 s) it=522579
+FOUND out/t32f_32_1269.txt t=12.5 (leg 0.0 s) it=522860
+FOUND out/t32f_32_1270.txt t=12.5 (leg 0.0 s) it=522932
+FOUND out/t32f_32_1271.txt t=12.6 (leg 0.0 s) it=523658
+FOUND out/t32f_32_1272.txt t=12.6 (leg 0.0 s) it=523876
+FOUND out/t32f_32_1273.txt t=12.7 (leg 0.0 s) it=524258
+FOUND out/t32f_32_1274.txt t=12.7 (leg 0.0 s) it=524367
+FOUND out/t32f_32_1275.txt t=12.7 (leg 0.0 s) it=524899
+FOUND out/t32f_32_1276.txt t=12.8 (leg 0.1 s) it=525801
+FOUND out/t32f_32_1277.txt t=12.8 (leg 0.0 s) it=526098
+FOUND out/t32f_32_1278.txt t=12.9 (leg 0.0 s) it=526248
+FOUND out/t32f_32_1279.txt t=12.9 (leg 0.0 s) it=526293
+FOUND out/t32f_32_1280.txt t=12.9 (leg 0.0 s) it=526966
+FOUND out/t32f_32_1281.txt t=12.9 (leg 0.0 s) it=527011
+FOUND out/t32f_32_1282.txt t=13.2 (leg 0.2 s) it=534593
+FOUND out/t32f_32_1283.txt t=13.2 (leg 0.0 s) it=534630
+FOUND out/t32f_32_1284.txt t=13.2 (leg 0.1 s) it=535693
+FOUND out/t32f_32_1285.txt t=13.3 (leg 0.1 s) it=536647
+FOUND out/t32f_32_1286.txt t=17.7 (leg 4.4 s) it=738407
+FOUND out/t32f_32_1287.txt t=17.8 (leg 0.0 s) it=738453
+FOUND out/t32f_32_1288.txt t=17.9 (leg 0.1 s) it=741810
+FOUND out/t32f_32_1289.txt t=18.0 (leg 0.1 s) it=744199
+FOUND out/t32f_32_1290.txt t=18.0 (leg 0.0 s) it=744605
+FOUND out/t32f_32_1291.txt t=18.0 (leg 0.0 s) it=744799
+FOUND out/t32f_32_1292.txt t=18.1 (leg 0.1 s) it=746576
+FOUND out/t32f_32_1293.txt t=18.2 (leg 0.0 s) it=746938
+FOUND out/t32f_32_1294.txt t=18.2 (leg 0.0 s) it=747436
+FOUND out/t32f_32_1295.txt t=18.2 (leg 0.0 s) it=747961
+FOUND out/t32f_32_1296.txt t=18.3 (leg 0.0 s) it=748050
+FOUND out/t32f_32_1297.txt t=18.3 (leg 0.1 s) it=749062
+FOUND out/t32f_32_1298.txt t=18.4 (leg 0.0 s) it=749656
+FOUND out/t32f_32_1299.txt t=18.4 (leg 0.1 s) it=751655
+FOUND out/t32f_32_1300.txt t=18.5 (leg 0.0 s) it=751699
+FOUND out/t32f_32_1301.txt t=18.8 (leg 0.3 s) it=765725
+FOUND out/t32f_32_1302.txt t=19.1 (leg 0.4 s) it=778529
+FOUND out/t32f_32_1303.txt t=19.2 (leg 0.0 s) it=778838
+FOUND out/t32f_32_1304.txt t=19.3 (leg 0.1 s) it=781764
+FOUND out/t32f_32_1305.txt t=19.4 (leg 0.1 s) it=782592
+FOUND out/t32f_32_1306.txt t=19.5 (leg 0.1 s) it=785750
+FOUND out/t32f_32_1307.txt t=19.5 (leg 0.1 s) it=787103
+FOUND out/t32f_32_1308.txt t=19.6 (leg 0.1 s) it=790818
+FOUND out/t32f_32_1309.txt t=19.7 (leg 0.1 s) it=793167
+FOUND out/t32f_32_1310.txt t=19.9 (leg 0.2 s) it=797431
+FOUND out/t32f_32_1311.txt t=19.9 (leg 0.1 s) it=797999
+FOUND out/t32f_32_1312.txt t=20.0 (leg 0.1 s) it=798179
+FOUND out/t32f_32_1313.txt t=20.0 (leg 0.0 s) it=798483
+FOUND out/t32f_32_1314.txt t=20.1 (leg 0.0 s) it=798635
+FOUND out/t32f_32_1315.txt t=20.1 (leg 0.1 s) it=799302
+FOUND out/t32f_32_1316.txt t=20.3 (leg 0.2 s) it=806246
+FOUND out/t32f_32_1317.txt t=20.4 (leg 0.1 s) it=808666
+FOUND out/t32f_32_1318.txt t=20.6 (leg 0.2 s) it=814378
+FOUND out/t32f_32_1319.txt t=20.6 (leg 0.1 s) it=815873
+FOUND out/t32f_32_1320.txt t=20.7 (leg 0.1 s) it=817892
+FOUND out/t32f_32_1321.txt t=21.0 (leg 0.3 s) it=826789
+FOUND out/t32f_32_1322.txt t=21.0 (leg 0.0 s) it=826922
+FOUND out/t32f_32_1323.txt t=21.1 (leg 0.0 s) it=827206
+FOUND out/t32f_32_1324.txt t=21.1 (leg 0.1 s) it=829171
+FOUND out/t32f_32_1325.txt t=21.2 (leg 0.0 s) it=829406
+FOUND out/t32f_32_1326.txt t=21.5 (leg 0.3 s) it=838812
+FOUND out/t32f_32_1327.txt t=21.6 (leg 0.1 s) it=843342
+FOUND out/t32f_32_1328.txt t=22.1 (leg 0.4 s) it=856867
+FOUND out/t32f_32_1329.txt t=23.1 (leg 1.0 s) it=888113
+FOUND out/t32f_32_1330.txt t=23.1 (leg 0.1 s) it=889134
+FOUND out/t32f_32_1331.txt t=23.2 (leg 0.1 s) it=890877
+FOUND out/t32f_32_1332.txt t=23.2 (leg 0.0 s) it=891013
+FOUND out/t32f_32_1333.txt t=23.3 (leg 0.1 s) it=892056
+FOUND out/t32f_32_1334.txt t=23.3 (leg 0.0 s) it=892268
+FOUND out/t32f_32_1335.txt t=23.3 (leg 0.0 s) it=892454
+FOUND out/t32f_32_1336.txt t=23.4 (leg 0.0 s) it=893302
+FOUND out/t32f_32_1337.txt t=23.6 (leg 0.2 s) it=899192
+FOUND out/t32f_32_1338.txt t=24.0 (leg 0.4 s) it=910164
+FOUND out/t32f_32_1339.txt t=24.0 (leg 0.1 s) it=911591
+FOUND out/t32f_32_1340.txt t=28.6 (leg 4.6 s) it=1112100
+FOUND out/t32f_32_1341.txt t=28.9 (leg 0.3 s) it=1120338
+FOUND out/t32f_32_1342.txt t=29.2 (leg 0.3 s) it=1127988
+FOUND out/t32f_32_1343.txt t=30.0 (leg 0.8 s) it=1154037
+t=30 it=1154048 k=1344 holes=16 best=16
+FOUND out/t32f_32_1344.txt t=30.4 (leg 0.4 s) it=1168933
+FOUND out/t32f_32_1345.txt t=30.5 (leg 0.1 s) it=1170588
+FOUND out/t32f_32_1346.txt t=30.7 (leg 0.2 s) it=1174506
+FOUND out/t32f_32_1347.txt t=31.3 (leg 0.6 s) it=1194423
+FOUND out/t32f_32_1348.txt t=32.2 (leg 0.9 s) it=1236990
+FOUND out/t32f_32_1349.txt t=32.3 (leg 0.1 s) it=1239982
+FOUND out/t32f_32_1350.txt t=32.3 (leg 0.1 s) it=1241265
+FOUND out/t32f_32_1351.txt t=32.6 (leg 0.2 s) it=1249653
+FOUND out/t32f_32_1352.txt t=33.2 (leg 0.6 s) it=1275843
+FOUND out/t32f_32_1353.txt t=33.3 (leg 0.1 s) it=1276679
+FOUND out/t32f_32_1354.txt t=34.0 (leg 0.7 s) it=1298737
+FOUND out/t32f_32_1355.txt t=35.0 (leg 0.9 s) it=1329982
+FOUND out/t32f_32_1356.txt t=35.1 (leg 0.1 s) it=1331859
+FOUND out/t32f_32_1357.txt t=35.8 (leg 0.7 s) it=1351089
+FOUND out/t32f_32_1358.txt t=35.8 (leg 0.1 s) it=1352186
+FOUND out/t32f_32_1359.txt t=36.1 (leg 0.3 s) it=1359521
+FOUND out/t32f_32_1360.txt t=36.6 (leg 0.5 s) it=1374622
+FOUND out/t32f_32_1361.txt t=36.6 (leg 0.0 s) it=1375633
+FOUND out/t32f_32_1362.txt t=37.8 (leg 1.2 s) it=1417702
+FOUND out/t32f_32_1363.txt t=37.9 (leg 0.1 s) it=1419360
+FOUND out/t32f_32_1364.txt t=39.4 (leg 1.5 s) it=1463507
+FOUND out/t32f_32_1365.txt t=39.5 (leg 0.1 s) it=1465627
+FOUND out/t32f_32_1366.txt t=39.6 (leg 0.1 s) it=1466943
+FOUND out/t32f_32_1367.txt t=46.3 (leg 6.7 s) it=1726778
+FOUND out/t32f_32_1368.txt t=46.3 (leg 0.0 s) it=1727514
+FOUND out/t32f_32_1369.txt t=47.0 (leg 0.6 s) it=1745878
+FOUND out/t32f_32_1370.txt t=53.9 (leg 6.9 s) it=2023968
+FOUND out/t32f_32_1371.txt t=53.9 (leg 0.0 s) it=2024021
+FOUND out/t32f_32_1372.txt t=54.1 (leg 0.2 s) it=2032060
+FOUND out/t32f_32_1373.txt t=54.4 (leg 0.3 s) it=2041294
+FOUND out/t32f_32_1374.txt t=55.5 (leg 1.1 s) it=2076094
+FOUND out/t32f_32_1375.txt t=55.6 (leg 0.1 s) it=2077907
+FOUND out/t32f_32_1376.txt t=57.0 (leg 1.4 s) it=2119613
+FOUND out/t32f_32_1377.txt t=57.1 (leg 0.1 s) it=2121472
+FOUND out/t32f_32_1378.txt t=57.2 (leg 0.1 s) it=2124720
+FOUND out/t32f_32_1379.txt t=58.6 (leg 1.4 s) it=2167441
+t=60 it=2204416 k=1380 holes=24 best=6
+FOUND out/t32f_32_1380.txt t=73.9 (leg 15.3 s) it=2596097
+FOUND out/t32f_32_1381.txt t=74.9 (leg 1.0 s) it=2621166
+t=90 it=3064064 k=1382 holes=1 best=1
+FOUND out/t32f_32_1382.txt t=106.3 (leg 31.4 s) it=3611592
+FOUND out/t32f_32_1383.txt t=107.0 (leg 0.7 s) it=3631830
+FOUND out/t32f_32_1384.txt t=119.0 (leg 12.0 s) it=3982151
+FOUND out/t32f_32_1385.txt t=119.0 (leg 0.1 s) it=3983639
+t=120 it=4018432 k=1386 holes=6 best=2
+FOUND out/t32f_32_1386.txt t=120.2 (leg 1.1 s) it=4023254
+FOUND out/t32f_32_1387.txt t=128.6 (leg 8.4 s) it=4262466
+FOUND out/t32f_32_1388.txt t=132.3 (leg 3.7 s) it=4374707
+t=150 it=4852480 k=1389 holes=26 best=8
+FOUND out/t32f_32_1389.txt t=159.9 (leg 27.6 s) it=5135786
+FOUND out/t32f_32_1390.txt t=161.1 (leg 1.2 s) it=5169811
+FOUND out/t32f_32_1391.txt t=162.1 (leg 1.0 s) it=5199037
+FOUND out/t32f_32_1392.txt t=162.2 (leg 0.1 s) it=5199881
+FOUND out/t32f_32_1393.txt t=162.3 (leg 0.1 s) it=5202275
+FOUND out/t32f_32_1394.txt t=162.3 (leg 0.1 s) it=5203654
+t=180 it=5751040 k=1395 holes=20 best=3
+FOUND out/t32f_32_1395.txt t=197.7 (leg 35.3 s) it=6333718
+FOUND out/t32f_32_1396.txt t=197.7 (leg 0.1 s) it=6334547
+t=210 it=6681344 k=1397 holes=13 best=7
+FOUND out/t32f_32_1397.txt t=212.8 (leg 15.0 s) it=6760174
+FOUND out/t32f_32_1398.txt t=212.9 (leg 0.1 s) it=6763560
+FOUND out/t32f_32_1399.txt t=213.6 (leg 0.7 s) it=6785788
+FOUND out/t32f_32_1400.txt t=220.3 (leg 6.7 s) it=6978071
+FOUND out/t32f_32_1401.txt t=222.7 (leg 2.4 s) it=7044142
+FOUND out/t32f_32_1402.txt t=231.3 (leg 8.6 s) it=7320618
+t=240 it=7563008 k=1403 holes=7 best=4
+FOUND out/t32f_32_1403.txt t=241.9 (leg 10.6 s) it=7617373
+FOUND out/t32f_32_1404.txt t=245.2 (leg 3.2 s) it=7706635
+t=270 it=8411136 k=1405 holes=4 best=2
+t=300 it=9188608 k=1405 holes=40 best=16
+FOUND out/t32f_32_1405.txt t=318.3 (leg 73.1 s) it=9762328
+FOUND out/t32f_32_1406.txt t=318.3 (leg 0.1 s) it=9763293
+FOUND out/t32f_32_1407.txt t=319.9 (leg 1.5 s) it=9806185
+FOUND out/t32f_32_1408.txt t=320.1 (leg 0.3 s) it=9812511
+FOUND out/t32f_32_1409.txt t=322.0 (leg 1.9 s) it=9869695
+t=330 it=10084096 k=1410 holes=20 best=15
+FOUND out/t32f_32_1410.txt t=334.0 (leg 12.0 s) it=10204131
+FOUND out/t32f_32_1411.txt t=334.5 (leg 0.5 s) it=10217455
+FOUND out/t32f_32_1412.txt t=334.9 (leg 0.4 s) it=10228060
+t=360 it=10940928 k=1413 holes=1 best=1
+FOUND out/t32f_32_1413.txt t=360.3 (leg 25.5 s) it=10950656
+FOUND out/t32f_32_1414.txt t=360.4 (leg 0.1 s) it=10951273
+t=390 it=11734016 k=1415 holes=44 best=19
+t=420 it=12536832 k=1415 holes=30 best=7
+t=450 it=13319424 k=1415 holes=31 best=11
+t=480 it=14128640 k=1415 holes=9 best=5
+t=510 it=14952192 k=1415 holes=23 best=22
+FOUND out/t32f_32_1415.txt t=511.1 (leg 150.7 s) it=14981335
+FOUND out/t32f_32_1416.txt t=533.4 (leg 22.3 s) it=15602227
+FOUND out/t32f_32_1417.txt t=533.5 (leg 0.1 s) it=15603874
+t=540 it=15776000 k=1418 holes=22 best=3
+t=570 it=16588800 k=1418 holes=36 best=12
+t=600 it=17405440 k=1418 holes=34 best=31
+t=630 it=18226944 k=1418 holes=24 best=9
+t=660 it=19055872 k=1418 holes=11 best=5
+t=690 it=19875072 k=1418 holes=14 best=8
+t=720 it=20675072 k=1418 holes=17 best=9
+FOUND out/t32f_32_1418.txt t=722.9 (leg 189.4 s) it=20761640
+FOUND out/t32f_32_1419.txt t=738.4 (leg 15.5 s) it=21222080
+FOUND out/t32f_32_1420.txt t=741.4 (leg 3.0 s) it=21317550
+FOUND out/t32f_32_1421.txt t=744.0 (leg 2.6 s) it=21403319
+FOUND out/t32f_32_1422.txt t=744.1 (leg 0.1 s) it=21403997
+FOUND out/t32f_32_1423.txt t=744.3 (leg 0.2 s) it=21408389
+t=750 it=21570560 k=1424 holes=29 best=6
+t=780 it=22358016 k=1424 holes=1 best=1
+t=810 it=23152384 k=1424 holes=31 best=15
+t=840 it=23954432 k=1424 holes=20 best=14
+t=870 it=24760832 k=1424 holes=27 best=7
+t=900 it=25586176 k=1424 holes=40 best=9
+t=930 it=26388224 k=1424 holes=36 best=7
+t=960 it=27176960 k=1424 holes=47 best=14
+t=990 it=27979776 k=1424 holes=22 best=15
+t=1020 it=28826880 k=1424 holes=9 best=9
+t=1050 it=29643520 k=1424 holes=26 best=11
+t=1080 it=30496512 k=1424 holes=28 best=23
+t=1110 it=31319552 k=1424 holes=36 best=18
+t=1140 it=32108800 k=1424 holes=23 best=13
+t=1170 it=32992768 k=1424 holes=11 best=8
+FOUND out/t32f_32_1424.txt t=1186.7 (leg 442.5 s) it=33437340
+t=1200 it=33793792 k=1425 holes=11 best=6
+FOUND out/t32f_32_1425.txt t=1221.4 (leg 34.6 s) it=34412125
+FOUND out/t32f_32_1426.txt t=1222.2 (leg 0.8 s) it=34436005
+t=1230 it=34654208 k=1427 holes=39 best=26
+t=1260 it=35450112 k=1427 holes=31 best=26
+t=1290 it=36261632 k=1427 holes=47 best=25
+t=1320 it=37088768 k=1427 holes=35 best=21
+t=1350 it=37915904 k=1427 holes=23 best=15
+t=1380 it=38726912 k=1427 holes=16 best=7
+t=1410 it=39527936 k=1427 holes=45 best=12
+t=1440 it=40299520 k=1427 holes=37 best=17
+t=1470 it=41094400 k=1427 holes=32 best=21
+t=1500 it=41865216 k=1427 holes=30 best=19
+t=1530 it=42668032 k=1427 holes=31 best=17
+t=1560 it=43441664 k=1427 holes=37 best=34
+t=1590 it=44209920 k=1427 holes=37 best=13
+t=1620 it=44967168 k=1427 holes=39 best=22
+t=1650 it=45731840 k=1427 holes=29 best=21
+t=1680 it=46511872 k=1427 holes=29 best=14
+FOUND out/t32f_32_1427.txt t=1697.2 (leg 475.1 s) it=46965623
+END N=32 k=1428 holes=16 best=2 solvedk=1427 it=47049728 dead=0 secs=1700 T=0.7
