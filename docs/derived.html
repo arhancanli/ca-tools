@@ -34,7 +34,7 @@ a { color: inherit; }
 </style></head><body><main>
 <h1>Sizes that follow by published constructions</h1>
 <p>Each line is a size that follows from the <a href="index.html">counted table</a> (cited and verified entries) by a published construction, and is smaller than the counted value at that point. These are computed sizes, not arrays in hand; the counted table does not include them. The list is recomputed from scratch on every change by <a href="https://github.com/chrispbsmolen/ca-tools/blob/main/tools/derive_table.py">tools/derive_table.py</a> and checked line by line, independently of that program, by tools/consistency.py. Every ingredient is written CAN(t,k,v)=N, the value of the lookup (counted or derived) at that point, so each line can be followed back to table entries. Stair-step as in the table: a line (t, v, k, N) gives N for up to k columns. 1052 lines, 2026-11-10.</p>
-<p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table holds only arrays added to it, so the same constructions are also evaluated at a fixed ladder of widths up to k = 100,000 (546 lines). Where the table has no entry that wide, the counted column reads <i>none</i>: the line is the smallest size these constructions give from the table, a yardstick for any array added there, not a survey of the literature.</p>
+<p>Past the baseline's column range (k = 20,000 at strength 2, 10,000 above), the table holds only arrays added to it, so the same constructions are also evaluated at a fixed ladder of widths up to k = 100,000 (530 lines). Where the table has no entry that wide, the counted column reads <i>none</i>: the line is the smallest size these constructions give from the table, a yardstick for any array added there, not a survey of the literature.</p>
 <p>Constructions: <b>fuse</b> fusing symbols (Colbourn, Kéri, Rivas Soriano, Schlage-Puchta 2010, Lemma 3.1); <b>derive</b> deriving a strength (CKRS 2010, (7)); <b>add1</b> adding one column (CKRS 2010, Theorem 3.2); <b>comp</b> composition (CKRS 2010, (3)); <b>CK</b> Chateauneuf-Kreher doubling (Cohen, Colbourn, Ling 2008, Thm 2); <b>CMTW34</b> Colbourn, Martirosyan, Trung, Walker 2006, Thm 3.4; <b>kRoux</b> k-ary Roux (CMTW 2006, Thm 3.3; DCAN values of Yin 2003); <b>PCT</b> Power CT (Colbourn and Zhou 2012, Thm 2.1 with Lemma 2.4; Colbourn and Torres-Jimenez 2013); <b>DP2</b> direct product (Colbourn and Torres-Jimenez 2013, Cor 4.3); <b>OD</b> ordered design (Cohen, Colbourn, Ling 2008, Construction 1); <b>SM</b> Shokri and Moura (J. Combin. Des. 2025).</p>
 <details class=sub><summary>t = 2, v = 3 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>25000</td><td class=n>45</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,20,3)=15 + CAN(2,1250,3)=32 - 2</td></tr>
@@ -91,9 +91,10 @@ a { color: inherit; }
 <tr><td class=n>90000</td><td class=n>326</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,9,8)=64 + CAN(2,10000,8)=264 - 2</td></tr>
 <tr><td class=n>100000</td><td class=n>328</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,13,8)=84 + CAN(2,7693,8)=246 - 2</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 2, v = 9 (4)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
-<tr><td class=n>25000</td><td class=n>368</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,10,9)=81 + CAN(2,2500,9)=289 - 2</td></tr>
-<tr><td class=n>30000</td><td class=n>375</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,10,9)=81 + CAN(2,3000,9)=296 - 2</td></tr>
+<details class=sub><summary>t = 2, v = 9 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>20726</td><td class=n>349</td><td class=n>369</td><td class=n>5.42%</td><td>DP2</td><td class=ev>CAN(2,22,9)=126 + CAN(2,943,9)=225 - 2</td></tr>
+<tr><td class=n>21807</td><td class=n>362</td><td class=n>369</td><td class=n>1.90%</td><td>DP2</td><td class=ev>CAN(2,10,9)=81 + CAN(2,2181,9)=283 - 2</td></tr>
+<tr><td class=n>25000</td><td class=n>368</td><td class=n>369</td><td class=n>0.27%</td><td>DP2</td><td class=ev>CAN(2,10,9)=81 + CAN(2,2500,9)=289 - 2</td></tr>
 <tr><td class=n>90000</td><td class=n>376</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,10,9)=81 + CAN(2,9000,9)=297 - 2</td></tr>
 <tr><td class=n>100000</td><td class=n>393</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,10,9)=81 + CAN(2,10000,9)=314 - 2</td></tr>
 </tbody></table></details>
@@ -109,13 +110,16 @@ a { color: inherit; }
 <tr><td class=n>90000</td><td class=n>513</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,70,10)=202 + CAN(2,1286,10)=313 - 2</td></tr>
 <tr><td class=n>100000</td><td class=n>516</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,6,10)=102 + CAN(2,16667,10)=416 - 2</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 2, v = 11 (6)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
-<tr><td class=n>25000</td><td class=n>497</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,15,11)=158 + CAN(2,1667,11)=341 - 2</td></tr>
-<tr><td class=n>30000</td><td class=n>516</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,2500,11)=397 - 2</td></tr>
-<tr><td class=n>35000</td><td class=n>531</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,2917,11)=412 - 2</td></tr>
-<tr><td class=n>40000</td><td class=n>542</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,24,11)=203 + CAN(2,1667,11)=341 - 2</td></tr>
-<tr><td class=n>50000</td><td class=n>564</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,4167,11)=445 - 2</td></tr>
-<tr><td class=n>100000</td><td class=n>570</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,5,11)=121 + CAN(2,20000,11)=451 - 2</td></tr>
+<details class=sub><summary>t = 2, v = 11 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>20727</td><td class=n>477</td><td class=n>561</td><td class=n>14.97%</td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,1728,11)=358 - 2</td></tr>
+<tr><td class=n>21807</td><td class=n>481</td><td class=n>561</td><td class=n>14.26%</td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,1818,11)=362 - 2</td></tr>
+<tr><td class=n>25000</td><td class=n>497</td><td class=n>561</td><td class=n>11.41%</td><td>DP2</td><td class=ev>CAN(2,15,11)=158 + CAN(2,1667,11)=341 - 2</td></tr>
+<tr><td class=n>26602</td><td class=n>500</td><td class=n>561</td><td class=n>10.87%</td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,2217,11)=381 - 2</td></tr>
+<tr><td class=n>28561</td><td class=n>510</td><td class=n>561</td><td class=n>9.09%</td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,2381,11)=391 - 2</td></tr>
+<tr><td class=n>30000</td><td class=n>516</td><td class=n>561</td><td class=n>8.02%</td><td>DP2</td><td class=ev>CAN(2,12,11)=121 + CAN(2,2500,11)=397 - 2</td></tr>
+<tr><td class=n>37439</td><td class=n>531</td><td class=n>561</td><td class=n>5.35%</td><td>DP2</td><td class=ev>CAN(2,22,11)=192 + CAN(2,1702,11)=341 - 2</td></tr>
+<tr><td class=n>38416</td><td class=n>539</td><td class=n>561</td><td class=n>3.92%</td><td>DP2</td><td class=ev>CAN(2,23,11)=200 + CAN(2,1671,11)=341 - 2</td></tr>
+<tr><td class=n>40000</td><td class=n>542</td><td class=n>561</td><td class=n>3.39%</td><td>DP2</td><td class=ev>CAN(2,24,11)=203 + CAN(2,1667,11)=341 - 2</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 2, v = 12 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>25000</td><td class=n>610</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,13,12)=164 + CAN(2,1924,12)=448 - 2</td></tr>
@@ -214,10 +218,8 @@ a { color: inherit; }
 <tr><td class=n>90000</td><td class=n>1997</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,23,22)=525 + CAN(2,3914,22)=1474 - 2</td></tr>
 <tr><td class=n>100000</td><td class=n>2000</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,7,22)=506 + CAN(2,14286,22)=1496 - 2</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 2, v = 23 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
-<tr><td class=n>25000</td><td class=n>1929</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,28,23)=622 + CAN(2,893,23)=1309 - 2</td></tr>
-<tr><td class=n>30000</td><td class=n>2052</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,23,23)=529 + CAN(2,1305,23)=1525 - 2</td></tr>
-<tr><td class=n>100000</td><td class=n>2068</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,8,23)=529 + CAN(2,12500,23)=1541 - 2</td></tr>
+<details class=sub><summary>t = 2, v = 23 (1)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>25000</td><td class=n>1929</td><td class=n>2047</td><td class=n>5.76%</td><td>DP2</td><td class=ev>CAN(2,28,23)=622 + CAN(2,893,23)=1309 - 2</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 2, v = 24 (9)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>25000</td><td class=n>2013</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,27,24)=624 + CAN(2,926,24)=1391 - 2</td></tr>
@@ -230,12 +232,10 @@ a { color: inherit; }
 <tr><td class=n>80000</td><td class=n>2345</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,9,24)=576 + CAN(2,8889,24)=1771 - 2</td></tr>
 <tr><td class=n>100000</td><td class=n>2346</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,9,24)=576 + CAN(2,11112,24)=1772 - 2</td></tr>
 </tbody></table></details>
-<details class=sub><summary>t = 2, v = 25 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
-<tr><td class=n>25000</td><td class=n>2099</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,30,25)=726 + CAN(2,834,25)=1375 - 2</td></tr>
-<tr><td class=n>30000</td><td class=n>2253</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,30,25)=726 + CAN(2,1000,25)=1529 - 2</td></tr>
-<tr><td class=n>35000</td><td class=n>2392</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,30,25)=726 + CAN(2,1167,25)=1668 - 2</td></tr>
-<tr><td class=n>40000</td><td class=n>2442</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,23,25)=625 + CAN(2,1740,25)=1819 - 2</td></tr>
-<tr><td class=n>100000</td><td class=n>2448</td><td class=n><i>none</i></td><td class=n></td><td>DP2</td><td class=ev>CAN(2,6,25)=625 + CAN(2,16667,25)=1825 - 2</td></tr>
+<details class=sub><summary>t = 2, v = 25 (3)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
+<tr><td class=n>25000</td><td class=n>2099</td><td class=n>2425</td><td class=n>13.44%</td><td>DP2</td><td class=ev>CAN(2,30,25)=726 + CAN(2,834,25)=1375 - 2</td></tr>
+<tr><td class=n>30000</td><td class=n>2253</td><td class=n>2425</td><td class=n>7.09%</td><td>DP2</td><td class=ev>CAN(2,30,25)=726 + CAN(2,1000,25)=1529 - 2</td></tr>
+<tr><td class=n>35000</td><td class=n>2392</td><td class=n>2425</td><td class=n>1.36%</td><td>DP2</td><td class=ev>CAN(2,30,25)=726 + CAN(2,1167,25)=1668 - 2</td></tr>
 </tbody></table></details>
 <details class=sub><summary>t = 3, v = 2 (5)</summary><table><thead><tr><th>k</th><th>N</th><th>counted</th><th>gain</th><th>construction</th><th>arithmetic</th></tr></thead><tbody>
 <tr><td class=n>12500</td><td class=n>77</td><td class=n><i>none</i></td><td class=n></td><td>PCT</td><td class=ev>M=7 x (CAN(3,11,2)=12 - 1), q=11, e=4, p=0</td></tr>
