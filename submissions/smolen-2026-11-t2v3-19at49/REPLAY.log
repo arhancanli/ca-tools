@@ -1,0 +1,108 @@
+[build] $ cc -O3 -o orbq6 programs/orbq6.c
+[build] $ python3 programs/mkspec.py 19 9,3,3,3 > s19a.txt
+[build] sha256 s19a.txt 3e50e22e3e52ebf0965ebc07fc61336de7a59767dce7992619cc483ab50ecc98
+[build] $ NOORDER=1 ./orbq6 s19a.txt 5 4 out
+----- [build] stdout of orbq6 -----
+N=19 |G|=9 normaliser gens=11 target m=5 nfree=4
+starters 189751059, vertices 423360  (3.4 s)
+normaliser orbits (representatives) 771
+rep 19/771 deg 880 cliques 0 best 0 maxdepth 2  4 s
+rep 39/771 deg 1202 cliques 0 best 0 maxdepth 2  4 s
+clique #1: 45 orbit columns, 39 free candidates, 3 mutually QI -> 48 columns
+DUMP out_dump_19_48.txt  (45 orbit columns + 3 free)
+clique #529: 45 orbit columns, 66 free candidates, 4 mutually QI -> 49 columns
+DUMP out_dump_19_49.txt  (45 orbit columns + 4 free)
+rep 59/771 deg 5468 cliques 7936 best 49 maxdepth 5  238 s
+rep 79/771 deg 1660 cliques 7936 best 49 maxdepth 5  239 s
+rep 99/771 deg 1732 cliques 7936 best 49 maxdepth 5  248 s
+rep 119/771 deg 716 cliques 7936 best 49 maxdepth 5  255 s
+rep 139/771 deg 2214 cliques 7936 best 49 maxdepth 5  255 s
+rep 159/771 deg 2936 cliques 7936 best 49 maxdepth 5  255 s
+rep 179/771 deg 195 cliques 7936 best 49 maxdepth 5  256 s
+rep 199/771 deg 0 cliques 7936 best 49 maxdepth 5  257 s
+rep 219/771 deg 2034 cliques 7936 best 49 maxdepth 5  258 s
+rep 239/771 deg 39 cliques 7936 best 49 maxdepth 5  259 s
+rep 259/771 deg 258 cliques 7936 best 49 maxdepth 5  260 s
+rep 279/771 deg 868 cliques 7936 best 49 maxdepth 5  260 s
+rep 299/771 deg 426 cliques 7936 best 49 maxdepth 5  261 s
+rep 319/771 deg 654 cliques 7936 best 49 maxdepth 5  261 s
+rep 339/771 deg 1398 cliques 7936 best 49 maxdepth 5  262 s
+rep 359/771 deg 228 cliques 7936 best 49 maxdepth 5  262 s
+rep 379/771 deg 440 cliques 7936 best 49 maxdepth 5  263 s
+rep 399/771 deg 546 cliques 7936 best 49 maxdepth 5  263 s
+rep 419/771 deg 0 cliques 7936 best 49 maxdepth 5  264 s
+rep 439/771 deg 323 cliques 7936 best 49 maxdepth 5  264 s
+rep 459/771 deg 1632 cliques 7936 best 49 maxdepth 5  265 s
+rep 479/771 deg 1842 cliques 7936 best 49 maxdepth 5  265 s
+rep 499/771 deg 32 cliques 7936 best 49 maxdepth 5  266 s
+rep 519/771 deg 0 cliques 7936 best 49 maxdepth 5  266 s
+rep 539/771 deg 1501 cliques 7936 best 49 maxdepth 5  266 s
+rep 559/771 deg 454 cliques 7936 best 49 maxdepth 5  266 s
+rep 579/771 deg 1009 cliques 7936 best 49 maxdepth 5  267 s
+rep 599/771 deg 566 cliques 7936 best 49 maxdepth 5  267 s
+rep 619/771 deg 0 cliques 7936 best 49 maxdepth 5  267 s
+rep 639/771 deg 6 cliques 7936 best 49 maxdepth 5  267 s
+rep 659/771 deg 1 cliques 7936 best 49 maxdepth 5  267 s
+rep 679/771 deg 481 cliques 7936 best 49 maxdepth 5  267 s
+rep 699/771 deg 14 cliques 7936 best 49 maxdepth 5  267 s
+rep 719/771 deg 0 cliques 7936 best 49 maxdepth 5  267 s
+rep 739/771 deg 0 cliques 7936 best 49 maxdepth 5  267 s
+rep 759/771 deg 0 cliques 7936 best 49 maxdepth 5  267 s
+EXACT COMPLETE: m-cliques (up to normaliser, as enumerated) 7936, largest clique seen 5, best columns 49
+free-column histogram: 3:7888 4:48
+[build] sha256 out_dump_19_49.txt d768955eca4515fbc82211c140ec08c5e281841a7cb5b6aa055b6dcfd610e6e4
+[replay] $ cc -O3 -o orbq6 programs/orbq6.c
+[replay] $ python3 programs/mkspec.py 19 9,3,3,3 > s19a.txt
+[replay] sha256 s19a.txt 3e50e22e3e52ebf0965ebc07fc61336de7a59767dce7992619cc483ab50ecc98
+[replay] $ NOORDER=1 ./orbq6 s19a.txt 5 4 out
+----- [replay] stdout of orbq6 -----
+N=19 |G|=9 normaliser gens=11 target m=5 nfree=4
+starters 189751059, vertices 423360  (3.3 s)
+normaliser orbits (representatives) 771
+rep 19/771 deg 880 cliques 0 best 0 maxdepth 2  4 s
+rep 39/771 deg 1202 cliques 0 best 0 maxdepth 2  4 s
+clique #1: 45 orbit columns, 39 free candidates, 3 mutually QI -> 48 columns
+DUMP out_dump_19_48.txt  (45 orbit columns + 3 free)
+clique #529: 45 orbit columns, 66 free candidates, 4 mutually QI -> 49 columns
+DUMP out_dump_19_49.txt  (45 orbit columns + 4 free)
+rep 59/771 deg 5468 cliques 7936 best 49 maxdepth 5  236 s
+rep 79/771 deg 1660 cliques 7936 best 49 maxdepth 5  237 s
+rep 99/771 deg 1732 cliques 7936 best 49 maxdepth 5  246 s
+rep 119/771 deg 716 cliques 7936 best 49 maxdepth 5  253 s
+rep 139/771 deg 2214 cliques 7936 best 49 maxdepth 5  253 s
+rep 159/771 deg 2936 cliques 7936 best 49 maxdepth 5  253 s
+rep 179/771 deg 195 cliques 7936 best 49 maxdepth 5  254 s
+rep 199/771 deg 0 cliques 7936 best 49 maxdepth 5  255 s
+rep 219/771 deg 2034 cliques 7936 best 49 maxdepth 5  256 s
+rep 239/771 deg 39 cliques 7936 best 49 maxdepth 5  257 s
+rep 259/771 deg 258 cliques 7936 best 49 maxdepth 5  257 s
+rep 279/771 deg 868 cliques 7936 best 49 maxdepth 5  258 s
+rep 299/771 deg 426 cliques 7936 best 49 maxdepth 5  259 s
+rep 319/771 deg 654 cliques 7936 best 49 maxdepth 5  259 s
+rep 339/771 deg 1398 cliques 7936 best 49 maxdepth 5  259 s
+rep 359/771 deg 228 cliques 7936 best 49 maxdepth 5  260 s
+rep 379/771 deg 440 cliques 7936 best 49 maxdepth 5  261 s
+rep 399/771 deg 546 cliques 7936 best 49 maxdepth 5  261 s
+rep 419/771 deg 0 cliques 7936 best 49 maxdepth 5  262 s
+rep 439/771 deg 323 cliques 7936 best 49 maxdepth 5  262 s
+rep 459/771 deg 1632 cliques 7936 best 49 maxdepth 5  263 s
+rep 479/771 deg 1842 cliques 7936 best 49 maxdepth 5  263 s
+rep 499/771 deg 32 cliques 7936 best 49 maxdepth 5  264 s
+rep 519/771 deg 0 cliques 7936 best 49 maxdepth 5  264 s
+rep 539/771 deg 1501 cliques 7936 best 49 maxdepth 5  264 s
+rep 559/771 deg 454 cliques 7936 best 49 maxdepth 5  264 s
+rep 579/771 deg 1009 cliques 7936 best 49 maxdepth 5  264 s
+rep 599/771 deg 566 cliques 7936 best 49 maxdepth 5  265 s
+rep 619/771 deg 0 cliques 7936 best 49 maxdepth 5  265 s
+rep 639/771 deg 6 cliques 7936 best 49 maxdepth 5  265 s
+rep 659/771 deg 1 cliques 7936 best 49 maxdepth 5  265 s
+rep 679/771 deg 481 cliques 7936 best 49 maxdepth 5  265 s
+rep 699/771 deg 14 cliques 7936 best 49 maxdepth 5  265 s
+rep 719/771 deg 0 cliques 7936 best 49 maxdepth 5  265 s
+rep 739/771 deg 0 cliques 7936 best 49 maxdepth 5  265 s
+rep 759/771 deg 0 cliques 7936 best 49 maxdepth 5  265 s
+EXACT COMPLETE: m-cliques (up to normaliser, as enumerated) 7936, largest clique seen 5, best columns 49
+free-column histogram: 3:7888 4:48
+[replay] sha256 out_dump_19_49.txt d768955eca4515fbc82211c140ec08c5e281841a7cb5b6aa055b6dcfd610e6e4
+sha256 CA_19_2_49_3.txt (submitted) d768955eca4515fbc82211c140ec08c5e281841a7cb5b6aa055b6dcfd610e6e4
+RESULT: build and replay both IDENTICAL to the submitted file

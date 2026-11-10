@@ -1,0 +1,20 @@
+RECIPE for CA_19_2_49_3.txt, written by programs/recipe.sh
+date (UTC): 2026-11-10T22:52:32Z
+machine: Linux x86_64; compiler: cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; python: Python 3.13.18
+seeds: none (exhaustive search, no random numbers); stop rule: search runs to completion, no clock
+inputs: none (no input array)
+sha256 programs/orbq6.c 18a0559ca3636e6a09563f489c0011032b2952ecfb46b205d2754ed9ebf99e31
+sha256 programs/mkspec.py 34318f61c12c231434f8f21913ac58cc77e53007853732b5855758c230c76504
+sha256 programs/s19a.txt 3e50e22e3e52ebf0965ebc07fc61336de7a59767dce7992619cc483ab50ecc98
+[build] $ cc -O3 -o orbq6 programs/orbq6.c
+[build] $ python3 programs/mkspec.py 19 9,3,3,3 > s19a.txt
+[build] sha256 s19a.txt 3e50e22e3e52ebf0965ebc07fc61336de7a59767dce7992619cc483ab50ecc98
+[build] $ NOORDER=1 ./orbq6 s19a.txt 5 4 out
+[build] sha256 out_dump_19_49.txt d768955eca4515fbc82211c140ec08c5e281841a7cb5b6aa055b6dcfd610e6e4
+[replay] $ cc -O3 -o orbq6 programs/orbq6.c
+[replay] $ python3 programs/mkspec.py 19 9,3,3,3 > s19a.txt
+[replay] sha256 s19a.txt 3e50e22e3e52ebf0965ebc07fc61336de7a59767dce7992619cc483ab50ecc98
+[replay] $ NOORDER=1 ./orbq6 s19a.txt 5 4 out
+[replay] sha256 out_dump_19_49.txt d768955eca4515fbc82211c140ec08c5e281841a7cb5b6aa055b6dcfd610e6e4
+sha256 CA_19_2_49_3.txt (submitted) d768955eca4515fbc82211c140ec08c5e281841a7cb5b6aa055b6dcfd610e6e4
+RESULT: build and replay both IDENTICAL to the submitted file
