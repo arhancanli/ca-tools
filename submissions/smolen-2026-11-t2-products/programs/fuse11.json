@@ -1,0 +1,4 @@
+{"format": "construction-cert-1", "construction": "fuse-1", "t": 2, "v": 11,
+ "input": {"file": "CA_167_2_14_12.txt", "sha256": "6b7b5a29116f286ddf445460d5af37ffd1e853acb000e5f4d5216c3af7855fc5"},
+ "rows": [0, 1],
+ "expected": {"N": 165, "k": 14, "array_sha256": "25eb3336d8d95494621fb7aff7545dd52aa14789aecc92d02d1660c9533ecf95"}}
