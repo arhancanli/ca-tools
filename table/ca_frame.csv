@@ -503,6 +503,7 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 2,8,17088,281,row,CITED,t2-v8-k17088-1,,,none,,Direct product,,Direct product,t2-v8-k17088-1,,2026-08-23,2026-11-10
 2,8,18448,282,row,CITED,t2-v8-k18448-1,,,none,,PCAxPCA,,PCAxPCA,t2-v8-k18448-1,,2026-08-23,2026-11-10
 2,8,20000,283,row,CITED,t2-v8-k20000-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v8-k20000-1,,2026-08-23,2026-11-10
+2,8,32768,288,row,VERIFIED,t2-v8-k32768-1,,,certificate,tools/cphf/cphfcheck table/certificates/CPHF_5_32768_8_2.txt 2 8 expand CA.txt affine,"Sherwood covering perfect hash family (affine): all 5-tuples of GF(8), the 5-fold direct product of OA(64; 8, 8, 2)",,"Sherwood covering perfect hash family (affine): all 5-tuples of GF(8), the 5-fold direct product of OA(64; 8, 8, 2)",t2-v8-k32768-1,,2026-11-10,2026-11-10
 2,9,10,81,row,CITED,t2-v9-k10-1,,,file,table/arrays/CA_81_2_10_9.txt,orthogonal array,,"orthogonal array || Dwyer CA_Database source code ""OA"" (Aaron Dwyer's abbreviation for the method; many of his arrays cite personal communication with Colbourn)",t2-v9-k10-1;t2-v9-k10-2,,2026-08-23,2026-11-10
 2,9,11,102,row,CITED,t2-v9-k11-1,,,none,,simulated annealing (Torres-Jimenez),,simulated annealing (Torres-Jimenez),t2-v9-k11-1,,2026-08-23,2026-11-10
 2,9,13,105,row,CITED,t2-v9-k13-1,,,none,,Fix 1 symbols (Meagher-Stevens),,Fix 1 symbols (Meagher-Stevens),t2-v9-k13-1,,2026-08-23,2026-11-10
@@ -1059,7 +1060,7 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 2,13,6110,614,row,CITED,t2-v13-k6110-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v13-k6110-1,,2026-08-23,2026-11-10
 2,13,6305,622,row,CITED,t2-v13-k6305-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v13-k6305-1,,2026-08-23,2026-11-10
 2,13,7150,629,row,CITED,t2-v13-k7150-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v13-k7150-1,,2026-08-23,2026-11-10
-2,13,20000,637,row,CITED,t2-v13-k20000-1,,,none,,Direct product,,Direct product,t2-v13-k20000-1,,2026-08-23,2026-11-10
+2,13,28561,637,row,VERIFIED,t2-v13-k28561-1,,,certificate,tools/cphf/cphfcheck table/certificates/CPHF_4_28561_13_2.txt 2 13 expand CA.txt affine,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(13), the 4-fold direct product of OA(169; 13, 13, 2)",,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(13), the 4-fold direct product of OA(169; 13, 13, 2)",t2-v13-k28561-1,,2026-11-10,2026-11-10
 2,14,6,196,row,CITED,t2-v14-k6-1,,,none,,orthogonal array,,orthogonal array,t2-v14-k6-1,,2026-08-23,2026-11-10
 2,14,7,203,row,CITED,t2-v14-k7-1,,,none,,Add Factor SO (AG-TJ-IM),,Add Factor SO (AG-TJ-IM),t2-v14-k7-1,,2026-08-23,2026-11-10
 2,14,8,213,row,CITED,t2-v14-k8-1,,,none,,Add Factor SO (AG-TJ-IM),,Add Factor SO (AG-TJ-IM),t2-v14-k8-1,,2026-08-23,2026-11-10
@@ -1582,7 +1583,7 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 2,16,11660,968,row,CITED,t2-v16-k11660-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v16-k11660-1,,2026-08-23,2026-11-10
 2,16,11700,969,row,CITED,t2-v16-k11700-1,,,none,,PCAxPCA,,PCAxPCA,t2-v16-k11700-1,,2026-08-23,2026-11-10
 2,16,12960,970,row,CITED,t2-v16-k12960-1,,,none,,Direct product,,Direct product,t2-v16-k12960-1,,2026-08-23,2026-11-10
-2,16,20000,976,row,CITED,t2-v16-k20000-1,,,none,,Direct product,,Direct product,t2-v16-k20000-1,,2026-08-23,2026-11-10
+2,16,65536,976,row,VERIFIED,t2-v16-k65536-1,,,certificate,tools/cphf/cphfcheck table/certificates/CPHF_4_65536_16_2.txt 2 16 expand CA.txt affine,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(16), the 4-fold direct product of OA(256; 16, 16, 2)",,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(16), the 4-fold direct product of OA(256; 16, 16, 2)",t2-v16-k65536-1,,2026-11-10,2026-11-10
 2,17,18,289,row,CITED,t2-v17-k18-1,,,none,,orthogonal array,,orthogonal array,t2-v17-k18-1,,2026-08-23,2026-11-10
 2,17,20,350,row,VERIFIED,t2-v17-k20-2,7,exact,file,table/arrays/CA_350_2_20_17.txt,"CA(350;2,20,17): row deletion + tabu repair (waveJ_free/wj_sa2.py) starting from OA(19^2;2,20,19) (Bush) fused twice (CKRS fusion, Lemma F), 357 rows",,"CA(350;2,20,17): row deletion + tabu repair (waveJ_free/wj_sa2.py) starting from OA(19^2;2,20,19) (Bush) fused twice (CKRS fusion, Lemma F), 357 rows",t2-v17-k20-2,t2-v17-k20-1,2026-11-01,2026-11-10
 2,17,21,354,row,CITED,t2-v17-k21-1,,,none,,projection (C) postop NCK,,projection (C) postop NCK,t2-v17-k21-1,,2026-08-23,2026-11-10
@@ -1722,7 +1723,7 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 2,17,13804,1095,row,CITED,t2-v17-k13804-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v17-k13804-1,,2026-08-23,2026-11-10
 2,17,14008,1103,row,CITED,t2-v17-k14008-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v17-k14008-1,,2026-08-23,2026-11-10
 2,17,15640,1104,row,CITED,t2-v17-k15640-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v17-k15640-1,,2026-08-23,2026-11-10
-2,17,20000,1105,row,CITED,t2-v17-k20000-1,,,none,,Direct product,,Direct product,t2-v17-k20000-1,,2026-08-23,2026-11-10
+2,17,83521,1105,row,VERIFIED,t2-v17-k83521-1,,,certificate,tools/cphf/cphfcheck table/certificates/CPHF_4_83521_17_2.txt 2 17 expand CA.txt affine,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(17), the 4-fold direct product of OA(289; 17, 17, 2)",,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(17), the 4-fold direct product of OA(289; 17, 17, 2)",t2-v17-k83521-1,,2026-11-10,2026-11-10
 2,18,7,324,row,CITED,t2-v18-k7-1,,,none,,orthogonal array,,orthogonal array,t2-v18-k7-1,,2026-08-23,2026-11-10
 2,18,9,346,row,CITED,t2-v18-k9-1,,,none,,Add Factor SO (AG-TJ-IM),,Add Factor SO (AG-TJ-IM),t2-v18-k9-1,,2026-08-23,2026-11-10
 2,18,10,349,row,CITED,t2-v18-k10-1,,,none,,Add Factor SO (AG-TJ-IM),,Add Factor SO (AG-TJ-IM),t2-v18-k10-1,,2026-08-23,2026-11-10
@@ -2108,7 +2109,7 @@ t,v,k,N,basis,tier,id,constant_rows,constant_rows_basis,get,get_ref,construction
 2,19,18354,1369,row,CITED,t2-v19-k18354-1,,,none,,Direct product,,Direct product,t2-v19-k18354-1,,2026-08-23,2026-11-10
 2,19,18525,1370,row,CITED,t2-v19-k18525-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v19-k18525-1,,2026-08-23,2026-11-10
 2,19,19038,1382,row,CITED,t2-v19-k19038-1,,,none,,PCAx2PCA,,PCAx2PCA,t2-v19-k19038-1,,2026-08-23,2026-11-10
-2,19,20000,1387,row,CITED,t2-v19-k20000-1,,,none,,Direct product,,Direct product,t2-v19-k20000-1,,2026-08-23,2026-11-10
+2,19,100000,1387,row,VERIFIED,t2-v19-k100000-1,,,certificate,tools/cphf/cphfcheck table/certificates/CPHF_4_100000_19_2.txt 2 19 expand CA.txt affine,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(19), the 4-fold direct product of OA(361; 19, 19, 2)",,"Sherwood covering perfect hash family (affine): all 4-tuples of GF(19), the 4-fold direct product of OA(361; 19, 19, 2)",t2-v19-k100000-1,,2026-11-10,2026-11-10
 2,20,6,400,row,CITED,t2-v20-k6-1,,,none,,orthogonal array,,orthogonal array,t2-v20-k6-1,,2026-08-23,2026-11-10
 2,20,7,423,row,CITED,t2-v20-k7-1,,,none,,Add Factor SO (AG-TJ-IM),,Add Factor SO (AG-TJ-IM),t2-v20-k7-1,,2026-08-23,2026-11-10
 2,20,9,425,row,CITED,t2-v20-k9-1,,,none,,Add Factor SO (AG-TJ-IM),,Add Factor SO (AG-TJ-IM),t2-v20-k9-1,,2026-08-23,2026-11-10
