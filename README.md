@@ -12,6 +12,19 @@ Built as a contribution to the covering array community, alongside the
 CAs R package by Ulrike Groemping (github.com/ugroempi/CAs), which preserves
 the November 2024 status of Charles J. Colbourn's covering array tables.
 
+What the table covers. The table starts from Charles Colbourn's tables as of
+November 2024. Since then it adds every array submitted and checked here,
+along with published bounds from the literature. The literature is checked
+every month, starting November 2026. A size marked VERIFIED has an array that
+was checked exactly, and the table says where to get it. A size marked CITED is a published bound with no
+array here yet. If you know of a result that's missing, or a size that's
+wrong, please open an issue. It will be added with credit to its authors.
+
+Many arrays here were found with AI-written search programs, and the rows
+say so where it is known. Every array is checked exactly before it is entered, whatever
+produced it, and credit goes to the people who submit it and the published
+methods it uses.
+
 ## What is in here
 
 ca_verify.c

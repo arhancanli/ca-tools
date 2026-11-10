@@ -526,6 +526,16 @@ def render(rows, manifest, date):
              "k = 10,000 at higher strengths; past that, a stair-step holds only arrays added "
              "here, its rungs say so, and the derived sizes page evaluates the constructions out "
              "to k = 100,000 for comparison.</p>" % DERIVED_COUNT[0])
+    H.append("<p><b>What the table covers.</b> The table starts from Charles Colbourn's tables as of "
+             "November 2024. Since then it adds every array submitted and checked here, along with "
+             "published bounds from the literature. The literature is checked every month, starting "
+             "November 2026. A size marked VERIFIED has an array that was checked exactly, and the table says where to get it. A size "
+             "marked CITED is a published bound with no array here yet. If you know of a result that's "
+             "missing, or a size that's wrong, please <a href=\"%s/issues\">open an issue</a>. It will "
+             "be added with credit to its authors.</p>" % REPO_URL)
+    H.append("<p>Many arrays here were found with AI-written search programs, and the rows say so where it is known. "
+             "Every array is checked exactly before it is entered, whatever produced it, and credit "
+             "goes to the people who submit it and the published methods it uses.</p>")
     H.append("<p>Rows are stair-steps: an entry (t, v, k, N) means N runs suffice for up "
              "to k columns, so the best known N at k is the smallest N among entries with "
              "at least k columns. The construction column names the construction or "

@@ -138,8 +138,18 @@ def r_key(r):
 
 
 def original_credit(notes):
-    m = re.search(r"(?:^|; )credit: ([^;]+)", notes or "")
-    return m.group(1).strip() if m else None
+    """The credit of a row's notes: from "credit: " to the first ';' outside parentheses, so that
+    a size written CA(N;t,k,v) inside the credit does not cut it."""
+    m = re.search(r"(?:^|; )credit: ", notes or "")
+    if not m:
+        return None
+    depth, out = 0, []
+    for ch in notes[m.end():]:
+        if ch == ";" and depth == 0:
+            break
+        depth += (ch == "(") - (ch == ")" and depth > 0)
+        out.append(ch)
+    return "".join(out).strip() or None
 
 
 def resolve(e, ctx, seen):

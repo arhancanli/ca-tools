@@ -1,4 +1,4 @@
-# Conventions of the covering array table (version 1.4, November 2026)
+# Conventions of the covering array table (version 1.5, November 2026)
 
 Parts that describe files not built yet say "will" or "planned". Anything that changes what the CAs package
 reads is announced to its author before it goes live (section 5).
@@ -74,6 +74,8 @@ line in the change log at the end.
   here from the record itself, the label list (section 8) says so with the basis "solved from the
   record" or "read from the record". A size reached only by such a reading is never counted. Proven
   rules applied to counted rows are different (section 6).
+- Since November 2024 the table adds every array submitted and checked here and published bounds from the
+  literature, which is checked every month starting November 2026 ("What the table covers" in the README).
 
 ## 3. Tiers of a row
 
@@ -425,3 +427,5 @@ A search box at the top jumps to a point by t, v and k.
   at its own width counts, but does not widen the counted range of the frame, and is flagged for the
   maintainer by tools/check_submission.py and, on every run, tools/consistency.py, with a list of rows accepted
   knowingly, table/above_rule_rows.csv (sections 4 and 6). The frame file is unchanged by it.
+- Version 1.5 (November 2026). Section 2 says what the table adds to the baseline and that the literature is
+  checked every month starting November 2026. No rule changed.

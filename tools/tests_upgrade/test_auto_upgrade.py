@@ -83,6 +83,19 @@ def main():
 
         rc, out = run(root, "x;y")
         check("bad slug refused", rc == 2)
+
+    # the credit runs to the first ';' outside parentheses, in both copies of the parser
+    import importlib.util
+    tools = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    note = ("credit: A. Author 2025 (the ingredient CA(5951;3,1463,11)), B. Person (the derivation); "
+            "exceeds table: previous best 6000")
+    for mod in ("auto_upgrade", "check_upgrades"):
+        spec = importlib.util.spec_from_file_location(mod, os.path.join(tools, mod + ".py"))
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        check("%s: credit not cut at a ';' inside CA(...)" % mod, m.original_credit(note) ==
+              "A. Author 2025 (the ingredient CA(5951;3,1463,11)), B. Person (the derivation)")
+        check("%s: plain credit" % mod, m.original_credit("x; credit: Jane Smith; more") == "Jane Smith")
     print("%d failure(s)" % fails)
     return 1 if fails else 0
 
