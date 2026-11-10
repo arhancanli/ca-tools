@@ -14,10 +14,13 @@ from the `docs/` folder of `main` and regenerated on every push to
 
 The table records covering arrays of strength 2 to 6 with at most 25
 symbols and at most 100,000 columns. The check refuses a claim outside
-these limits. Sizes obtained by fusing symbols are not entered as rows.
-They appear only in the derived lookup (`../table/derived.csv`), which
-the maintainer computes from the table. The project takes arrays and
-certificates, not code (Rule 7).
+these limits. A size that follows from a table row by fusing symbols,
+with no array of its own, is not entered as a row. It appears in the
+derived lookup (`../table/derived.csv`) and, where the fusing is proven,
+as a derived line of the frame file (`../table/ca_frame.csv`), both
+computed from the table on every change. An array built by fusing and
+then submitted and checked is entered like any other. The project takes
+arrays and certificates, not code (Rule 7).
 
 Some contributors keep arrays beyond these limits in their own
 repositories. Arhan Canli's strength-3 families wider than 100,000

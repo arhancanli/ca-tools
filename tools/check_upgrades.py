@@ -66,6 +66,7 @@ import cphf_cert as cc  # noqa: E402
 import ca_shard_merge as sm  # noqa: E402
 import external_array as ea  # noqa: E402
 from cphf_cert import CertError  # noqa: E402
+import credit_text  # noqa: E402
 
 HEADER = ["kind", "sha256", "credit", "notes"]
 KINDS = ("array", "family")
@@ -139,17 +140,8 @@ def r_key(r):
 
 def original_credit(notes):
     """The credit of a row's notes: from "credit: " to the first ';' outside parentheses, so that
-    a size written CA(N;t,k,v) inside the credit does not cut it."""
-    m = re.search(r"(?:^|; )credit: ", notes or "")
-    if not m:
-        return None
-    depth, out = 0, []
-    for ch in notes[m.end():]:
-        if ch == ";" and depth == 0:
-            break
-        depth += (ch == "(") - (ch == ")" and depth > 0)
-        out.append(ch)
-    return "".join(out).strip() or None
+    a size written CA(N;t,k,v) inside the credit does not cut it (tools/credit_text.py)."""
+    return credit_text.credit(notes) or None
 
 
 def resolve(e, ctx, seen):

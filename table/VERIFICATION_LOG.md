@@ -1,5 +1,10 @@
 # Verification log
 
+How the checks of the table were run, by date: a narrative, not a record per row. The record of
+each row is its `verify_stamp` (verifier, version or commit, date, machine) and its `array_sha256`
+(or `family_sha256`) in `ca_table.csv`. The checks of submissions (since 2026-10-18) are
+reported in their pull requests.
+
 ## Run of record, 2026-08-23
 
 Venue: Apple Silicon Mac, 16 cores, R 4.6.1, macOS Tahoe 26.6.2.

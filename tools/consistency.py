@@ -169,7 +169,32 @@ def counts(rows, man):
     return dict(methods=methods, by_family=by_family, rows=len(rows), tiers=tiers, arrays=len(man), status=status,
                 nofile=len(nofile), nofile_src=nofile_src, nofile_above=nofile_above,
                 points=sum(1 for r in rows if r["source_id"] == "S1"), smaller_n=smaller_n, more_k=more_k, worse=worse,
-                latest=latest)
+                latest=latest, frame=frame_counts(),
+                big=sum(1 for r in rows if num(r["N"]) > 2 ** 31 - 1))
+
+
+def frame_counts():
+    """Counts of table/ca_frame.csv that table/README.md quotes (since 2026-11-10 generated here, not
+    written by hand): lines, derived lines, workings with add1 (and at t = 3), workings that mix two
+    kinds of step, VERIFIED row lines with get none, CITED row lines that take get from a tied VERIFIED
+    row. None when the frame file is missing."""
+    if not os.path.isfile(FRAME):
+        return None
+    with open(FRAME, newline="", encoding="utf-8") as f:
+        fr = list(csv.DictReader(f))
+    der = [x for x in fr if x["basis"] == "derived"]
+
+    def steps(w):
+        m = re.search(r"((?::(?:fuse|derive|add1))+)$", w)
+        return set(re.findall(r"fuse|derive|add1", m.group(1))) if m else set()
+    add1 = [x for x in der if "add1" in steps(x["construction"])]
+    return dict(lines=len(fr), derived=len(der), add1=len(add1),
+                add1_t3=sum(1 for x in add1 if x["t"] == "3"),
+                mixed=sum(1 for x in der if len(steps(x["construction"])) > 1),
+                verified_none=sum(1 for x in fr if x["basis"] == "row" and x["tier"] == "VERIFIED"
+                                  and x["get"] == "none"),
+                cited_get=sum(1 for x in fr if x["basis"] == "row" and x["tier"] == "CITED"
+                              and x["get"] != "none"))
 
 
 def fmt(n):
@@ -205,8 +230,19 @@ def block(c):
         "- against the frozen tables at their %s points, the lookups over CITED and "
         "VERIFIED rows give a smaller N at %s and more columns at %s, and a worse "
         "value at %s" % (fmt(c["points"]), fmt(c["smaller_n"]), fmt(c["more_k"]), fmt(c["worse"])),
-        END,
     ]
+    lines.append("- rows whose N is above 2^31 - 1, the largest 32-bit integer (so "
+                 "table/ca_table.R reads N as numeric): %s" % fmt(c["big"]))
+    fc = c.get("frame")
+    if fc:
+        lines.append(
+            "- frame file `ca_frame.csv`: %s lines, %s of them derived; add1 is in the working of %s "
+            "derived lines (%s at t = 3), and %s workings mix two kinds of step; get is none on %s "
+            "VERIFIED row lines (arrays the table cannot point to), and %s CITED row lines take get "
+            "from a VERIFIED row tied at their step"
+            % (fmt(fc["lines"]), fmt(fc["derived"]), fmt(fc["add1"]), fmt(fc["add1_t3"]), fmt(fc["mixed"]),
+               fmt(fc["verified_none"]), fmt(fc["cited_get"])))
+    lines.append(END)
     return "\n".join(lines)
 
 

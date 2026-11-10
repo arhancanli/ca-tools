@@ -21,6 +21,8 @@ Counts as of 2026-11-10, the latest entry date in the table:
 - VERIFIED rows by how they were checked: direct 1,061, certificate 225, certificate + fusing 2, construction certificate 12
 - VERIFIED rows without a stored array: 622 (S4 143, S5 100, S6 139, S7 230, S8 10), 279 of them above the best known size; 10 identified by their family, array not hashed
 - against the frozen tables at their 13,641 points, the lookups over CITED and VERIFIED rows give a smaller N at 2,376 and more columns at 2,426, and a worse value at 0
+- rows whose N is above 2^31 - 1, the largest 32-bit integer (so table/ca_table.R reads N as numeric): 847
+- frame file `ca_frame.csv`: 9,570 lines, 577 of them derived; add1 is in the working of 228 derived lines (27 at t = 3), and 152 workings mix two kinds of step; get is none on 3 VERIFIED row lines (arrays the table cannot point to), and 171 CITED row lines take get from a VERIFIED row tied at their step
 <!-- end of generated block -->
 
 The counts above are written by `../tools/consistency.py` after every
@@ -514,13 +516,14 @@ issue #62), so the fused sizes at t = 3 with 2 and 3 symbols past 10,000 columns
 are withheld. A row past the baseline's column range that `derived.csv` beats at
 its own width counts, but does not widen the counted range (version 1.4); such
 rows accepted knowingly are listed in `above_rule_rows.csv`.
-On 2026-11-09 add1 is in the working of 225 steps of the frame (27 of them at
-t = 3, each one step from a covering perfect hash family row, for example
+add1 is in the working of many steps of the frame (how many, and how many at
+t = 3, is in the generated counts at the top). At t = 3 each is one step from a
+covering perfect hash family row, for example
 CA(832; 3, 15180, 4), `Sherwood covering perfect hash family (affine):add1`,
-from CA(784; 3, 15179, 4)), for example
-CA(4257520; 6, 238, 8), `SCPHF Random Extension (CLS):add1`, below Colbourn's own
-"Add 1 factors" size 4259480 there, because its strength 4 ingredient is now a
-smaller row (`t4-v8-k274-2`).
+from CA(784; 3, 15179, 4). At higher strengths a step can go below Colbourn's own
+"Add 1 factors" size, for example CA(4257520; 6, 238, 8),
+`SCPHF Random Extension (CLS):add1`, below his 4259480 there, because its
+strength 4 ingredient is now a smaller row (`t4-v8-k274-2`).
 
 There is one line per stair step, in the sense of the page: for each t and v, a
 step (k, N) has N smallest at every k' >= k and k the largest width with that N.
@@ -534,8 +537,8 @@ its working: the source row's own construction label followed by one `:fuse`,
 `:derive` or `:add1` per step, in the order applied (for example
 `Sherwood covering perfect hash family (affine):fuse:fuse`). This is close to the
 form CAs shows in its Source column, but not the same: CAs 0.25 writes a run of
-`:fuse` or of `:add1`, never both, and `:derive` last, while here 152 of the 554
-workings mix them (`:fuse:add1`, `:derive:fuse`, `:derive:fuse:add1`), so read
+`:fuse` or of `:add1`, never both, and `:derive` last, while here some
+workings mix them (how many is in the generated counts at the top) (`:fuse:add1`, `:derive:fuse`, `:derive:fuse:add1`), so read
 the steps with the split below, not with CAs's own label parser. CA(5289; 3, 629, 10), from the VERIFIED CA(5291; 3, 629,
 11), reads `Sherwood covering perfect hash family (affine):fuse`. The source row's
 id (here `t3-v11-k629-1`) is in ids_all, so the author stays traceable, and
@@ -575,9 +578,15 @@ order of `CONVENTIONS.md`, section 9: a CITED row first, then more constant rows
 (an unknown count, an empty constant_rows, ranks below every known count, so a
 row with a counted array is named before an equal row whose array was never
 counted, even an earlier one), the earlier entry date, the wider array, the id.
-get is none on every CITED line, on every derived line, and on a VERIFIED row
-whose array the table cannot point to; that includes 34 lines whose arrays ship
-inside CAs itself (`tjCA`, `CAEX_CAs`), which the table does not reference.
+get is none on every derived line, and on a row line when neither the named row
+nor a counted VERIFIED row tied at its step has an array the table can point to.
+So most CITED lines have get none, and a CITED line has an array (get file, for
+example) when a VERIFIED row ties it; a VERIFIED line has get none when its array
+is not stored, such as the withdrawn files of the CAs data (`TJ2level_CAs`,
+`CAEX_CAs`). The generated counts at the top give both numbers. The tier of a
+derived line is that of its weakest input row: VERIFIED there means that every
+input row is VERIFIED, not that the derived array itself was built or checked
+(it was not, and its get is none).
 family is empty on every line for now, so `read.csv` reads it as logical NA;
 test it with `is.na(fr$family) | fr$family == ""`.
 
@@ -654,7 +663,8 @@ leave the disputed CITED values out as well, filter them first and use
 Colbourn tables in `CAs::colbournBigFrame` and return the best N for
 at least k columns, or the most columns for at most N runs, with that
 row's Source text. This table can stand in for them.
-`tools/ecan_compare.R` checks it. Its output with CAs 0.24-4 is
+`tools/ecan_compare.R` checks it. Its output with CAs 0.24-4 (it has not been run
+again with CAs 0.25, on CRAN since 2026-11-07) is
 kept in `../results/`, one file per run, the latest
 `ecan_compare_2026-10-25.txt`. The 13,641
 baseline rows (CITED, source S1) equal `colbournBigFrame` row for row,

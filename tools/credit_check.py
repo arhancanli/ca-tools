@@ -43,13 +43,13 @@ import re
 import urllib.request
 
 import builds_on as bo
+import credit_text
 
 DOI_RE = re.compile(r"10\.\d{4,9}/[^\s,;()\"<>]+", re.I)
 CA_RE = re.compile(r"\bCA\(\s*(\d+)\s*;\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)")
 INITIAL = r"(?:[A-Z]\.(?:-?[A-Z]\.)*\s?)"
 AUTHOR_RE = re.compile(r"^(?:%s)+((?:(?:van|von|de|der|da|di|le|la)\s)*[A-Z][A-Za-z'\-]+"
                        r"(?:[ -][A-Z][A-Za-z'\-]+)?)$" % INITIAL)
-CREDIT_RE = re.compile(r"credit:\s*([^;]+)", re.I)
 
 
 def short(text, n=90):
@@ -118,9 +118,11 @@ def same_person(credit_a, credit_b):
 
 
 def row_credit(row):
-    m = CREDIT_RE.search(row.get("notes") or "")
-    if m:
-        return m.group(1).strip()
+    """The credit of a table row (tools/credit_text.py: to the first ';' outside
+    parentheses), else the author-year in its source detail."""
+    c = credit_text.credit(row.get("notes"))
+    if c:
+        return c
     m = re.search(r"\(([^()]*?\b(?:19|20)\d\d)\b", row.get("source_detail") or "")
     return m.group(1).strip() if m else ""
 

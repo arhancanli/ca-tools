@@ -21,9 +21,11 @@ array here yet. If you know of a result that's missing, or a size that's
 wrong, please open an issue. It will be added with credit to its authors.
 
 Many arrays here were found with AI-written search programs, and the rows
-say so where it is known. Every array is checked exactly before it is entered, whatever
-produced it, and credit goes to the people who submit it and the published
-methods it uses.
+say so where it is known. Every array is checked before it is entered, whatever
+produced it: exactly (VERIFIED), or, when it is too large for the exact check
+in the time the public check has, on random column windows (SCREENED, listed
+but not counted as best known until its exact check passes). Credit goes to
+the people who submit it and the published methods it uses.
 
 ## What is in here
 
@@ -32,7 +34,7 @@ ca_verify.c
     text array (whitespace or comma separated, symbols 0..v-1 or 1..v,
     don't-care entries '-', '*', 'x', 'NA' or -1 allowed and contributing
     nothing to a projection that contains them, the rule of caverify
-    0.2.0), checks that every t-way interaction is covered, reports either
+    since 0.2.0), checks that every t-way interaction is covered, reports either
     VERIFIED or the missing
     tuples. Exit code 0/1/2 = verified / gaps / error, so it can gate a CI
     pipeline. Build: cc -O3 -pthread -o ca_verify ca_verify.c
@@ -106,7 +108,7 @@ form of the whole thing, read with the stair-step rule.
 ## R packages (r/)
 
 r/caverify/
-:   The verifier as an R package, caverify 0.2.0, on CRAN
+:   The verifier as an R package, caverify 0.3.0, on CRAN
     (`install.packages("caverify")`). A don't-care entry (NA)
     contributes nothing to a projection that contains it, so a verified
     array stays covering however its NA entries are later filled.
@@ -120,8 +122,8 @@ r/cafast/
 :   Fast C versions of routines of the CAs package (maxconstant_c,
     flexpos_c, markflex_c, postopNCK_c, count_core, and the power
     construction for any (t, k, v)), each tested against the CAs
-    original. Version 0.1.0 is under review at CRAN; the development
-    version here adds the change listed in its NEWS.md.
+    original. Version 0.1.0 is on CRAN (published 2026-10-28); the
+    development version here adds the change listed in its NEWS.md.
 
 r/countkernel/
 :   The development sources of cafast's counting kernel and of its

@@ -1,4 +1,4 @@
-# Conventions of the covering array table (version 1.5, November 2026)
+# Conventions of the covering array table (version 1.6, November 2026)
 
 Parts that describe files not built yet say "will" or "planned". Anything that changes what the CAs package
 reads is announced to its author before it goes live (section 5).
@@ -98,7 +98,9 @@ Current counts per tier are in `table/README.md`.
 - RETRACTED: defined for a VERIFIED row later found wrong. None exists. None is entered without
   telling the maintainer of the CAs package first (section 5).
 - Derived sizes are not rows. They live in `table/derived.csv` and, for proven rules, in the frame file
-  (section 6).
+  (section 6). A derived line of the frame file carries the tier of its weakest input row: VERIFIED
+  there means that every input row is VERIFIED, not that the derived array was built or checked here
+  (it was not, and its get is none).
 
 ## 4. Counting rules ("best known")
 
@@ -121,8 +123,10 @@ Frame rule (for the frame file `ca_frame.csv`, section 7)
   the baseline's column range that `derived.csv` beats at its own width does not widen it (section 6).
 - `ca_table.csv` itself is not changed by this rule.
 
-A guarantee for programs that do not filter on tier. CAs 0.25 with frozen=FALSE takes the smallest N
-over all rows at (t, v), whatever their tier. So the table guarantees that no SCREENED,
+A guarantee for programs that do not filter on tier. CAs 0.25 (on CRAN since 2026-11-07) with
+frozen=FALSE reads `ca_table.csv` and takes the smallest N over all rows at (t, v), whatever their
+tier; its default is still frozen=TRUE. The development version of CAs on GitHub (0.25-1) reads
+`ca_frame.csv` instead, which holds only counted steps. So the table guarantees that no SCREENED,
 FAILED_PENDING_RECHECK or DISPUTED row has an N below the counted best at its point. This holds today
 for every such row (SCREENED, FAILED_PENDING_RECHECK and DISPUTED), and `tools/consistency.py` checks it on every push: a pull request that adds a
 row breaking it fails, and a row already on main that breaks it is reported as a warning so the page
@@ -318,9 +322,11 @@ compares it with a fresh build),
 and it is the one table to read for "what is best here, how is it made, and how do I get it".
 The full history stays in `ca_table.csv`, which keeps every row.
 
-On the page, every rung gets a "get" link built from get and get_ref (the raw file, the deposit, the
-URL, the R call as text, or the certificate with its one-line command, or "no array, cited from ...").
-A search box at the top jumps to a point by t, v and k.
+[planned, not built yet] On the page, every rung will get a "get" link built from get and get_ref (the
+raw file, the deposit, the URL, the R call as text, or the certificate with its one-line command, or
+"no array, cited from ..."), and a search box at the top will jump to a point by t, v and k. Today the
+page links the array file, deposit or certificate where a row has one, and the rebuild command is in
+the frame file only.
 
 ## 8. Labels and workings
 
@@ -429,3 +435,6 @@ A search box at the top jumps to a point by t, v and k.
   knowingly, table/above_rule_rows.csv (sections 4 and 6). The frame file is unchanged by it.
 - Version 1.5 (November 2026). Section 2 says what the table adds to the baseline and that the literature is
   checked every month starting November 2026. No rule changed.
+- Version 1.6 (November 2026). Wording only, after the audit of 2026-11-10; no rule changed. Section 3
+  says what the tier of a derived line means, section 4 which file each version of CAs reads, and
+  section 7 marks the get links and the search box of the page as planned.

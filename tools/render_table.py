@@ -22,6 +22,8 @@ import sys
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(REPO, "table"))
 from ca_table import counted, check_method, identity  # noqa: E402  (the one definition of the counted rows)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import credit_text  # noqa: E402  (the one reader of a row's credit)
 REPO_URL = "https://github.com/chrispbsmolen/ca-tools"
 RAW_CSV = "https://raw.githubusercontent.com/chrispbsmolen/ca-tools/main/table/ca_table.csv"
 
@@ -79,19 +81,9 @@ def load(table_dir):
 
 def credit_of(r):
     """The text after "credit: " up to the first semicolon outside parentheses
-    (a semicolon inside, as in CA(15; 3, 12, 2), belongs to the credit)."""
-    notes = r.get("notes") or ""
-    i = notes.find("credit: ")
-    if i < 0:
-        return ""
-    s = notes[i + len("credit: "):]
-    depth = 0
-    for j, ch in enumerate(s):
-        if ch == ";" and depth == 0:
-            return s[:j].strip()
-        depth = max(0, depth + (ch == "(") - (ch == ")"))
-    # unbalanced parentheses: fall back to the first semicolon
-    return (s.split(";", 1)[0] if depth > 0 else s).strip()
+    (a semicolon inside, as in CA(15; 3, 12, 2), belongs to the credit); the one
+    reader is tools/credit_text.py."""
+    return credit_text.credit(r.get("notes"))
 
 
 CR = {}
@@ -130,7 +122,8 @@ def identity_html(r):
 def stamp_html(r):
     """The verification stamp with links: the verifier it names (caverify by
     version, on CRAN; ca_verify by the commit of its source), the stored array
-    if there is one, and the verification log."""
+    if there is one, and the verification notes (table/VERIFICATION_LOG.md, a narrative of how
+    the checks were run, not a record per row: the stamp is the record of the row)."""
     st = r.get("verify_stamp") or ""
     m = re.match(r"^(caverify) (\S+)(.*)$", st)
     m2 = re.match(r"^(ca_verify) ([0-9a-f]{7,40})(.*)$", st)
@@ -160,7 +153,7 @@ def stamp_html(r):
     c = SHA2CERT.get(row_key(r))
     if c:
         links.append('<a href="%s%s">certificate</a>' % (CERT_URL, html.escape(c)))
-    links.append('<a href="%s">verification log</a>' % LOG_URL)
+    links.append('<a href="%s">verification notes</a>' % LOG_URL)
     m = check_method(r) if r.get("tier") == "VERIFIED" else None
     label = '<b class=method>%s</b>: ' % m if m else ""
     return label + head + " (" + ", ".join(links) + ")"
@@ -197,6 +190,22 @@ def short_ref(rid):
     return (who + " " + year).strip()
 
 
+def ref_label(rid):
+    """short_ref, with a letter after the year where two works share it ('Colbourn 2015a',
+    'Colbourn 2015b'), in the file order of table/references.csv, so no label names two works."""
+    if not LABELS:
+        groups = {}
+        for i in REFS:
+            groups.setdefault(short_ref(i), []).append(i)
+        for lab, ids in groups.items():
+            for j, i in enumerate(ids):
+                LABELS[i] = lab if len(ids) == 1 else lab + "abcdefghijklmnopqrstuvwxyz"[j]
+    return LABELS.get(rid) or short_ref(rid)
+
+
+LABELS = {}
+
+
 CORRECTIONS_URL = "https://github.com/chrispbsmolen/ca-tools/blob/main/table/CREDIT_CORRECTIONS.csv"
 
 
@@ -217,7 +226,7 @@ def builds_on_html(r):
         if part in REFS:
             REFS_USED.add(part)
             out.append('<a href=#r%d>%s</a>' % (list(REFS).index(part) + 1,
-                                                html.escape(short_ref(part))))
+                                                html.escape(ref_label(part))))
         elif part.startswith("new "):
             link = part[4:].strip()
             url = link if link.startswith("http") else (
@@ -350,7 +359,9 @@ LEGEND = [
      "line), for rows with an array"),
     ("verify_stamp", "the verifier, its version or commit, the date and the machine; on this page "
      "each stamp links to that verifier (caverify on CRAN, or the ca_verify source at that commit), "
-     "to the array file or certificate where one is stored, and to the verification log"),
+     "to the array file or certificate where one is stored, and to the verification notes "
+     "(table/VERIFICATION_LOG.md: how the checks were run, by date, not a record per row; the stamp "
+     "and the array's SHA-256 are the record of the row)"),
     ("entered", "the date the row was added"),
     ("notes", "comparison with the previous best as of entry, credit, submission, and supersession "
      "notes; every construction belongs to the sources the row names, and a row whose construction "
@@ -460,7 +471,7 @@ def disputed_html(d, rows_tv):
     out = ('<br><span class="tag dis">disputed</span>the construction recorded for this entry, '
            '<i>%s</i>, did not give a covering array at the recorded size when checked here '
            '(<code>%s</code>); the recorded size stays listed and counted, and is not shown to '
-           'be unreachable (<a href="%s">verification log</a>)'
+           'be unreachable (<a href="%s">verification notes</a>)'
            % (html.escape(d["construction"] or d["source_detail"]),
               html.escape(d["source_detail"]), LOG_URL))
     if any(r["tier"] == "VERIFIED" and r["N"] <= d["N"] for r in rest):
@@ -518,7 +529,8 @@ def render(rows, manifest, date):
              "construction for an entry, as checked here, did not give a covering array at the "
              "recorded size, the "
              "entry stays as recorded and its rung is marked disputed (tier DISPUTED). No entry "
-             "here is a computed size. Sizes that follow from these entries by published "
+             "here is a size this table computed from other entries (a few CITED entries are values "
+             "of a published theorem's formula past the paper's own table, and say so). Sizes that follow from these entries by published "
              "constructions (fusing symbols, deriving a strength, Power CT and others) are "
              "recomputed on every change and listed separately, each with its arithmetic, on "
              "<a href=\"derived.html\">the derived sizes page</a> (%s points); they are not "
@@ -534,8 +546,11 @@ def render(rows, manifest, date):
              "missing, or a size that's wrong, please <a href=\"%s/issues\">open an issue</a>. It will "
              "be added with credit to its authors.</p>" % REPO_URL)
     H.append("<p>Many arrays here were found with AI-written search programs, and the rows say so where it is known. "
-             "Every array is checked exactly before it is entered, whatever produced it, and credit "
-             "goes to the people who submit it and the published methods it uses.</p>")
+             "Every array is checked before it is entered, whatever produced it: exactly (VERIFIED), "
+             "or, when it is too large for the exact check in the time the public check has, on "
+             "random column windows (SCREENED, listed but not counted as best known until its exact "
+             "check passes). Credit goes to the people who submit it and the published methods it "
+             "uses.</p>")
     H.append("<p>Rows are stair-steps: an entry (t, v, k, N) means N runs suffice for up "
              "to k columns, so the best known N at k is the smallest N among entries with "
              "at least k columns. The construction column names the construction or "
@@ -632,8 +647,9 @@ def render(rows, manifest, date):
                 link = ("" if not d else ' <a href="%s">%s</a>' % (
                     "https://arxiv.org/abs/" + d[6:] if d.startswith("arXiv:") else "https://doi.org/" + d,
                     html.escape(d if d.startswith("arXiv:") else "doi:" + d)))
-                H.append('<li id=r%d>%s%s <span class=mute>(%s)</span></li>'
-                         % (list(REFS).index(rid) + 1, html.escape(REFS[rid]["reference"]), link, rid))
+                H.append('<li id=r%d>%s%s <span class=mute>(%s; %s)</span></li>'
+                         % (list(REFS).index(rid) + 1, html.escape(REFS[rid]["reference"]), link,
+                            html.escape(ref_label(rid)), rid))
         H.append("</ol>")
     H.append("</main></body></html>")
     return "\n".join(H) + "\n"

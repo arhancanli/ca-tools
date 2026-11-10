@@ -9,7 +9,7 @@
 load_ca_table <- function(path = "ca_table.csv") {
     tab <- utils::read.csv(path, stringsAsFactors = FALSE,
                            colClasses = c(array_sha256 = "character", family_sha256 = "character"))
-    tab$N <- as.numeric(tab$N)   ## 844 entries exceed 32-bit integers
+    tab$N <- as.numeric(tab$N)   ## some N exceed 32-bit integers (count in README.md)
     tab
 }
 

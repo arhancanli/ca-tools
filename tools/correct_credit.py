@@ -20,6 +20,8 @@ Usage (a dry run unless --apply is given):
   --row t,v,k,N           the row, with --sha (array_sha256 or family_sha256, any prefix
                           of 8+ hex digits) or --source TEXT (part of source_detail) when
                           the size alone matches more than one row
+  --tier TIER             with --row: only rows of this tier (a SCREENED row and its
+                          VERIFIED twin share the size and the hash)
   --field                 notes, construction or builds_on
   --set VALUE             replace the field
   --add ID / --remove ID  builds_on only: add or remove one entry
@@ -127,7 +129,7 @@ def unlogged_changes(old_rows, new_rows, table_dir):
     return probs
 
 
-def find_row(rows, spec, sha=None, source=None):
+def find_row(rows, spec, sha=None, source=None, tier=None):
     try:
         t, v, k, N = (x.strip() for x in spec.split(","))
     except ValueError:
@@ -141,9 +143,12 @@ def find_row(rows, spec, sha=None, source=None):
              or (r.get("family_sha256") or "").startswith(sha)]
     if source:
         m = [r for r in m if source in (r.get("source_detail") or "")]
+    if tier:
+        m = [r for r in m if r["tier"] == tier]
     if not m:
-        raise SystemExit("no row matches %s%s%s" % (spec, " sha " + sha if sha else "",
-                                                       " source " + repr(source) if source else ""))
+        raise SystemExit("no row matches %s%s%s%s" % (spec, " sha " + sha if sha else "",
+                                                         " source " + repr(source) if source else "",
+                                                         " tier " + tier if tier else ""))
     if len(m) > 1:
         lines = "\n".join("  %s %s %s sha=%s %s" % (r["tier"], r["source_id"], r["entered"],
                                                     (r.get("array_sha256") or r.get("family_sha256") or "-")[:12],
@@ -243,6 +248,7 @@ def main(argv=None):
     ap.add_argument("--row")
     ap.add_argument("--sha")
     ap.add_argument("--source")
+    ap.add_argument("--tier")
     ap.add_argument("--field", choices=FIELDS)
     ap.add_argument("--set")
     ap.add_argument("--add")
@@ -267,7 +273,7 @@ def main(argv=None):
     if not (a.row and a.field and a.reason and a.requested_by):
         ap.error("--row, --field, --reason and --requested-by are required")
     refs = bo.load(a.table_dir)
-    r = find_row(rows, a.row, a.sha, a.source)
+    r = find_row(rows, a.row, a.sha, a.source, a.tier)
     old, new = new_value(r, a, refs)
     date = a.date or datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
     print("row: t=%s v=%s k=%s N=%s %s %s entered %s (key %s)"

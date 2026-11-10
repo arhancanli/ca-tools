@@ -6,7 +6,9 @@ S7 rows. Usage, from the repository root:
 The csv has n,k,t,N,old_N,refined, read from the article's Tables 4 to 7 (refined: the number of
 k at which the paper says N is a new bound). Each row's snapshot best is computed here from the
 S1 rows, and a row that an array already in the table beats says so."""
-import csv, io, sys, datetime
+import csv, io, sys, datetime, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import credit_text  # the one reader of a row's credit (to the first ';' outside parentheses)
 SRC, DATE = sys.argv[1], sys.argv[2]
 datetime.datetime.strptime(DATE, "%Y-%m-%d")
 DOI = "doi:10.3390/math12121908"
@@ -29,7 +31,7 @@ for d in csv.DictReader(open(SRC, newline="")):
     beat = sorted((vn, -vk, ent, note) for vt, vk, vn, ent, note in ver if vt == t and vk >= k and vn <= N)
     if beat:
         vn, vk, ent, note = beat[0]
-        who = note.split("credit: ", 1)[1].split(";", 1)[0] if "credit: " in note else "a verified array"
+        who = credit_text.credit(note) or "a verified array"
         extra_beat = ("; a verified %d at k = %d (%s, entered %s) was already in the table, so this row "
                       "is not the best known" % (vn, -vk, who, ent))
     else:

@@ -28,22 +28,17 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import credit_text  # noqa: E402  (the one reader of a row's credit)
+
 HEADER = ["kind", "sha256", "credit", "notes"]
 SLUG_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
 def original_credit(notes):
-    """As tools/check_upgrades.py: the credit runs to the first ';' outside parentheses."""
-    m = re.search(r"(?:^|; )credit: ", notes or "")
-    if not m:
-        return None
-    depth, out = 0, []
-    for ch in notes[m.end():]:
-        if ch == ";" and depth == 0:
-            break
-        depth += (ch == "(") - (ch == ")" and depth > 0)
-        out.append(ch)
-    return "".join(out).strip() or None
+    """As tools/check_upgrades.py: the credit runs to the first ';' outside parentheses
+    (tools/credit_text.py)."""
+    return credit_text.credit(notes) or None
 
 
 def requested_shas(sub_dir):
