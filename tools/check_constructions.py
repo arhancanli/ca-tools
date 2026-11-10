@@ -50,8 +50,9 @@ import provenance  # noqa: E402
 HEADER = ["t", "v", "k", "N", "file", "source_detail", "construction", "builds_on", "credit", "notes"]
 LIST_HEADER = ["file", "t", "v", "k", "N", "construction", "sha256", "array_sha256", "check", "stored"]
 MAX_ENTRIES = 10 ** 9            # N * k rebuilt here in Python (about a minute per 10^8 entries)
-# the sms kinds rebuild rows as byte strings, about 4 x 10^7 entries a second (CA(1890050; 4, 626, 25),
-# 1.18 x 10^9 entries, in 32 s on the 2-core VM, 2026-11-10), so they get a larger limit
+# the sms kinds and sm-xplication-1 rebuild rows as byte strings, about 3 to 4 x 10^7 entries a second
+# (CA(1890050; 4, 626, 25), 1.18 x 10^9 entries, in 32 s, and CA(74425; 3, 16275, 25), 1.21 x 10^9 entries,
+# in 42 s, on the 2-core VM, 2026-11-10), so they get a larger limit
 MAX_ENTRIES_FAST = 2 * 10 ** 9
 MAX_CERT_BYTES = 1024 * 1024     # one certificate file
 CROSS_CHECK_SECONDS = 120        # ca_verify also checks the rebuilt array when predicted below this
@@ -128,7 +129,7 @@ def check_claim(cl, ctx, tmp):
                 declared = json.loads(f.read().decode("utf-8")).get("construction")
         except (OSError, ValueError, AttributeError):
             declared = None
-        limit = MAX_ENTRIES_FAST if declared in ccert.SMS_KINDS else MAX_ENTRIES
+        limit = MAX_ENTRIES_FAST if declared in ccert.SMS_KINDS + (ccert.SMX_KIND,) else MAX_ENTRIES
         if N * k > limit:
             raise ConError("N k = %d entries is above the %d this route rebuilds; ask the maintainer" % (N * k, limit))
         text_bytes = N * k * (len(str(v - 1)) + 1)

@@ -103,6 +103,12 @@ jobs:
               sudo apt-get update -q > /dev/null
               sudo apt-get install -y -q python3-numpy > /dev/null
               python3 tools/tests_construction/test_sms.py
+          - name: Shokri-Moura x-plication certificates and mutants
+            # test_smx.py and tools/sm_xplication.py use numpy (update first: the package index can be stale)
+            run: |
+              sudo apt-get update -q > /dev/null
+              sudo apt-get install -y -q python3-numpy > /dev/null
+              python3 tools/tests_construction/test_smx.py
           - name: CPHF certificates
             run: python3 tools/cphf/tests/test_certificates.py
           - name: CPHF shards

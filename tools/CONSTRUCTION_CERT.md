@@ -1,13 +1,14 @@
 # Construction certificates
 
 A construction certificate proves a covering array by its recipe instead of by checking every
-t-set of the array. Seven constructions are known to the checker, each with its theorem stated
+t-set of the array. Eight constructions are known to the checker, each with its theorem stated
 and proved below. They are Power CZ (`powercz-1`, Colbourn and Zhou 2012), Power CZ with relabelled
 blocks and constant tuples proved by enumeration (`powercz-2`, since 2026-11-03), fusing one symbol
 (`fuse-1`, Colbourn, Keri, Rivas Soriano and Schlage-Puchta 2010, Lemma 3.1), the derived array of
 a lower strength (`derive-1`), the direct product of two strength-2 arrays (`product-1`), and the
 two strength-4 constructions of Shokri, Moura and Stevens from truncated Moebius planes (`sms51-1`
-and `sms65-1`, since 2026-11-10). Since
+and `sms65-1`, since 2026-11-10), and the strength-3 x-plications of Shokri and Moura
+(`sm-xplication-1`, since 2026-11-10). Since
 2026-11-02 a certificate is also a submission route (`constructions.csv`, section "The submission
 route" below), and an ingredient may be an array of the table named by its hash (section
 "Ingredients from the table").
@@ -881,6 +882,204 @@ shared code of `test_kinds.py`).
 
     python3 tools/tests_construction/test_sms.py --cases 60 --seed 20261110
     python3 tools/tests_construction/test_sms.py --cases 40 --quick --skip-real     (about 2 minutes)
+
+## Shokri and Moura, x-plication: sm-xplication-1
+
+Source: K. Shokri and L. Moura, New families of strength-3 covering arrays using linear feedback shift
+register sequences, J. Combin. Des. 33 (2025) 156-171 (`lfsr-sm2025` in `table/references.csv`, added to
+`builds_on` when it is missing). The journal text was not read here. The theorems and proofs were read in
+Chapter 5 of K. Shokri's PhD thesis (University of Ottawa, 2026, doi:10.20381/ruor-31663, `thesis-s2026`),
+which says the chapter was published in that paper; the numbering below is the thesis's. Since 2026-11-10.
+
+The thesis proves one general theorem (Theorem 5.2.6, a Roux-type construction) and gets its arrays by
+choosing ingredients and then deleting rows of the last row block that repeat rows the other blocks
+already give. The checker checks the general theorem, with the deletion built in, for the given q and
+ingredients, exactly. It does not take the thesis's word for the deleted rows: it checks that what is
+left still covers.
+
+### Setting
+
+* q = p^m, field elements are the labels 0..q-1 of Power CZ (base-p digits, a monic `modulus` for m > 1).
+  k0 = q^2 + q + 1.
+* A monic cubic f (`cubic`, four labels, constant term first); alpha is the class of x in F_q[x]/(f) and
+  L(y) the coordinate vector of y in the basis 1, alpha, alpha^2. G1 is the 3 x k0 matrix with columns
+  L(alpha^j), G2 the one with columns L(alpha^-j), 0 <= j < k0 (thesis Construction 3.1.1 and Theorem
+  3.2.4; alpha^-j = alpha^((q^3 - 1 - j) mod (q^3 - 1))).
+* A(G), for a matrix G with 3 rows, is the array of the q^3 rows u G, u in F_q^3, in the order of
+  `itertools.product(range(q), repeat=3)` (u_0 most significant).
+* P is the CA(2q^2 - q; 2, q^2 + 2q, q) of Corollary 5.1.9, cut to its first k0 columns. Its ingredient is
+  the Bush OA(q^2; 2, q + 1, q): the polynomials c0 + c1 X evaluated at the q `points` (a list of the labels
+  in some order) and c1. Rows: (c1, c0) for c1 = 1..q-1, c0 = 0..q-1 (labels), twice, then the constant rows
+  0..q-1. Columns: j q + z with value F(c1, c0; z), F(c1', c0'; j) and the constant a in the three row parts;
+  then q columns j (c1, F(c1', c0'; j), 0); then q columns z (F(c1, c0; z), c1', 0). F(c1, c0; z) is
+  c0 + c1 a_z, a_z the z-th point. This is Theorem 5.1.8 with the Bush array as both ingredients.
+* D (`dca`) is an m x x array of labels, m >= 2. x is the number of column blocks.
+* E_D is the set of the m q vectors D[r] + a (a added to every entry), r < m, a in F_q (the CA(mq; 2, x, q)
+  of thesis Proposition 5.1.16 when D is a DCA).
+* `last` is a list of 3 x x matrices H_1, H_2, ... . C' is the rows of A(H_1), A(H_2), ... in this order,
+  without the rows that are in E_D and without repeats (the first copy is kept).
+
+### The array
+
+Column l k0 + i is column i of column block l (0 <= l < x, 0 <= i < k0). With B_0 = A(G1), B_1 = A(G2) and
+B_r = P for 2 <= r < m, row block r is B_r with D[r][l] added to every entry of column block l. The last
+row block has, for each row c of C', the entry c_l in every column of block l. The array X has
+N = 2q^3 + (m - 2)(2q^2 - q) + |C'| rows and x k0 columns. This is `tools/sm_xplication.py`.
+
+### The theorem as checked
+
+Hypotheses:
+
+* (H1) `points`: any two columns of G1 are linearly independent, and any two of G2.
+* (H2) `cphf`: no 3 columns are linearly dependent in G1 and in G2 (the two rows form a CPHF(2; k0, q, 3),
+  thesis Theorem 3.2.4).
+* (H3) `P`: P is a CA(2q^2 - q; 2, k0, q), checked on every pair of columns.
+* (H4) `dca`: D is a difference covering array DCA(m; 2, x, q): for any two columns l < l' the differences
+  D[r][l'] - D[r][l], r < m, take all q values.
+* (H5) `last`: E = E_D together with C' covers every 3-set of the x columns (nothing to check for x < 3).
+
+`cubic` (alpha has order q^3 - 1, the thesis's hypothesis) is checked too, but the proof does not use it.
+
+Claim: X is a CA(N; 3, x k0, q).
+
+Proof. By Lemma 1 of the sms section, (H1) makes A(G1) and A(G2) show every pair on any two columns,
+and every symbol in every column. (H3) gives the same for P. So every base block B_r shows every pair on
+any two of its columns. Take three distinct columns (l, i), (l', i'), (l'', i'') of X and a tuple
+(s, s', s'').
+
+1. i, i', i'' are distinct. By (H2) G1 or G2 is independent on columns i, i', i''; say G_g, g in {1, 2}.
+   By Lemma 1 the block B_(g-1) shows every triple on them, in particular (s - D[g-1][l], s' - D[g-1][l'],
+   s'' - D[g-1][l'']), and row block g - 1 of X then shows (s, s', s'').
+2. Exactly two of i, i', i'' are equal; rename so that i = i'' != i'. The columns are distinct, so
+   l != l''. By (H4) some row r of D has D[r][l''] - D[r][l] = s'' - s. B_r shows the pair
+   (s - D[r][l], s' - D[r][l']) on its columns i, i'; that row of row block r has s at (l, i), s' at
+   (l', i') and s - D[r][l] + D[r][l''] = s'' at (l'', i).
+3. i = i' = i'', so l, l', l'' are distinct. By (H5) some e in E has (e_l, e_l', e_l'') = (s, s', s'').
+   If e is in C', the last block shows it on every column of blocks l, l', l'', so on these. If
+   e = D[r] + a, B_r has a row with the symbol a in column i, and that row of row block r has
+   a + D[r][l] = e_l at (l, i), and the same at (l', i) and (l'', i). []
+
+The thesis's Theorem 5.2.6 is the case where C' is a CA(N2; 3, x, q) (then (H5) holds whatever E_D is);
+deleting from it the rows that are in E_D, as the thesis does for each instance, keeps (H5), since E_D
+is shown by the first m row blocks in every column block triple (case 3). The checker does not assume
+that the rows deleted are the thesis's: it computes E_D and C' and checks (H5) on all of E.
+
+### The instances
+
+| construction | thesis | x | D | last | |C'| | N |
+|---|---|---|---|---|---|---|
+| 2-plication | Theorem 5.2.7 | 2 | columns 0 and 1 of the multiplication table: D[r] = (0, a_r) | none | 0 | 4q^3 - 5q^2 + 2q |
+| q-plication | Theorem 5.2.8 | q | the multiplication table D[r][c] = a_r a_c (Theorem 5.1.11) | the rows a_c^2, a_c, 1 (Bush OA(q^3; 3, q, q), Corollary 5.1.2) | q^3 - q^2 | 5q^3 - 6q^2 + 2q |
+| q^2-plication | Theorem 5.2.11 | q^2 | D (x) D without one zero row, 2q - 1 rows (Theorem 5.1.13) | G1' = (1, a_z, a_j) at j q + z (Table 5.3) and G2' (the columns of G2 at the same points) | 2q^3 - 2q^2 + q - 1 | 8q^3 - 10q^2 + 4q - 1 |
+| q^2-plication, even q | Corollary 5.2.12 | q^2 | as 5.2.11 | G1' and G2' = (1, x^2 + y, y^2 + by + cx) at G1' column (1, x, y) | 2q^3 - 2q^2 | 8q^3 - 10q^2 + 3q |
+| (q^2-q+1)-plication | Theorem 5.2.13 | q^2 - q + 1 | as 5.2.11, without the q - 1 columns where G2' has first entry 0 | G1'' and G2'' (the same columns, G2'' scaled to first entry 1) | 2q^3 - 2q^2 | 8q^3 - 10q^2 + 3q |
+
+Here a_0 = 0 and a_i = e^(i-1), e the smallest primitive label, are the `points` of the script, and D (x) D
+has, in column j q + z, a_r a_z in its first q rows and a_r a_j in the other q - 1 (r = 1..q-1). In 5.2.12,
+b and c make X^3 + bX + c irreducible: G2' maps the affine points by the map (x, y) -> (x^2 + y, y^2 + by +
+cx) of C. J. Colbourn, C. Ingalls, J. Jedwab, M. Saaltink, K. W. Smith and B. Stevens, Sets of mutually
+orthogoval projective and affine planes, Combin. Theory 4 (2024), Corollary 3.4 and Theorem 3.8
+(`orthogoval-cijsss2024`), which the thesis cites as its Proposition 3.3.3. In every instance E_D is the
+part of A(G1') (or of the Bush OA) the thesis deletes, so C' is what the thesis keeps; the counts in the
+table are what the script and the checker find.
+
+Two places where the thesis is not exact, found here:
+
+1. Theorem 5.2.13 says G2' always has exactly q - 1 columns with first entry 0 ("the first rows of G1 and
+   G^-1 have exactly two zeros in the same position"). That depends on the cubic. Over all primitive
+   cubics the number is q - 1 for some and q + 1 for the others: at q = 3, 4, 5, 7, 8, 9 the counts of
+   cubics with q - 1 against q + 1 are 2 : 2, 6 : 6, 12 : 8, 21 : 15, 72 : 72, 40 : 56. With q + 1 the
+   construction has 2 columns fewer per block (x = q^2 - q - 1). The script takes the first cubic with
+   q - 1; the checker needs nothing of the kind, since it checks (H5) for the D and the matrices given.
+2. The proofs take "the CA(2q^2 - q; 2, q^2 + q + 1, q) in Corollary 5.1.9", which has q^2 + 2q columns. The
+   script and the checker use its first q^2 + q + 1, and (H3) is checked on them.
+
+The thesis's Theorem 5.2.8 proof needs the columns of the Bush array in the order of the rows of D (Table
+5.1 and 5.2); that is so here, and the checker's (H5) would fail otherwise.
+
+Because C' drops every row already in E_D or already listed, it can be shorter than the thesis's last block.
+For q >= 3 in all the tests it is exactly the thesis's. At q = 2, A(G2') repeats rows the thesis keeps (3 for
+Theorem 5.2.11, 6 for Corollary 5.2.12), so the checker's array has N = 28 and 24 against the thesis's 31 and 30;
+both still cover (the test checks them with `ca_verify`), and neither is of interest for v = 2. A certificate's
+N is always the checker's count.
+
+### Format
+
+    {"format": "construction-cert-1", "construction": "sm-xplication-1", "t": 3, "v": 25,
+     "field": {"q": 25, "p": 5, "m": 2, "modulus": [1, 1, 1]},
+     "cubic": [c0, c1, c2, 1],
+     "points": [0, 1, ...],                    (optional, default 0..q-1; P is evaluated at them)
+     "dca": [[...], ...],                      (m rows of x labels, m >= 2)
+     "last": [[[...], [...], [...]], ...],     (3 x x matrices, possibly none)
+     "expected": {"N": 74425, "k": 16275, "array_sha256": "..."}}
+
+t must be 3 and v = q <= 32. Unknown and duplicate keys are rejected. `python3 tools/sm_xplication.py
+THEOREM q --certificate C.json > A.txt` (THEOREM 2, q, q2, q2even or q2q1) writes the certificate with
+the N, k and sha256 of the array it prints; the script follows the thesis's own deletions, so the
+checker's rebuild (with E_D computed) is compared with an independent one.
+
+### The checks
+
+| name | hypothesis |
+|---|---|
+| field | as for Power CZ |
+| cubic | alpha has order q^3 - 1 |
+| points | (H1) |
+| cphf | (H2): for every pair of normalized functionals h1, h2, at most 2 columns where h1 vanishes on G1 and h2 on G2 (3 vectors of F_q^3 are dependent exactly when a nonzero functional vanishes on all three); (q^2+q+1)^2 pairs of bit masks |
+| P | (H3), every pair of columns |
+| dca | (H4), every pair of columns |
+| last | (H5), every 3-set of the x columns over all of E |
+| symbols, N, k, sha256, alphabet | as for the other constructions |
+
+The rebuild uses the byte-string rows of the sms kinds.
+
+### Cost
+
+On the 2-core VM the ten certificates of `submissions/smolen-2026-11-sm-xplication/` take 0.4 s (q^2-plication,
+q = 7) to about a minute (q-plication at q = 25, CA(74425; 3, 16275, 25), 1.21 x 10^9 entries), nearly all of it
+the rebuild. `tools/check_constructions.py` allows this kind the 2 x 10^9 entries of the sms kinds.
+
+### Tests of sm-xplication-1
+
+`tools/tests_construction/test_smx.py`, three parts.
+
+1. The script and the checker for all five theorems at small q (q = 2 to 7): the script's certificate is
+   accepted, the array the checker writes is byte for byte the script's, and `ca_verify` verifies it on every
+   3-set (at q = 2 for 5.2.11 and 5.2.12 the checker's array is the shorter one described above, and both are
+   verified). The
+   script reproduces, with the same sha256, the 12 arrays of Bai XunDi (Zenodo 23787055) the table has as
+   VERIFIED rows for prime q (2-plication at q = 3, 5, 7, 9, 13, 17, 19, q-plication at q = 5, 7, 9, 11, 13)
+   and the three arrays of T. N. Sitjar from the thesis (Corollary 5.2.12 at q = 4; Theorems 5.2.11 and 5.2.13
+   at q = 5, with the cubic x^3 + 3x + 2 his generator chooses). For q = 4, 8, 16 Bai's arrays are the same rows
+   in another order (his G2 is ours times an invertible matrix); the test compares them as sets of rows.
+2. Random certificates (random q, D, cubics primitive or not, last matrices from the instances or random,
+   planted faults) against an independent oracle that decides every hypothesis by its definition (3 x 3 and
+   2 x 2 determinants over F_q, numpy counts), builds the array with numpy and checks it with `ca_verify`.
+   Assertions as for the sms kinds (A1 to A4). Then each check is disabled in turn, and boundary mutants are
+   applied.
+3. The ten real certificates pass with their recorded sha256, and planted faults on the two q = 7 certificates
+   (a non-primitive cubic, one entry of D, G2' replaced by G1', no last block, N + 1) are rejected by the
+   intended check; a checker whose recipe for P is broken (column 0 replaced by column 1) rejects them by `P`.
+
+Results (2026-11-10, seed 20261110, 60 random and 8 targeted certificates, 121 s with part 1 and part 3):
+
+| | |
+|---|---|
+| certificates satisfying every hypothesis / their arrays not covering (A4) | 32 / 0 |
+| accepted but not covering (A3) | 0 |
+| checks compared with the oracle, disagreements | 408, 0 |
+| mutants killed | 13 of 13 that a certificate here can reach |
+| mutants that accept a non-covering array | disable dca 3, last 6; dca on adjacent columns only 2; last on consecutive 3-sets only 1 |
+| published arrays rebuilt with the same sha256 | 18 of 18 |
+
+Six mutants are reported, not counted as survivors: disabling `points` or `cphf` alone (a primitive cubic implies
+both, by Singer's theorem and by Raaphorst et al., Theorem 3.2.4; with `cubic` disabled as well both are killed),
+`P` (Corollary 5.1.9 holds for every order of the points; part 3 breaks the recipe instead), `field` (part 1
+plants a reducible modulus), `symbols` and `alphabet` (every array has a zero row and only field labels). The
+mutants that need a non-primitive cubic are killed by one case each.
+
+    python3 tools/tests_construction/test_smx.py --cases 60 --seed 20261110      (about 2 minutes)
+    python3 tools/tests_construction/test_smx.py --quick --cases 30 --skip-real  (seconds)
 
 ## The submission route
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """construction_cert - check a construction certificate and rebuild the array it proves.
 
-A construction certificate records the recipe of a covering array instead of the array. Seven
+A construction certificate records the recipe of a covering array instead of the array. Eight
 constructions are known (tools/CONSTRUCTION_CERT.md states each theorem, its hypotheses and the
 proof the checker follows):
 
@@ -21,6 +21,11 @@ proof the checker follows):
   sms65-1    the same authors, Theorem 6.2 with the ingredient size of Corollary 6.5: a
              CA(3q^4 + (q-2)N; 4, q^2+1, q) from a CA(N; 3, (q^2+1)/2, q), the ingredient built here
              from a pair of orthogoval planes and checked exactly, or an array ingredient
+  sm-xplication-1
+             Shokri and Moura (J. Combin. Des. 33 (2025) 156-171; thesis of K. Shokri, Chapter 5), the
+             general theorem 5.2.6 with the redundant rows of the last block removed: x copies of the
+             CA(2q^3 - 1; 3, q^2+q+1, q) of a primitive cubic and its inverse, shifted by a difference
+             covering array, P blocks, and a last block; the 2-, q-, q^2- and (q^2-q+1)-plications
 
 An ingredient is given inline ("rows"), as a file beside the certificate ("file" and its "sha256"),
 both checked exhaustively here, or by the array_sha256 of a counted VERIFIED row of the table
@@ -65,7 +70,8 @@ import sys
 import time
 
 FORMAT = "construction-cert-1"
-CONSTRUCTIONS = ("powercz-1", "powercz-2", "fuse-1", "derive-1", "product-1", "sms51-1", "sms65-1")
+CONSTRUCTIONS = ("powercz-1", "powercz-2", "fuse-1", "derive-1", "product-1", "sms51-1", "sms65-1",
+                 "sm-xplication-1")
 ARRAY_KINDS = ("fuse-1", "derive-1", "product-1")
 SMS_KINDS = ("sms51-1", "sms65-1")
 # the reference id (table/references.csv) of the theorem of each construction, for builds_on
@@ -73,7 +79,7 @@ SMS_KINDS = ("sms51-1", "sms65-1")
 # references.csv, so the submitter's builds_on is kept as given and nothing is added)
 REFERENCE = {"powercz-1": "power-cz2012", "powercz-2": "power-cz2012", "fuse-1": "fuse-ckrs2010",
              "derive-1": None, "product-1": "product-cmmssy2006", "sms51-1": "mobius-sms2025",
-             "sms65-1": "mobius-sms2025"}
+             "sms65-1": "mobius-sms2025", "sm-xplication-1": "lfsr-sm2025"}
 REPO_TABLE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "table")
 # the exhaustive check of an inline or file ingredient here costs about C(k, t) * N entry reads in
 # Python; above this an ingredient must be entered in the table first and named by its hash
@@ -321,6 +327,8 @@ def load_certificate(path, table_dir=None):
         return load_array_kind(cert, raw, path, table_dir)
     if isinstance(cert, dict) and cert.get("construction") in SMS_KINDS:
         return load_sms(cert, raw, path, table_dir)
+    if isinstance(cert, dict) and cert.get("construction") == SMX_KIND:
+        return load_smx(cert, raw, path, table_dir)
     cz2 = isinstance(cert, dict) and cert.get("construction") == "powercz-2"
     only_keys(cert, ("format", "construction", "t", "v", "e", "field", "family", "ingredients",
                      "expected", "notes") + (("enumerate_weights",) if cz2 else ()), "certificate")
@@ -2063,6 +2071,297 @@ def assemble_sms(c, write=None):
     c["symbols"] = ({0} if T.has0 else set()) | ({T.maxsym} if T.N else set())
 
 
+# ---------------------------------------------------------------------------
+# sm-xplication-1: the general theorem (Theorem 5.2.6) of the thesis of K. Shokri (doi:10.20381/ruor-31663),
+# Chapter 5 = Shokri and Moura, J. Combin. Des. 33 (2025) 156-171, with the last ingredient given as the
+# rows that remain after the redundant ones are removed (Theorems 5.2.7, 5.2.8, 5.2.11, 5.2.13 and
+# Corollary 5.2.12). tools/CONSTRUCTION_CERT.md states the theorem and the proof these checks follow.
+# ---------------------------------------------------------------------------
+
+SMX_KIND = "sm-xplication-1"
+SMX_MAX_Q = 32              # largest q (labels below 100 and the byte coding of SmsRows)
+SMX_MAX_DCA = 10 ** 6       # entries of the difference covering array D
+SMX_LAST_WORK = 3 * 10 ** 8  # C(x, 3) * |E| for the exhaustive check of the last block
+SMX_P_WORK = 3 * 10 ** 8     # C(k, 2) * |P| for the exhaustive check of P
+
+
+def parse_labels(obj, q, where, width=None):
+    """a nonempty list of rows of equal length (= width if given) of labels 0..q-1"""
+    if not (isinstance(obj, list) and obj and all(isinstance(r, list) and r for r in obj)):
+        raise CertError("%s must be a nonempty list of nonempty rows" % where)
+    w = len(obj[0]) if width is None else width
+    for i, r in enumerate(obj):
+        if len(r) != w or not all(is_int(x) and 0 <= x < q for x in r):
+            raise CertError("%s: row %d must have %d labels 0..%d" % (where, i, w, q - 1))
+    return [list(r) for r in obj]
+
+
+def load_smx(cert, raw, path, table_dir):
+    only_keys(cert, ("format", "construction", "t", "v", "field", "cubic", "points", "dca", "last", "expected",
+                     "notes"), "certificate")
+    if cert.get("format") != FORMAT:
+        raise CertError("format must be %r" % FORMAT)
+    if "notes" in cert and not (isinstance(cert["notes"], str) or
+                                (isinstance(cert["notes"], list) and all(isinstance(x, str) for x in cert["notes"]))):
+        raise CertError("notes must be a string or a list of strings")
+    t = need_int(cert, "t", 3, 3)
+    v = need_int(cert, "v", 2, SMX_MAX_Q)
+    if "field" not in cert:
+        raise CertError("missing key 'field'")
+    p, m, q, modulus = parse_field(cert["field"])
+    if q != v:
+        raise CertError("%s: the field must be GF(v) (v = %d, q = %d)" % (SMX_KIND, v, q))
+    c = {"kind": SMX_KIND, "t": t, "v": v, "q": q, "dir": os.path.dirname(os.path.abspath(path)),
+         "cert_sha256": hashlib.sha256(raw).hexdigest(), "ingredients": {}}
+    c["F"] = Field(p, m, modulus)
+    parse_expected(cert, c)
+    c["cubic"] = parse_poly(cert.get("cubic"), 3, q, "cubic")
+    pts = cert.get("points", list(range(q)))
+    if not (isinstance(pts, list) and sorted(pts) == list(range(q)) and all(is_int(a) for a in pts)):
+        raise CertError("points must list the q labels 0..%d once each (the evaluation points of P)" % (q - 1))
+    c["points"] = list(pts)
+    D = parse_labels(cert.get("dca"), q, "dca")
+    if len(D) < 2:
+        raise CertError("dca must have at least 2 rows (rows 0 and 1 go with A(G1) and A(G2))")
+    x = len(D[0])
+    if len(D) * x > SMX_MAX_DCA:
+        raise CertError("dca has %d entries, above %d" % (len(D) * x, SMX_MAX_DCA))
+    c["D"], c["x"] = D, x
+    last = cert.get("last")
+    if not isinstance(last, list):
+        raise CertError("last must be a list of 3 x %d generator matrices (possibly empty)" % x)
+    c["last"] = [parse_labels(H, q, "last[%d]" % i, x) for i, H in enumerate(last)]
+    if any(len(H) != 3 for H in c["last"]):
+        raise CertError("every matrix of last must have 3 rows")
+    c["k0"] = q * q + q + 1
+    c["ingredients"]["P"] = {"recipe": "Corollary 5.1.9", "name": "P"}
+    if c["last"]:
+        c["ingredients"]["C"] = {"recipe": "the rows of A(H) for %s of last" % (
+            "the matrix H" if len(c["last"]) == 1 else "the %d matrices H" % len(c["last"])), "name": "C"}
+    # the powers of alpha (the array is defined by them whatever the checks find)
+    c["L3"], c["ret3"] = sms_powers(c["F"], c["cubic"])
+    return c
+
+
+def smx_columns(c):
+    """the columns of G1 (L(alpha^j)) and G2 (L(alpha^-j)), 0 <= j < q^2+q+1, as tuples"""
+    if "G1c" not in c:
+        L, n, k0 = c["L3"], c["q"] ** 3 - 1, c["k0"]
+        c["G1c"] = [tuple(L[j % n]) for j in range(k0)]
+        c["G2c"] = [tuple(L[(-j) % n]) for j in range(k0)]
+    return c["G1c"], c["G2c"]
+
+
+def smx_normal(F, vec):
+    """the projective point of a nonzero vector: scaled so that its first nonzero entry is 1"""
+    for a in vec:
+        if a:
+            s = F.mul[a].index(1)
+            return tuple(F.mul[s][b] for b in vec)
+    return None
+
+
+def check_smx_cubic(c):
+    """alpha (the class of x modulo the cubic) has order q^3 - 1: the cubic is primitive (the hypothesis of
+    Theorem 3.2.4); soundness does not rest on it, the points and cphf checks test G1 and G2 themselves"""
+    q = c["q"]
+    if c["ret3"] != q ** 3 - 1:
+        return ["x has order %s modulo the cubic %r, not q^3 - 1 = %d: the cubic is not primitive"
+                % (c["ret3"] if c["ret3"] else "no finite", c["cubic"], q ** 3 - 1)]
+    return []
+
+
+def check_smx_points(c):
+    """(H1) any two columns of G1 are linearly independent, and so are any two of G2: then A(G1) and A(G2)
+    are CA(q^3; 2, q^2+q+1, q), and every symbol occurs in each column"""
+    F = c["F"]
+    out = []
+    for name, cols in zip(("G1", "G2"), smx_columns(c)):
+        seen = {}
+        for j, col in enumerate(cols):
+            pt = smx_normal(F, col)
+            if pt is None:
+                out.append("column %d of %s is zero" % (j, name))
+                break
+            if pt in seen:
+                out.append("columns %d and %d of %s are proportional" % (seen[pt], j, name))
+                break
+            seen[pt] = j
+    return out
+
+
+def check_smx_cphf(c):
+    """(H2) no 3 columns are linearly dependent in both G1 and G2 (Theorem 3.2.4: the two rows form a
+    CPHF(2; q^2+q+1, q, 3)). Three vectors of F_q^3 are dependent if and only if a nonzero functional h
+    vanishes on all three; h runs over all q^2+q+1 normalized nonzero vectors, Z_g(h) is the set of
+    columns of G_g where h vanishes, and the check is |Z_1(h1) & Z_2(h2)| <= 2 for all h1, h2."""
+    F, q = c["F"], c["q"]
+    add, mul = F.add, F.mul
+    hs = [h for h in itertools.product(range(q), repeat=3) if smx_normal(F, h) == h]
+    masks = []
+    for cols in smx_columns(c):
+        ms = []
+        for h in hs:
+            r0, r1, r2 = mul[h[0]], mul[h[1]], mul[h[2]]
+            mk = 0
+            for j, (g0, g1, g2) in enumerate(cols):
+                if add[add[r0[g0]][r1[g1]]][r2[g2]] == 0:
+                    mk |= 1 << j
+            ms.append(mk)
+        masks.append(ms)
+    M2 = masks[1]
+    for i1, m1 in enumerate(masks[0]):
+        for i2, m2 in enumerate(M2):
+            z = m1 & m2
+            if z:
+                z &= z - 1
+                if z:
+                    z &= z - 1
+                    if z:
+                        z = m1 & m2
+                        trip = [j for j in range(c["k0"]) if z >> j & 1][:3]
+                        return ["columns %s are dependent in G1 (functional %r) and in G2 (functional %r)"
+                                % (trip, hs[i1], hs[i2])]
+    return []
+
+
+def smx_P(c):
+    """P: Corollary 5.1.9, the first q^2+q+1 columns of the CA(2q^2 - q; 2, q^2 + 2q, q) of Theorem 5.1.8
+    with the Bush OA(q^2; 2, q+1, q) (c0 + c1 X at the points, and c1) as both ingredients, as lists of
+    rows (CONSTRUCTION_CERT.md)"""
+    if "P" not in c:
+        F, q, k0 = c["F"], c["q"], c["k0"]
+        rho = [(c1, c0) for c1 in range(1, q) for c0 in range(q)]
+        ev = [[F.add[c0][F.mul[c1][z]] for z in c["points"]] for c1, c0 in rho]
+        rows = []
+        for (c1, c0), e in zip(rho, ev):                    # first part: A1 tiled, C, A1
+            rows.append(e * q + [c1] * q + e)
+        for (c1, c0), e in zip(rho, ev):                    # second part: B1 columns repeated, B1, C
+            rows.append([e[j] for j in range(q) for _ in range(q)] + e + [c1] * q)
+        for a in range(q):                                  # constant rows over the first q^2 columns
+            rows.append([a] * (q * q) + [0] * (2 * q))
+        c["P"] = [r[:k0] for r in rows]
+    return c["P"]
+
+
+def check_smx_P(c):
+    """(H3) P is a CA(N1; 2, q^2+q+1, q): every pair of columns covers all q^2 pairs (exhaustive)"""
+    P, q, k0 = smx_P(c), c["q"], c["k0"]
+    if comb(k0, 2) * len(P) > SMX_P_WORK:
+        return ["P has %d rows and %d columns, above the work limit %d" % (len(P), k0, SMX_P_WORK)]
+    cols = [[r[j] for r in P] for j in range(k0)]
+    colq = [[q * a for a in col] for col in cols]
+    import operator
+    add = operator.add
+    for a in range(k0):
+        A = colq[a]
+        for b in range(a + 1, k0):
+            if len(set(map(add, A, cols[b]))) != q * q:
+                got = set(map(add, A, cols[b]))
+                miss = min(set(range(q * q)) - got)
+                return ["P does not cover (%d, %d) on columns %d, %d" % (miss // q, miss % q, a, b)]
+    return []
+
+
+def check_smx_dca(c):
+    """(H4) D is a DCA(m; 2, x, q): for any two columns l < l', the differences D[r][l'] - D[r][l] over the
+    rows r take all q values"""
+    F, q, D, x = c["F"], c["q"], c["D"], c["x"]
+    neg = [F.add[a].index(0) for a in range(q)]
+    for l in range(x):
+        for l2 in range(l + 1, x):
+            diffs = {F.add[r[l2]][neg[r[l]]] for r in D}
+            if len(diffs) != q:
+                miss = min(set(range(q)) - diffs)
+                return ["D misses the difference %d on columns %d, %d" % (miss, l, l2)]
+    return []
+
+
+def smx_span(F, H):
+    """A(H) for a 3-row matrix H: the rows u0 H[0] + u1 H[1] + u2 H[2], u in itertools.product order"""
+    q = F.q
+    add, mul = F.add, F.mul
+    x = len(H[0])
+    for u in itertools.product(range(q), repeat=3):
+        m0, m1, m2 = mul[u[0]], mul[u[1]], mul[u[2]]
+        yield tuple(add[add[m0[H[0][j]]][m1[H[1][j]]]][m2[H[2][j]]] for j in range(x))
+
+
+def smx_last(c):
+    """the D-part E_D = {D[r] + a : r, a} and the last block C': the rows of A(H) for H in last, in order,
+    without the rows of E_D and without repeats"""
+    if "C" not in c:
+        F, q, D = c["F"], c["q"], c["D"]
+        ED = {tuple(F.add[d][a] for d in r) for r in D for a in range(q)}
+        seen, C = set(ED), []
+        for H in c["last"]:
+            for row in smx_span(F, H):
+                if row not in seen:
+                    seen.add(row)
+                    C.append(row)
+        c["ED"], c["C"] = ED, C
+    return c["ED"], c["C"]
+
+
+def check_smx_last(c):
+    """(H5) E = E_D together with C' covers every 3-set of the x column blocks (exhaustive); E_D is covered
+    in every column block triple by the first m row blocks of the array (CONSTRUCTION_CERT.md)"""
+    q, x = c["q"], c["x"]
+    if x < 3:
+        return []
+    ED, C = smx_last(c)
+    E = list(ED) + C
+    if comb(x, 3) * len(E) > SMX_LAST_WORK:
+        return ["E has %d rows and %d columns, above the work limit %d" % (len(E), x, SMX_LAST_WORK)]
+    import operator
+    add = operator.add
+    cols = [[r[j] for r in E] for j in range(x)]
+    cq2 = [[q * q * a for a in col] for col in cols]
+    cq = [[q * a for a in col] for col in cols]
+    for a in range(x):
+        for b in range(a + 1, x):
+            ab = list(map(add, cq2[a], cq[b]))
+            for d in range(b + 1, x):
+                if len(set(map(add, ab, cols[d]))) != q ** 3:
+                    got = set(map(add, ab, cols[d]))
+                    miss = min(set(range(q ** 3)) - got)
+                    return ["the last block with E_D does not cover (%d, %d, %d) on column blocks %d, %d, %d"
+                            % (miss // (q * q), miss // q % q, miss % q, a, b, d)]
+    return []
+
+
+SMX_CHECKS = [("field", check_field), ("cubic", check_smx_cubic), ("points", check_smx_points),
+              ("cphf", check_smx_cphf), ("P", check_smx_P), ("dca", check_smx_dca), ("last", check_smx_last)]
+
+
+def assemble_smx(c, write=None):
+    """row block 0: A(G1) + D[0], block 1: A(G2) + D[1], block r >= 2: P + D[r] (D[r][l] added in column
+    block l), then the rows of C' with entry l repeated k0 times in column block l"""
+    F, q, D, x, k0 = c["F"], c["q"], c["D"], c["x"], c["k0"]
+    S = SmsRows(F)
+    G1c, G2c = smx_columns(c)
+    T = TextHash(x * k0, write)
+    try:
+        for r, cols in enumerate((G1c, G2c)):
+            sh = [S.shift[d] for d in D[r]]
+            G = [[v[i] for v in cols] for i in range(3)]
+            for row in S.span_rows(G):
+                T.add(b"".join([row.translate(s) for s in sh]))
+        P = smx_P(c)
+        for r in range(2, len(D)):
+            sh = [S.shift[d] for d in D[r]]
+            for prow in P:
+                row = bytes(prow)
+                T.add(b"".join([row.translate(s) for s in sh]))
+        _, C = smx_last(c)
+        for crow in C:
+            T.add(b"".join([bytes([a]) * k0 for a in crow]))
+    finally:
+        T.close()
+    c["N"], c["k"], c["sha256"] = T.N, x * k0, T.h.hexdigest()
+    c["symbols"] = ({0} if T.has0 else set()) | ({T.maxsym} if T.N else set())
+
+
 # order matters only for reporting; every check runs (those after the assembly only if the
 # array could be built)
 CHECKS = [("field", check_field), ("shape", check_shape), ("width", check_width),
@@ -2126,6 +2425,10 @@ def run(path, write=None, log=None, table_dir=None):
             path, kind, c["q"], c["mult"], "p = %s" % "".join(map(str, c["p"])) if kind == "sms51-1" else
             "ingredient R %s" % ("built from orthogoval planes (cubic %r)" % (c["cubic"],) if "recipe" in R else
                                  "%d x %d" % (len(R["rows"]), len(R["rows"][0]) if R["rows"] else 0))))
+    elif kind == SMX_KIND:
+        checks, post, build = SMX_CHECKS, POST_CHECKS + KIND_POST_CHECKS, assemble_smx
+        say("certificate %s: %s, t = 3, q = %d, cubic %r, D %d x %d, last block from %d generator matrices"
+            % (path, kind, c["q"], c["cubic"], len(c["D"]), c["x"], len(c["last"])))
     elif kind == "powercz-2":
         build_family(c)
         apply_relabel(c)
