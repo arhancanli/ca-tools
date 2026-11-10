@@ -30,7 +30,8 @@ own relabelling and assembly, and a brute-force count over every t-set of the as
   A5 planted faults on accepted cases are rejected by the check they target (an over-declared
      weight: quilting; a relabel that is not a permutation: relabel; a wrong sha256: sha256 only)
 Then two mutants: the enumeration check disabled, and the condition "no bad set below t" dropped
-(Python path). Each must accept some certificate whose array is not covering.
+(Python path). Each must accept some certificate whose array is not covering. Each has a fixed case
+that kills it (scenario E fixed, scenario C), so the verdict does not depend on the seed or --cases.
 
 Usage: test_powercz2.py [--cases N] [--seed S] [--skip-real]   (exit 1 on any violation)
 """
@@ -468,6 +469,32 @@ def part_mutants(rng, work, cases):
             errors.append("A1 mutant scenario E case %d: accepted, not covering" % case)
         if miss_any and not ok:
             kill["E"] += mutant_runs(p)[0]
+    # scenario E, fixed: the random cases kill the mutant in only about 3 to 4 cases in 100 (seed 20261103 gave 0
+    # of 30 at the default --cases 60), so this case (found with seed 61 of the generator above: M = 4 blocks of
+    # one ingredient E5 on 5 columns, 30 rows, identity relabelling) is always run. Its array misses one constant
+    # 3-tuple (weight 3, brute force); the checker rejects it by the enumeration, the mutant accepts it.
+    E5 = [[0, 0, 1, 1, 0], [0, 0, 1, 1, 1], [1, 0, 0, 1, 0], [1, 1, 0, 0, 0], [0, 1, 1, 0, 0], [0, 0, 1, 0, 0],
+          [0, 0, 1, 0, 1], [0, 0, 0, 1, 1], [1, 0, 1, 0, 0], [0, 0, 1, 1, 0], [1, 0, 0, 0, 1], [0, 1, 0, 0, 1],
+          [1, 1, 1, 0, 0], [1, 0, 0, 0, 1], [1, 1, 0, 0, 1], [0, 1, 0, 1, 0], [1, 0, 1, 1, 0], [0, 0, 1, 1, 1],
+          [1, 1, 0, 1, 0], [0, 1, 1, 1, 0], [1, 0, 0, 1, 0], [0, 1, 0, 1, 1], [0, 1, 1, 0, 0], [1, 1, 0, 1, 0],
+          [0, 1, 1, 0, 1], [1, 1, 0, 0, 0], [1, 0, 1, 0, 1], [1, 0, 1, 0, 0], [0, 0, 0, 1, 1], [0, 1, 1, 0, 1]]
+    M = 4
+    A, k = assemble(q, 2, list(range(M)), [[] for _ in range(M)], None, [E5] * M, [list(range(q))] * M)
+    cert = {"format": "construction-cert-1", "construction": "powercz-2", "t": t, "v": 2, "e": 2,
+            "field": {"q": q, "p": q, "m": 1},
+            "family": {"type": "reed-solomon", "rows": [{"point": i, "forbidden": [], "ingredient": "P"}
+                                                        for i in range(M)]},
+            "ingredients": {"P": {"rows": E5, "covers": {"weights": [1, t - 1]}}}, "enumerate_weights": [0, t],
+            "expected": {"N": len(A), "k": k, "array_sha256": canon_sha(A)}}
+    p = write(work, "m.json", cert)
+    miss_any, miss0, miss1 = brute(A, t, k)
+    ok, got, r = run(p)
+    killed = mutant_runs(p)[0]
+    bump("mutant scenario E (fixed case)")
+    if small_bad(E5, t) or (miss_any, miss0, miss1) != (1, 0, 1) or ok or got != {"enumeration"} or not killed:
+        errors.append("fixed scenario E case: bad below t=%s misses=%s ok=%s failures=%s mutant accepts=%s"
+                      % (small_bad(E5, t), (miss_any, miss0, miss1), ok, sorted(got), killed))
+    kill["E"] += bool(killed and miss_any and not ok)
     # scenario C
     X = [(0, 1, 2), (1, 2, 3)]
     P = [list(v) for v in itertools.product((0, 1), repeat=4) if 0 < sum(v) < 4

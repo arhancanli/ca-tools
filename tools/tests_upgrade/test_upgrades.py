@@ -81,6 +81,19 @@ def make_repo(T):
             shutil.copyfile(p, os.path.join(T, "table", name))
     with open(os.path.join(T, "table", "MANIFEST.csv"), "w", encoding="utf-8", newline="") as f:
         f.write(",".join('"%s"' % h for h in cs.MANIFEST_HEADER) + "\n")
+    # the copy holds no stored arrays (MANIFEST.csv above is empty), so no listing of
+    # table/constructions/CONSTRUCTIONS.csv may name one: its "stored" column is emptied the same way.
+    # Without this, every listing with a stored array (11 since 2026-11-02, smolen-2026-11-powercz-round2
+    # and others) is a consistency problem in the copy. The certificates themselves stay.
+    cl = os.path.join(T, "table", "constructions", "CONSTRUCTIONS.csv")
+    if os.path.isfile(cl):
+        raw = open(cl, encoding="utf-8", newline="").read()
+        head = raw.split("\n", 1)[0] + "\n"
+        rows = list(csv.DictReader(io.StringIO(raw)))
+        num = ("t", "v", "k", "N")
+        with open(cl, "w", encoding="utf-8", newline="") as f:
+            f.write(head + cs.manifest_csv_text([[int(r[c]) if c in num else ("" if c == "stored" else r[c])
+                                                  for c in r] for r in rows]))
     os.makedirs(os.path.join(T, "submissions"))
     g = ["git", "-C", T, "-c", "user.name=x", "-c", "user.email=x@x", "-c", "gc.auto=0"]
     subprocess.run(g[:3] + ["init", "-q"], check=True)
@@ -379,6 +392,7 @@ def run(keep=None):
     os.makedirs(d)
     open(os.path.join(d, "upgrade.csv"), "w").write("kind,sha256,credit,notes\narray,%s,X Y,\n" % sha1)
     open(os.path.join(d, "claims.csv"), "w").write(",".join(cs.CLAIMS_HEADER) + "\n")
+    open(os.path.join(d, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")
     rc, out = quiet(cu.main, [d, "--table-dir", TD, "--light", "--out", os.path.join(W, "nm")])
     check(rc == 1 and "must be alone" in out, "upgrade.csv beside claims.csv is refused")
     rc, out = quiet(cs.main, [d, "--table-dir", TD, "--ca-verify", cav, "--threads", "2", "--out", os.path.join(W, "nm-pr")])

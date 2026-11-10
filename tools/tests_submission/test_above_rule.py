@@ -7,7 +7,8 @@ every such row, on every run, as a ::warning:: (never a problem) unless table/ab
 
 Cases: an end-to-end submission on a small synthetic table (a flagged claim passes, with the flag in the summary,
 the details and the credit check, and lets in no frame line; the same claim not beaten lets in two add1 lines; an
-ordinary claim inside the range is not flagged); on the live table, the synthetic rows CA(1000; 3, 100000, 2) and
+ordinary claim inside the range is not flagged); on the fixed fixture table (tools/tests_frame/fixtures/
+table_51d2111, the table at commit 51d2111; never the live table, which grows), the synthetic rows CA(1000; 3, 100000, 2) and
 CA(2400; 2, 100000, 3) are flagged and let in no frame line; the one existing row above a size rule
 (t6-v2-k10051-1) is on the list and does not warn; a pull request adding CA(1000; 3, 100000, 2) warns; a regenerated
 derived.csv that comes to beat an existing row warns without --base; the list's format is checked; the frame line
@@ -31,9 +32,12 @@ sys.path.insert(0, os.path.join(REPO, "tools"))
 import check_submission as cs  # noqa: E402
 import consistency as cc  # noqa: E402
 import build_frame as bf  # noqa: E402
+sys.path.insert(0, os.path.join(REPO, "tools", "tests_frame"))
+from fixture_table import FIXTURE, fixture_table  # noqa: E402
 
 RESULTS = {"pass": 0, "fail": 0}
 LIVE = os.path.join(REPO, "table")
+FIX = None   # the fixed fixture table (tools/tests_frame/fixtures/table_51d2111), unpacked by main()
 SNAP = "colbourn-2024-11-ug"
 
 
@@ -63,7 +67,7 @@ def trow(t, v, k, n, tier="CITED", src="S1", snap=SNAP, sha="", entered="2026-08
 def small_table(d, derived):
     """a copy of table/ without the arrays, with a ca_table.csv of two baseline rows at (3, 2) (k = 4 and 10), an
     empty MANIFEST.csv and the given derived.csv lines"""
-    for name in os.listdir(LIVE):
+    for name in os.listdir(LIVE):          # the support files only (references, lists); no size of it is used
         p = os.path.join(LIVE, name)
         if name in ("arrays", "ca_table.csv", "MANIFEST.csv", "derived.csv") or name.endswith(".md"):
             continue
@@ -178,50 +182,50 @@ def live_claim(t, v, k, N):
                 raw=dict(construction="test row", file="x.txt"), line=2)
 
 
-def test_submission_live():
-    rows = list(csv.DictReader(open(os.path.join(LIVE, "ca_table.csv"), newline="", encoding="utf-8")))
-    ctx = dict(table_rows=rows, table_dir=LIVE, slug="test", stamp="ca_verify test", date="2026-11-09")
+def test_submission_fixture():
+    rows = list(csv.DictReader(open(os.path.join(FIX, "ca_table.csv"), newline="", encoding="utf-8")))
+    ctx = dict(table_rows=rows, table_dir=FIX, slug="test", stamp="ca_verify test", date="2026-11-09")
     w1 = cs.above_rule_flag(ctx, 3, 2, 100000, 1000)
     w2 = cs.above_rule_flag(ctx, 2, 3, 100000, 2400)
     w3 = cs.above_rule_flag(ctx, 2, 25, 100000, 2425)
     check(w1 and w1[0] < 100 and w2 and w2[0] < 60 and w3 is None,
-          "live: CA(1000; 3, 100000, 2) (%s) and CA(2400; 2, 100000, 3) (%s) are flagged; CA(2425; 2, 100000, 25) "
+          "fixture: CA(1000; 3, 100000, 2) (%s) and CA(2400; 2, 100000, 3) (%s) are flagged; CA(2425; 2, 100000, 25) "
           "is not (DP2 gives 2448)" % (w1, w2))
     cl = [live_claim(3, 2, 100000, 1000), live_claim(2, 3, 100000, 2400)]
     for c, w in zip(cl, (w1, w2)):
         c["above_rule"] = w
     cs.frame_effect(cl, ctx)
     check([c["frame_effect"]["lines"] for c in cl] == [0, 0],
-          "live: neither lets a derived line into the frame (version 1.3 let in 231 lines of 80 to 996, and 8 of "
+          "fixture: neither lets a derived line into the frame (version 1.3 let in 231 lines of 80 to 996, and 8 of "
           "209 to 266)")
 
 
 def test_consistency():
-    rows = list(csv.DictReader(open(os.path.join(LIVE, "ca_table.csv"), newline="", encoding="utf-8")))
-    ab = cc.above_rule_rows(rows, LIVE)
+    rows = list(csv.DictReader(open(os.path.join(FIX, "ca_table.csv"), newline="", encoding="utf-8")))
+    ab = cc.above_rule_rows(rows, FIX)
     check([x[1] for x in ab] == ["t6-v2-k10051-1"] and ab[0][2][:2] == (6555, 11000),
-          "live: one counted row past the baseline's range is above a size rule: CA(6580; 6, 10051, 2), PCT 6555 "
+          "fixture: one counted row past the baseline's range is above a size rule: CA(6580; 6, 10051, 2), PCT 6555 "
           "at k' = 11000 (got %s)" % [(x[1], x[2]) for x in ab])
     pos = ab[0][0]
     del cc.problems[:]
     out = io.StringIO()
     with contextlib.redirect_stdout(out):
-        r = cc.check_above_rule(rows, pos, LIVE)
+        r = cc.check_above_rule(rows, pos, FIX)
     check(r == (0, 1) and "::warning::" not in out.getvalue() and not cc.problems,
           "the listed row (table/above_rule_rows.csv) does not warn, even when counted as added")
     with contextlib.redirect_stdout(out):
-        r0 = cc.check_above_rule(rows, None, LIVE)
+        r0 = cc.check_above_rule(rows, None, FIX)
     check(r0 == (0, 1) and not cc.problems, "without --base every row is checked; the listed row does not warn")
     new = dict(trow(3, 2, 100000, 1000, "VERIFIED", "S7", "", "ab" * 32, "2026-11-09"))
     out = io.StringIO()
     with contextlib.redirect_stdout(out):
-        r = cc.check_above_rule(rows + [new], len(rows), LIVE)
+        r = cc.check_above_rule(rows + [new], len(rows), FIX)
     w = [l for l in out.getvalue().splitlines() if l.startswith("::warning::")]
     check(r == (1, 1) and len(w) == 1 and "t3-v2-k100000-1" in w[0] and "1000 vs PCT value" in w[0] and not cc.problems,
           "a pull request adding CA(1000; 3, 100000, 2) gets one ::warning:: and no problem")
     with tempfile.TemporaryDirectory() as d:
         for f in ("derived.csv",):
-            os.symlink(os.path.join(LIVE, f), os.path.join(d, f))
+            os.symlink(os.path.join(FIX, f), os.path.join(d, f))
         with contextlib.redirect_stdout(io.StringIO()) as o:
             r = cc.check_above_rule(rows, pos, d)
         check(r == (1, 0) and not cc.problems, "without the list, the same row warns")
@@ -239,8 +243,8 @@ def test_consistency():
     # drift: a regenerated derived.csv with a line beating an existing wide row
     wide = [x for x in rows if (x["t"], x["v"], x["k"]) == ("3", "4", "100000")]
     with tempfile.TemporaryDirectory() as d:
-        shutil.copyfile(os.path.join(LIVE, "derived.csv"), os.path.join(d, "derived.csv"))
-        shutil.copyfile(os.path.join(LIVE, "above_rule_rows.csv"), os.path.join(d, "above_rule_rows.csv"))
+        shutil.copyfile(os.path.join(FIX, "derived.csv"), os.path.join(d, "derived.csv"))
+        shutil.copyfile(os.path.join(FIX, "above_rule_rows.csv"), os.path.join(d, "above_rule_rows.csv"))
         n = min(int(x["N"]) for x in wide) if wide else None
         with open(os.path.join(d, "derived.csv"), "a", newline="") as f:
             csv.writer(f, lineterminator="\n").writerow([3, 4, 100000, (n or 2) - 1, "", "", "PCT", "test", 1])
@@ -252,8 +256,8 @@ def test_consistency():
 
 
 def test_frame_effect_cap():
-    rows = list(csv.DictReader(open(os.path.join(LIVE, "ca_table.csv"), newline="", encoding="utf-8")))
-    ctx = dict(table_rows=rows, table_dir=LIVE, slug="test", stamp="ca_verify test", date="2026-11-09")
+    rows = list(csv.DictReader(open(os.path.join(FIX, "ca_table.csv"), newline="", encoding="utf-8")))
+    ctx = dict(table_rows=rows, table_dir=FIX, slug="test", stamp="ca_verify test", date="2026-11-09")
     old = cs.FRAME_EFFECT_MAX
     cs.FRAME_EFFECT_MAX = 1
     try:
@@ -267,8 +271,11 @@ def test_frame_effect_cap():
 
 
 def main():
-    for fn in (test_consistency, test_submission_live, test_frame_effect_cap, test_submission_small):
-        fn()
+    global FIX
+    with fixture_table() as (d, _):
+        FIX = d
+        for fn in (test_consistency, test_submission_fixture, test_frame_effect_cap, test_submission_small):
+            fn()
     print("%d passed, %d failed" % (RESULTS["pass"], RESULTS["fail"]))
     return 1 if RESULTS["fail"] else 0
 

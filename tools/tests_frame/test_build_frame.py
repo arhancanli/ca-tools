@@ -11,15 +11,20 @@ withdrawn files, get lent by a tied VERIFIED row when the named row has none, wo
 label form (source label, then :fuse/:derive/:add1; labels with colons and commas), the comparison with
 derived.csv past the counted range (issue #62: a fused size withheld where any size rule gives less, kept
 where none does, the consistency.py check of it, prev_id of a past-range step below the widest counted
-value, the live frame at (3, 2), (3, 3) and (3, 10), a strength-2 row CA(2425; 2, 100000, 25)), a row past the
+value, the frame of the fixture table at (3, 2), (3, 3) and (3, 10), a strength-2 row CA(2425; 2, 100000, 25)), a row past the
 baseline's range that derived.csv beats at its own width does not widen the counted range (version 1.4: on the
-live table a CA(1000; 3, 100000, 2) lets in no derived line), add1 (CKRS 2010
+fixture table a CA(1000; 3, 100000, 2) lets in no derived line), add1 (CKRS 2010
 Theorem 3.2: two inputs, the weaker tier, both rows in ids_all, chains, t = 3 with the trivial strength 1
 ingredient, inside the counted range only, fuse before add1, a sound chain cut, a VERIFIED ingredient before
 a CITED one of the same size, the consistency check of add1 workings), a .txt.gz path in a document and a
 RETRACTED row with a SCREENED twin (consistency.py), Colbourn's 133 "Add 1 factors"
-rows reproduced from their ingredients in the live table, the live withdrawn_files.csv against
-withdrawn_fingerprints.csv, and --check.
+rows reproduced from their ingredients (fixture), the live withdrawn_files.csv against
+withdrawn_fingerprints.csv and against its fixture (append-only), and --check.
+
+No test here asserts a size of the live table/. Tests that need a real table read the fixed fixture
+tools/tests_frame/fixtures/table_51d2111 (the table at commit 51d2111, made by fixtures/make_fixture.py),
+so the table can grow without breaking them. What must hold on the live table however it grows is in
+test_frame_invariants.py; test_no_live_pins.py fails if a test asserts a live value again.
 
 Usage: test_build_frame.py   (prints PASS/FAIL lines and a summary; exit 1 on a failure)
 """
@@ -35,6 +40,7 @@ import contextlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(REPO, "tools"))
+sys.path.insert(0, HERE)
 import build_frame as bf  # noqa: E402
 
 RESULTS = {"pass": 0, "fail": 0}
@@ -83,6 +89,9 @@ def write_table(d, rows, manifest=(), withdrawn=(), derived=()):
             w.writerow(["file", "t", "v", "k", "N", "status", "sha256", "source_id", "source_detail",
                         "verify_stamp", "constant_rows", "withdrawn", "reason"])
             w.writerows(withdrawn)
+
+
+from fixture_table import FIXTURES, FIXTURE, fixture_table  # noqa: E402  (the fixed fixture table)
 
 
 def frame(rows, **kw):
@@ -302,68 +311,63 @@ def test_past_range_prev_id():
     check(l and l["N"] == "498" and l["prev_id"] == "", "one not below the widest counted value: prev_id empty")
 
 
-def _live_counted_kmax():
+def _counted_kmax(rows):
     sys.path.insert(0, os.path.join(REPO, "table"))
     from ca_table import counted
-    rows = list(csv.DictReader(open(os.path.join(REPO, "table", "ca_table.csv"), newline="", encoding="utf-8")))
     kmax = {}
     for r in counted(rows):
         tv = (int(r["t"]), int(r["v"]))
         kmax[tv] = max(kmax.get(tv, 0), int(r["k"]))
-    return rows, kmax
+    return kmax
 
 
-def test_live_past_range():
-    """the committed frame (issue #62): no (3, 2) or (3, 3) line past the counted range, the ten #54 alphabets
-    kept (CA(11889; 3, 100000, 10)), the prev_id of CA(13115; 3, 11288, 12)"""
-    rows, kmax = _live_counted_kmax()
-    fr = list(csv.DictReader(open(os.path.join(REPO, "table", "ca_frame.csv"), newline="", encoding="utf-8")))
-    past = [l for l in fr if (l["t"], l["v"]) in (("3", "2"), ("3", "3"))
-            and int(l["k"]) > kmax[(3, int(l["v"]))]]
-    check(kmax[(3, 2)] == kmax[(3, 3)] == 10000 and not past,
-          "no frame line at (3, 2) or (3, 3) past the counted range (k > 10,000; got %d)" % len(past))
-    l = one(fr, 3, 10, 100000)
-    check(l and l["N"] == "11889" and l["basis"] == "derived", "CA(11889; 3, 100000, 10) is in the frame")
-    kept = sorted({int(l["v"]) for l in fr if l["t"] == "3" and l["basis"] == "derived"
-                   and int(l["k"]) > kmax.get((3, int(l["v"])), 0)})
-    check(kept == [6, 10, 12, 14, 15, 18, 20, 21, 22, 24],
-          "past the counted range at t = 3 the frame keeps exactly the ten #54 alphabets (got %s)" % kept)
-    l = one(fr, 3, 12, 11288)
-    check(l and l["N"] == "13115" and l["prev_id"] == "t3-v12-k10000-1",
-          "CA(13115; 3, 11288, 12) lowers the 13,151 at k = 10,000 and names that row as prev_id")
+def test_fixture_past_range():
+    """issue #62 (version 1.3) on the fixed fixture table (the table at commit 51d2111, where these values were
+    first asserted on the live table): no (3, 2) or (3, 3) line past the counted range, the ten #54 alphabets
+    kept (CA(11889; 3, 100000, 10)), the prev_id of CA(13115; 3, 11288, 12), and the consistency.py check of
+    a frame written from it"""
     import consistency as cc
-    del cc.problems[:]
-    n, bad = cc.check_frame_veto(rows, table_dir=os.path.join(REPO, "table"))
-    check(n > 0 and bad == 0 and not cc.problems,
-          "consistency.py: the committed frame obeys the comparison with the committed derived.csv (%d lines)" % n)
+    with fixture_table() as (d, rows):
+        kmax = _counted_kmax(rows)
+        with contextlib.redirect_stdout(io.StringIO()):
+            bf.main(["--table-dir", d])
+        fr = list(csv.DictReader(open(os.path.join(d, "ca_frame.csv"), newline="", encoding="utf-8")))
+        past = [l for l in fr if (l["t"], l["v"]) in (("3", "2"), ("3", "3"))
+                and int(l["k"]) > kmax[(3, int(l["v"]))]]
+        check(kmax[(3, 2)] == kmax[(3, 3)] == 10000 and not past,
+              "fixture: no frame line at (3, 2) or (3, 3) past the counted range (k > 10,000; got %d)" % len(past))
+        l = one(fr, 3, 10, 100000)
+        check(l and l["N"] == "11889" and l["basis"] == "derived", "fixture: CA(11889; 3, 100000, 10) is in the frame")
+        kept = sorted({int(l["v"]) for l in fr if l["t"] == "3" and l["basis"] == "derived"
+                       and int(l["k"]) > kmax.get((3, int(l["v"])), 0)})
+        check(kept == [6, 10, 12, 14, 15, 18, 20, 21, 22, 24],
+              "fixture: past the counted range at t = 3 the frame keeps exactly the ten #54 alphabets (got %s)" % kept)
+        l = one(fr, 3, 12, 11288)
+        check(l and l["N"] == "13115" and l["prev_id"] == "t3-v12-k10000-1",
+              "fixture: CA(13115; 3, 11288, 12) lowers the 13,151 at k = 10,000 and names that row as prev_id")
+        del cc.problems[:]
+        n, bad = cc.check_frame_veto(rows, table_dir=d)
+        check(n == 33 and bad == 0 and not cc.problems,
+              "fixture: consistency.py: the frame obeys the comparison with derived.csv (%d lines past the range)" % n)
 
 
 def test_strength2_row_past_range():
-    """a synthetic VERIFIED CA(2425; 2, 100000, 25) on the live table and derived.csv: the row counts at v = 25,
-    its 23 fused sizes at v = 2 to 24 are withheld wherever DP2 or another rule in derived.csv gives less"""
-    live = os.path.join(REPO, "table")
-    rows = list(csv.DictReader(open(os.path.join(live, "ca_table.csv"), newline="", encoding="utf-8")))
-    new = {c: "" for c in rows[0]}
-    new.update(t="2", v="25", k="100000", N="2425", tier="VERIFIED", source_id="S7", source_detail="test row",
+    """a synthetic VERIFIED CA(2425; 2, 100000, 25) on the fixed fixture table: the row counts at v = 25, its 23
+    fused sizes at v = 2 to 24 are withheld wherever DP2 or another rule in derived.csv gives less"""
+    new = dict(t="2", v="25", k="100000", N="2425", tier="VERIFIED", source_id="S7", source_detail="test row",
                array_sha256="ab" * 32, verify_stamp="ca_verify test 2026-11-09 Linux", entered="2026-11-09",
                construction="test strength-2 row")
-    with tempfile.TemporaryDirectory() as d:
-        for f in ("MANIFEST.csv", "EXTERNAL.csv", "withdrawn_files.csv", "derived.csv", "certificates", "constructions"):
-            os.symlink(os.path.join(live, f), os.path.join(d, f))
-        with open(os.path.join(d, "ca_table.csv"), "w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, list(rows[0]), lineterminator="\n")
-            w.writeheader()
-            w.writerows(rows + [new])
+    with fixture_table([new]) as (d, rows):
         lines, st, _ = bf.build(d)
         floor = bf.derived_floor(d)
     fr = [dict(zip(bf.FRAME_HEADER, l)) for l in lines]
     l = one(fr, 2, 25, 100000)
     check(l and l["basis"] == "row" and l["N"] == "2425" and bf.floor_at(floor, (2, 25), 100000) == 2448,
-          "the row counts at v = 25 (a row is never withheld; DP2 gives 2448 there)")
+          "fixture: the row counts at v = 25 (a row is never withheld; DP2 gives 2448 there)")
     beaten = [v for v in range(2, 25) if bf.floor_at(floor, (2, v), 100000) < 2425 - 2 * (25 - v)]
     fused = [v for v in range(2, 25) if any(x["construction"].startswith("test strength-2 row:") for x in at(fr, 2, v))]
     check(beaten == list(range(2, 25)) and not fused,
-          "derived.csv gives less at all 23 alphabets v = 2 to 24, and none of the fused sizes is in the frame")
+          "fixture: derived.csv gives less at all 23 alphabets v = 2 to 24, and none of the fused sizes is in the frame")
 
 
 def test_weak_row_range():
@@ -382,25 +386,17 @@ def test_weak_row_range():
     inside = row(3, 2, 9, 64, "VERIFIED", "S7", "", "c5" * 32, "2026-11-09")
     fr, st = frame(base + [inside, row(3, 3, 12, 300)], derived=[(3, 2, 15, 5, "PCT")])
     check(st["range_rows_left_out"] == 0, "a row inside the baseline's column range always widens it")
-    # the live table with a VERIFIED CA(1000; 3, 100000, 2) (the gap left by version 1.3: 231 lines of 80 to 996)
-    live = os.path.join(REPO, "table")
-    rows = list(csv.DictReader(open(os.path.join(live, "ca_table.csv"), newline="", encoding="utf-8")))
-    new = {c: "" for c in rows[0]}
-    new.update(t="3", v="2", k="100000", N="1000", tier="VERIFIED", source_id="S7", source_detail="test row",
+    # the fixed fixture table with a VERIFIED CA(1000; 3, 100000, 2) (the gap left by version 1.3: 231 lines of
+    # 80 to 996 on the table of that day)
+    new = dict(t="3", v="2", k="100000", N="1000", tier="VERIFIED", source_id="S7", source_detail="test row",
                array_sha256="ab" * 32, verify_stamp="ca_verify test 2026-11-09 Linux", entered="2026-11-09",
                construction="test weak row")
-    with tempfile.TemporaryDirectory() as d:
-        for f in ("MANIFEST.csv", "EXTERNAL.csv", "withdrawn_files.csv", "derived.csv", "certificates", "constructions"):
-            os.symlink(os.path.join(live, f), os.path.join(d, f))
-        with open(os.path.join(d, "ca_table.csv"), "w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, list(rows[0]), lineterminator="\n")
-            w.writeheader()
-            w.writerows(rows + [new])
+    with fixture_table([new]) as (d, rows):
         lines, st, _ = bf.build(d)
     fr = [dict(zip(bf.FRAME_HEADER, l)) for l in lines]
     past = [l for l in at(fr, 3, 2) if int(l["k"]) > 10000]
     check([(l["k"], l["N"], l["basis"]) for l in past] == [("100000", "1000", "row")] and st["range_rows_left_out"] == 2,
-          "live: CA(1000; 3, 100000, 2) counts as a row, and no derived line at (3, 2) past k = 10,000 enters "
+          "fixture: CA(1000; 3, 100000, 2) counts as a row, and no derived line at (3, 2) past k = 10,000 enters "
           "(left out of the range: it and t6-v2-k10051-1)")
 
 
@@ -587,11 +583,18 @@ def test_add1_scope():
 
 
 def test_colbourn_add1_rows():
-    """Colbourn's "Add 1 factors" rows (CKRS 2010 Theorem 3.2) from their ingredients in his own rows (S1)"""
+    """Colbourn's "Add 1 factors" rows (CKRS 2010 Theorem 3.2) from their ingredients in his own rows (S1), on the
+    fixed fixture colbourn_add1_51d2111.csv.gz (those rows and the S1 rows that answer their two lookups)"""
     import derive_laws as L
-    look = L.load(sources={"S1"})
+    raw = gzip.decompress(open(os.path.join(FIXTURES, "colbourn_add1_%s.csv.gz" % FIXTURE), "rb").read())
+    fixture_rows = list(csv.DictReader(io.StringIO(raw.decode("utf-8"))))
+    saved, L.rows = L.rows, fixture_rows
+    try:
+        look = L.load(sources={"S1"})
+    finally:
+        L.rows = saved
     e = L.mk_ecan(look)
-    a1 = [r for r in L.rows if r["source_id"] == "S1" and r["construction"] == "Add 1 factors"]
+    a1 = [r for r in fixture_rows if r["source_id"] == "S1" and r["construction"] == "Add 1 factors"]
     ok = [r for r in a1 if L.law_add1(e, int(r["t"]), int(r["v"]), int(r["k"]))
           == (int(r["N"]), ())]
     check(len(a1) == 133 and len(ok) == 133,
@@ -614,18 +617,33 @@ def test_get_from_tied_verified():
     check(l and l["get"] == "none" and l["get_ref"] == "", "a CITED row with no tied array: get none")
 
 
+def test_withdrawn_fixture():
+    """the withdrawn list of commit 51d2111 (fixture withdrawn_files_51d2111.csv.gz): 137 files of 2026-10-27,
+    then the three never stored TJ2level arrays"""
+    import withdrawn_fingerprints as wf
+    raw = gzip.decompress(open(os.path.join(FIXTURES, "withdrawn_files_%s.csv.gz" % FIXTURE), "rb").read())
+    fix = list(csv.DictReader(io.StringIO(raw.decode("utf-8"))))
+    old = [x["file"] for x in fix if x["withdrawn"] == wf.WITHDRAWN_ON]
+    later = [(x["t"], x["v"], x["k"], x["N"]) for x in fix if x["withdrawn"] != wf.WITHDRAWN_ON]
+    check(len(old) == 137 and later == [("4", "2", "338", "177"), ("4", "2", "354", "178"), ("4", "2", "358", "179")],
+          "fixture: 137 files withdrawn on 2026-10-27, then the three never stored TJ2level arrays")
+
+
 def test_live_withdrawn_list():
+    """the live withdrawn_files.csv (invariants only): withdrawn_fingerprints.py reads exactly its files withdrawn
+    on WITHDRAWN_ON, and the list is append-only: it starts with the list of the fixture"""
     path = os.path.join(REPO, "table", "withdrawn_files.csv")
     w = list(csv.DictReader(open(path, newline="", encoding="utf-8")))
     fp = [x["file"] for x in csv.DictReader(open(os.path.join(REPO, "table", "withdrawn_fingerprints.csv"),
                                                     newline="", encoding="utf-8"))]
     import withdrawn_fingerprints as wf
     old = [x["file"] for x in w if x["withdrawn"] == wf.WITHDRAWN_ON]
-    later = [(x["t"], x["v"], x["k"], x["N"]) for x in w if x["withdrawn"] != wf.WITHDRAWN_ON]
-    check(old == fp and len(old) == 137,
-          "withdrawn_fingerprints.py reads exactly the 137 files withdrawn on 2026-10-27 (those in its output)")
-    check(later == [("4", "2", "338", "177"), ("4", "2", "354", "178"), ("4", "2", "358", "179")],
-          "the three never stored TJ2level arrays are the only later lines")
+    check(old == fp and len(old) > 0,
+          "withdrawn_fingerprints.py reads exactly the %d files withdrawn on %s (those in its output)"
+          % (len(old), wf.WITHDRAWN_ON))
+    raw = gzip.decompress(open(os.path.join(FIXTURES, "withdrawn_files_%s.csv.gz" % FIXTURE), "rb").read())
+    fix = list(csv.DictReader(io.StringIO(raw.decode("utf-8"))))
+    check(w[:len(fix)] == fix, "the live list is append-only: it starts with the %d lines of the fixture" % len(fix))
 
 
 def test_get():
@@ -695,11 +713,11 @@ def test_guarantee():
 def main():
     for fn in (test_guarantee, test_fuse_chain, test_derive_chain, test_tier_of_weakest_and_ties, test_equal_is_row,
                test_disputed_excluded, test_retracted_excluded, test_steps, test_ids_stable, test_prev_id, test_past_range_fuse_only,
-               test_past_range_veto, test_past_range_prev_id, test_live_past_range, test_strength2_row_past_range,
+               test_past_range_veto, test_past_range_prev_id, test_fixture_past_range, test_strength2_row_past_range,
                test_weak_row_range,
                test_label_with_colon_and_comma, test_add1, test_add1_t3, test_add1_chain_cut_sound,
                test_add1_ingredient_tier, test_ci_checks, test_add1_scope, test_colbourn_add1_rows,
-               test_get_from_tied_verified, test_live_withdrawn_list,
+               test_get_from_tied_verified, test_withdrawn_fixture, test_live_withdrawn_list,
                test_get, test_text_and_check):
         fn()
     print("%d passed, %d failed" % (RESULTS["pass"], RESULTS["fail"]))

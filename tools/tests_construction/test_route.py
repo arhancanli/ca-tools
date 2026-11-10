@@ -72,12 +72,12 @@ def run(keep=None):
     os.makedirs(S0)
     open(os.path.join(S0, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     tu.write_rows(os.path.join(S0, "OA16.txt"), oa16)
-    scr = tu.random_ca(rng, cav, 30, 2, 40, 2, W)
+    scr = tu.random_ca(rng, cav, 56, 3, 8, 2, W)   # strength 3, so that derive-1 gives t = 2 (scope t 2-6)
     tu.write_rows(os.path.join(S0, "S.txt"), scr)
     with open(os.path.join(S0, "claims.csv"), "w") as f:
         f.write(",".join(cs.CLAIMS_HEADER) + "\n")
         f.write(tu.claims_line(2, 4, 5, 16, "OA16.txt", "Ann Seed", "orthogonal array over GF(4)", "oa-bush1952"))
-        f.write(tu.claims_line(2, 2, 40, 30, "S.txt", "Ann Seed"))
+        f.write(tu.claims_line(3, 2, 8, 56, "S.txt", "Ann Seed"))
     old_ff = cs.FULL_FRACTION
     rc, _ = quiet(cs.main, [S0, "--table-dir", TD, "--ca-verify", cav, "--threads", "2", "--out", os.path.join(W, "o0"),
                             "--apply", "--date", "2026-11-01"])
@@ -86,13 +86,13 @@ def run(keep=None):
     rows = table_rows(T)
     sha_oa = cs.sha256_text(cs.canon_serialize(oa16))
     sha_s = cs.sha256_text(cs.canon_serialize(scr))
-    scr2 = tu.random_ca(rng, cav, 31, 2, 41, 2, W)
+    scr2 = tu.random_ca(rng, cav, 100, 3, 31, 2, W)   # k > 30, the screen window, so it can be screened
     S0b = os.path.join(T, "submissions", "seed-screened")
     os.makedirs(S0b)
     open(os.path.join(S0b, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     tu.write_rows(os.path.join(S0b, "S2.txt"), scr2)
     open(os.path.join(S0b, "claims.csv"), "w").write(",".join(cs.CLAIMS_HEADER) + "\n" +
-                                                     tu.claims_line(2, 2, 41, 31, "S2.txt", "Ann Seed"))
+                                                     tu.claims_line(3, 2, 31, 100, "S2.txt", "Ann Seed"))
     cs.FULL_FRACTION = -1.0
     rc, _ = quiet(cs.main, [S0b, "--table-dir", TD, "--ca-verify", cav, "--threads", "2", "--out", os.path.join(W, "o0b"),
                             "--apply", "--date", "2026-11-01"])
@@ -151,6 +151,7 @@ def run(keep=None):
         check(ok and cs.canonical_of_file(os.path.join(TD, "arrays", m["file"]), v)[2] == r["array_sha256"],
               "stored array %s verifies with ca_verify and hashes to the row" % (m or {}).get("file"))
     lst = list(csv.DictReader(open(os.path.join(TD, "constructions", "CONSTRUCTIONS.csv"), newline="")))
+    lst = [c for c in lst if c["file"].startswith("con-1/")]   # the copy keeps the real listings
     check(len(lst) == 3 and all(os.path.isfile(os.path.join(TD, "constructions", c["file"])) for c in lst)
           and os.path.isfile(os.path.join(TD, "constructions", "con-1", "ca3.txt")), "certificates and file ingredients stored and listed")
     rc, probs, txt = consistency(T, base)
@@ -199,14 +200,14 @@ def run(keep=None):
                                                              "fuse-ckrs2010"), "rejected by tools/construction_cert.py")
     neg("claim-differs", {"fuse.json": fj}, con_line(2, 3, 6, r_fuse["N"], "fuse.json", "C D", "fusing", "fuse-ckrs2010"),
         "the claim says")
-    scert = json.dumps(cert("derive-1", {"t": 1, "v": 2, "input": {"table": sha_s2}, "column": 0, "symbol": 0}, 10, 40))
-    neg("screened-input", {"s.json": scert}, con_line(1, 2, 40, 10, "s.json", "C D", "derived", "fuse-ckrs2010"),
+    scert = json.dumps(cert("derive-1", {"t": 2, "v": 2, "input": {"table": sha_s2}, "column": 0, "symbol": 0}, 10, 30))
+    neg("screened-input", {"s.json": scert}, con_line(2, 2, 30, 10, "s.json", "C D", "derived", "fuse-ckrs2010"),
         "is not the array_sha256 of a counted VERIFIED row")
-    d2 = cert("derive-1", {"t": 1, "v": 2, "input": {"table": sha_s}, "column": 0, "symbol": 1})
+    d2 = cert("derive-1", {"t": 2, "v": 2, "input": {"table": sha_s}, "column": 0, "symbol": 1})
     tmpd = os.path.join(W, "d2")
     os.makedirs(tmpd)
     r2 = finish(os.path.join(tmpd, "d2.json"), d2, TD)
-    neg("empty-builds-on", {"d2.json": json.dumps(d2)}, con_line(1, 2, 39, r2["N"], "d2.json", "C D", "derived", ""),
+    neg("empty-builds-on", {"d2.json": json.dumps(d2)}, con_line(2, 2, 7, r2["N"], "d2.json", "C D", "derived", ""),
         "builds_on is empty")
     # not stored: the storage limit lowered, so only the certificate is kept
     d = os.path.join(T, "submissions", "con-big")
@@ -214,7 +215,7 @@ def run(keep=None):
     open(os.path.join(d, "HOW.md"), "w").write("Construction: test array\nBuilt from: nothing\nProgram: this test\n")  # submissions need HOW.md (tools/provenance.py)
     shutil.copyfile(os.path.join(tmpd, "d2.json"), os.path.join(d, "d2.json"))
     open(os.path.join(d, "constructions.csv"), "w").write(",".join(ccn.HEADER) + "\n" +
-                                                          con_line(1, 2, 39, r2["N"], "d2.json", "Eve Big", "derived array", "fuse-ckrs2010"))
+                                                          con_line(2, 2, 7, r2["N"], "d2.json", "Eve Big", "derived array", "fuse-ckrs2010"))
     old = ccn.STORE_MAX_BYTES
     ccn.STORE_MAX_BYTES = 100
     nman = len(list(csv.DictReader(open(os.path.join(TD, "MANIFEST.csv"), newline=""))))
