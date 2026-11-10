@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """construction_cert - check a construction certificate and rebuild the array it proves.
 
-A construction certificate records the recipe of a covering array instead of the array. Five
+A construction certificate records the recipe of a covering array instead of the array. Seven
 constructions are known (tools/CONSTRUCTION_CERT.md states each theorem, its hypotheses and the
 proof the checker follows):
 
@@ -15,6 +15,12 @@ proof the checker follows):
              column c deleted, form a CA(N_s; t, k, v)
   product-1  the direct product of a CA(N1; 2, k1, v) and a CA(N2; 2, k2, v): a CA(N1+N2-d; 2,
              k1 k2, v), d the rows of the second part that repeat a row of the first (constant rows)
+  sms51-1    Shokri, Moura and Stevens (arXiv:2510.13122v3), Theorem 5.1: three truncated Moebius
+             planes of an ovoid of PG(3, q), q an odd prime power, give a CA(3q^4 - 2; 4, (q^2+1)/2, q);
+             the anti-cocircularity (their Theorem 4.25) is checked exactly by enumerating circles
+  sms65-1    the same authors, Theorem 6.2 with the ingredient size of Corollary 6.5: a
+             CA(3q^4 + (q-2)N; 4, q^2+1, q) from a CA(N; 3, (q^2+1)/2, q), the ingredient built here
+             from a pair of orthogoval planes and checked exactly, or an array ingredient
 
 An ingredient is given inline ("rows"), as a file beside the certificate ("file" and its "sha256"),
 both checked exhaustively here, or by the array_sha256 of a counted VERIFIED row of the table
@@ -59,13 +65,15 @@ import sys
 import time
 
 FORMAT = "construction-cert-1"
-CONSTRUCTIONS = ("powercz-1", "powercz-2", "fuse-1", "derive-1", "product-1")
+CONSTRUCTIONS = ("powercz-1", "powercz-2", "fuse-1", "derive-1", "product-1", "sms51-1", "sms65-1")
 ARRAY_KINDS = ("fuse-1", "derive-1", "product-1")
+SMS_KINDS = ("sms51-1", "sms65-1")
 # the reference id (table/references.csv) of the theorem of each construction, for builds_on
 # (derive-1 has none: deriving a strength t-1 array is folklore with no single source in
 # references.csv, so the submitter's builds_on is kept as given and nothing is added)
 REFERENCE = {"powercz-1": "power-cz2012", "powercz-2": "power-cz2012", "fuse-1": "fuse-ckrs2010",
-             "derive-1": None, "product-1": "product-cmmssy2006"}
+             "derive-1": None, "product-1": "product-cmmssy2006", "sms51-1": "mobius-sms2025",
+             "sms65-1": "mobius-sms2025"}
 REPO_TABLE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "table")
 # the exhaustive check of an inline or file ingredient here costs about C(k, t) * N entry reads in
 # Python; above this an ingredient must be entered in the table first and named by its hash
@@ -311,6 +319,8 @@ def load_certificate(path, table_dir=None):
         raise CertError("cannot read certificate %s: %s" % (path, e))
     if isinstance(cert, dict) and cert.get("construction") in ARRAY_KINDS:
         return load_array_kind(cert, raw, path, table_dir)
+    if isinstance(cert, dict) and cert.get("construction") in SMS_KINDS:
+        return load_sms(cert, raw, path, table_dir)
     cz2 = isinstance(cert, dict) and cert.get("construction") == "powercz-2"
     only_keys(cert, ("format", "construction", "t", "v", "e", "field", "family", "ingredients",
                      "expected", "notes") + (("enumerate_weights",) if cz2 else ()), "certificate")
@@ -1534,6 +1544,525 @@ TABLE_CHECKS = [("ingredient_table", check_table_ingredients)]
 KIND_POST_CHECKS = [("alphabet", check_out_symbols)]
 
 
+# ---------------------------------------------------------------------------
+# Shokri, Moura and Stevens (arXiv:2510.13122v3): sms51-1 (Theorem 5.1) and sms65-1 (Theorem 6.2
+# with the ingredient of Corollary 6.5). tools/CONSTRUCTION_CERT.md states the theorems and the
+# proofs these checks follow.
+# ---------------------------------------------------------------------------
+
+SMS_MAX_Q = 31              # largest q (the q^4 - 1 powers of alpha are listed here in Python)
+SMS_KEYS = {"sms51-1": ("p",), "sms65-1": ("ingredient",)}
+
+
+def popcount(x):
+    return bin(x).count("1")
+
+
+def sms_powers(F, f):
+    """the coordinate vectors of x^0, x^1, ..., x^(q^m - 2) in F_q[x]/(f), f monic of degree m given
+    constant term first (m + 1 labels), and the first e > 0 with x^e = 1 (None if none below q^m)"""
+    q, m = F.q, len(f) - 1
+    add, mul = F.add, F.mul
+    neg = [add[a].index(0) for a in range(q)]
+    nf = [neg[c] for c in f[:m]]                     # x^m = -(f_0 + ... + f_(m-1) x^(m-1))
+    one = tuple([1] + [0] * (m - 1))
+    cur = one
+    out = []
+    ret = None
+    for e in range(q ** m - 1):
+        out.append(cur)
+        top = cur[m - 1]
+        nxt = [0] + list(cur[:m - 1])
+        if top:
+            mr = mul[top]
+            nxt = [add[nxt[i]][mr[nf[i]]] for i in range(m)]
+        cur = tuple(nxt)
+        if cur == one and ret is None:
+            ret = e + 1
+    return out, ret
+
+
+def rot(mask, e, n, full):
+    """{s : (s + e) mod n in D} from the mask of D (bit d set for d in D)"""
+    e %= n
+    return ((mask >> e) | (mask << (n - e))) & full if e else mask
+
+
+def divisors(n):
+    return [d for d in range(1, n) if n % d == 0]
+
+
+def parse_poly(obj, deg, q, where):
+    if not (isinstance(obj, list) and len(obj) == deg + 1 and all(is_int(x) and 0 <= x < q for x in obj)
+            and obj[deg] == 1):
+        raise CertError("%s must be a list of %d field elements 0..%d, constant term first, the last 1 (monic)"
+                        % (where, deg + 1, q - 1))
+    return list(obj)
+
+
+def load_sms(cert, raw, path, table_dir):
+    kind = cert["construction"]
+    only_keys(cert, ("format", "construction", "t", "v", "field", "quartic", "multipliers", "expected", "notes")
+              + SMS_KEYS[kind], "certificate")
+    if cert.get("format") != FORMAT:
+        raise CertError("format must be %r" % FORMAT)
+    if "notes" in cert and not (isinstance(cert["notes"], str) or
+                                (isinstance(cert["notes"], list) and all(isinstance(x, str) for x in cert["notes"]))):
+        raise CertError("notes must be a string or a list of strings")
+    t = need_int(cert, "t", 4, 4)
+    v = need_int(cert, "v", 3, SMS_MAX_Q)
+    if "field" not in cert:
+        raise CertError("missing key 'field'")
+    p, m, q, modulus = parse_field(cert["field"])
+    if q != v or q % 2 == 0:
+        raise CertError("%s: the field must be GF(v) with v odd (v = %d, q = %d)" % (kind, v, q))
+    c = {"kind": kind, "t": t, "v": v, "q": q, "dir": os.path.dirname(os.path.abspath(path)),
+         "cert_sha256": hashlib.sha256(raw).hexdigest(), "ingredients": {}}
+    c["F"] = Field(p, m, modulus)
+    parse_expected(cert, c)
+    c["quartic"] = parse_poly(cert.get("quartic"), 4, q, "quartic")
+    n = (q ** 4 - 1) // (q - 1)
+    c["n"], c["half"] = n, (q * q + 1) // 2
+    mult = cert.get("multipliers", [1, 2, 4])
+    if not (isinstance(mult, list) and len(mult) == 3 and all(is_int(x) and 1 <= x < n for x in mult)):
+        raise CertError("multipliers must be three integers in 1..%d (default [1, 2, 4])" % (n - 1))
+    if kind == "sms65-1" and (mult[1] % 2 or mult[2] % 2):
+        raise CertError("sms65-1: the second and third multipliers must be even (the blocks A(H) | A(H))")
+    c["mult"] = list(mult)
+    half = c["half"]
+    if kind == "sms51-1":
+        pv = cert.get("p")
+        if isinstance(pv, str) and len(pv) == half and set(pv) <= {"0", "1"}:
+            c["p"] = [int(ch) for ch in pv]
+        else:
+            raise CertError("p must be a string of (q^2+1)/2 = %d characters 0 or 1" % half)
+    else:
+        ing = cert.get("ingredient")
+        if isinstance(ing, dict) and "orthogoval" in ing:
+            only_keys(ing, ("orthogoval",), "ingredient")
+            og = ing["orthogoval"]
+            only_keys(og, ("cubic", "points"), "ingredient.orthogoval")
+            c["cubic"] = parse_poly(og.get("cubic"), 3, q, "ingredient.orthogoval.cubic")
+            pts = og.get("points")
+            if not (isinstance(pts, list) and len(pts) == half and all(is_int(x) and 0 <= x < q ** 3 - 1 for x in pts)):
+                raise CertError("ingredient.orthogoval.points must be (q^2+1)/2 = %d exponents 0..%d"
+                                % (half, q ** 3 - 2))
+            c["points"] = list(pts)
+            c["ingredients"]["R"] = {"recipe": "orthogoval", "name": "R"}
+        elif isinstance(ing, dict):
+            d = parse_array_ingredient(ing, "R", c, table_dir)
+            d["need_t"], d["need_v"] = 3, q
+            c["ingredients"]["R"] = d
+        else:
+            raise CertError("ingredient must be an object: {\"orthogoval\": ...} or an array ingredient")
+    # the powers of alpha (the array is defined by them whatever the checks find)
+    c["L4"], c["ret4"] = sms_powers(c["F"], c["quartic"])
+    return c
+
+
+def sms_geometry(c):
+    """D0 = {e < n : first coordinate of alpha^e is 0} as a set and as a mask, cached"""
+    if "D0" not in c:
+        n = c["n"]
+        D0 = [e for e in range(n) if c["L4"][e][0] == 0]
+        mask = 0
+        for e in D0:
+            mask |= 1 << e
+        c["D0"], c["D0set"], c["D0mask"], c["full"] = D0, set(D0), mask, (1 << n) - 1
+    return c
+
+
+def check_quartic(c):
+    """alpha (the class of x modulo the quartic) has multiplicative order q^4 - 1, so the quartic is
+    primitive and F_q[x]/(quartic) is the field F_(q^4)"""
+    q = c["q"]
+    if c["ret4"] != q ** 4 - 1:
+        return ["x has order %s modulo the quartic %r, not q^4 - 1 = %d: the quartic is not primitive"
+                % (c["ret4"] if c["ret4"] else "no finite", c["quartic"], q ** 4 - 1)]
+    return []
+
+
+def check_hyperplanes(c):
+    """the n = (q^4-1)/(q-1) translates of D0 are distinct (D0 has no period), so they are the zero sets
+    of n pairwise non-proportional functionals, that is of all the hyperplanes of PG(3, q)"""
+    sms_geometry(c)
+    n, mask, full = c["n"], c["D0mask"], c["full"]
+    q = c["q"]
+    out = []
+    if len(c["D0"]) != q * q + q + 1:
+        out.append("D0 has %d elements, a plane of PG(3, %d) has %d points" % (len(c["D0"]), q, q * q + q + 1))
+    for d in divisors(n):
+        if rot(mask, d, n, full) == mask:
+            out.append("D0 has period %d, so its translates are not all distinct" % d)
+            break
+    return out
+
+
+def sms_ready(c):
+    """the hyperplane checks use Lemma 2, which needs (Q) and the size of D0; without them they do not run
+    (and fail), so a certificate with a degenerate quartic cannot make them slow"""
+    sms_geometry(c)
+    q = c["q"]
+    if c["ret4"] != q ** 4 - 1 or len(c["D0"]) != q * q + q + 1:
+        return ["not checked: the quartic is not primitive or D0 is not a plane (see quartic, hyperplanes)"]
+    return []
+
+
+def sms_masks(c, mult, cols, xfun):
+    """for each column c in cols: the mask of hyperplanes s with (mult (q+1) xfun(c) + s) mod n in D0"""
+    sms_geometry(c)
+    n, q, mask, full = c["n"], c["q"], c["D0mask"], c["full"]
+    return {col: rot(mask, mult * (q + 1) * xfun(col), n, full) for col in cols}
+
+
+def check_actm(c):
+    """(ACTM) no 4-set of columns of the full ovoid, 0 <= col < q^2+1, with distinct x = col mod half, is
+    dependent in all three labelings E_l(col) = l (q+1) col mod n (l the multipliers); by the shift
+    col -> col+1 it suffices to test the 4-sets that contain column 0"""
+    if sms_ready(c):
+        return sms_ready(c)
+    q, n, half = c["q"], c["n"], c["half"]
+    l1, l2, l3 = c["mult"]
+    K = q * q + 1
+    D0set = c["D0set"]
+    ident = lambda col: col
+    M2 = sms_masks(c, l2, range(K), ident)
+    M3 = sms_masks(c, l3, range(K), ident)
+    E1 = [(l1 * (q + 1) * col) % n for col in range(K)]
+    E2 = [(l2 * (q + 1) * col) % n for col in range(K)]
+    E3 = [(l3 * (q + 1) * col) % n for col in range(K)]
+    tested = 0
+    for s1 in range(n):
+        if (E1[0] + s1) % n not in D0set:
+            continue
+        Y = [col for col in range(1, K) if col % half != 0 and (E1[col] + s1) % n in D0set]
+        for ib in range(len(Y)):
+            b = Y[ib]
+            for ic in range(ib + 1, len(Y)):
+                cc_ = Y[ic]
+                if cc_ % half == b % half:
+                    continue
+                P2 = M2[0] & M2[b] & M2[cc_]
+                if not P2:
+                    continue
+                P3 = M3[0] & M3[b] & M3[cc_]
+                if not P3:
+                    continue
+                single2 = P2 & (P2 - 1) == 0
+                single3 = P3 & (P3 - 1) == 0
+                s2 = P2.bit_length() - 1
+                s3 = P3.bit_length() - 1
+                for d in Y[ic + 1:]:
+                    if d % half in (b % half, cc_ % half):
+                        continue
+                    tested += 1
+                    in2 = ((E2[d] + s2) % n in D0set) if single2 else bool(M2[d] & P2)
+                    if not in2:
+                        continue
+                    in3 = ((E3[d] + s3) % n in D0set) if single3 else bool(M3[d] & P3)
+                    if in3:
+                        c["actm_tested"] = tested
+                        return ["columns %s of the full ovoid (distinct x) are dependent in all three labelings "
+                                "(multipliers %s)" % ([0, b, cc_, d], c["mult"])]
+    c["actm_tested"] = tested
+    return []
+
+
+def check_caps(c):
+    """sms65-1, case 2: any 3 columns of H2 = G^(l2 (q+1)) and of H4 = G^(l3 (q+1)) on half columns are
+    linearly independent (exactly one common hyperplane); by the shift x -> x+1 mod half (l even) it
+    suffices to test the 3-sets that contain column 0"""
+    if sms_ready(c):
+        return sms_ready(c)
+    q, half = c["q"], c["half"]
+    out = []
+    for l in c["mult"][1:]:
+        M = sms_masks(c, l, range(half), lambda x: x)
+        for b in range(1, half):
+            P = M[0] & M[b]
+            for cc_ in range(b + 1, half):
+                if popcount(P & M[cc_]) != 1:
+                    out.append("columns 0, %d, %d of G^(%d(q+1)) on %d columns are linearly dependent"
+                               % (b, cc_, l, half))
+                    return out
+    return out
+
+
+def check_pairs(c):
+    """sms65-1, case 3: the 4 columns x, x + half, x', x' + half of G^(l1 (q+1)) on q^2+1 columns are
+    linearly independent (no common hyperplane); by the shift it suffices to take x = 0"""
+    if sms_ready(c):
+        return sms_ready(c)
+    q, half = c["q"], c["half"]
+    K = q * q + 1
+    M = sms_masks(c, c["mult"][0], range(K), lambda col: col)
+    base = M[0] & M[half]
+    for x in range(1, half):
+        if base & M[x] & M[x + half]:
+            return ["columns 0, %d, %d, %d of G^(%d(q+1)) are linearly dependent" % (half, x, x + half, c["mult"][0])]
+    return []
+
+
+def sms_ortho(c):
+    """the orthogoval ingredient: powers of beta, D3, the scaled generator matrices (cached)"""
+    if "L3" not in c:
+        F, q = c["F"], c["q"]
+        c["L3"], c["ret3"] = sms_powers(F, c["cubic"])
+        n3 = q * q + q + 1
+        D3 = [e for e in range(n3) if c["L3"][e][0] == 0]
+        mask = 0
+        for e in D3:
+            mask |= 1 << e
+        c["n3"], c["D3"], c["D3mask"], c["full3"] = n3, D3, mask, (1 << n3) - 1
+    return c
+
+
+def check_cubic(c):
+    """the orthogoval ingredient: beta (x modulo the cubic) has multiplicative order q^3 - 1"""
+    sms_ortho(c)
+    q = c["q"]
+    if c["ret3"] != q ** 3 - 1:
+        return ["x has order %s modulo the cubic %r, not q^3 - 1 = %d: the cubic is not primitive"
+                % (c["ret3"] if c["ret3"] else "no finite", c["cubic"], q ** 3 - 1)]
+    return []
+
+
+def check_lines(c):
+    """the q^2+q+1 translates of D3 = {e : first coordinate of beta^e is 0} are distinct (all the lines)"""
+    sms_ortho(c)
+    n3, mask, full = c["n3"], c["D3mask"], c["full3"]
+    q = c["q"]
+    out = []
+    if len(c["D3"]) != q + 1:
+        out.append("D3 has %d elements, a line of PG(2, %d) has %d points" % (len(c["D3"]), q, q + 1))
+    for d in divisors(n3):
+        if rot(mask, d, n3, full) == mask:
+            out.append("D3 has period %d" % d)
+            break
+    return out
+
+
+def check_points(c):
+    """every chosen column beta^j and beta^-j has a nonzero first coordinate (so it can be scaled to 1)"""
+    sms_ortho(c)
+    L3, n = c["L3"], c["q"] ** 3 - 1
+    for i, j in enumerate(c["points"]):
+        if L3[j][0] == 0 or L3[(-j) % n][0] == 0:
+            return ["point %d (j = %d): beta^j or beta^-j has first coordinate 0" % (i, j)]
+    return []
+
+
+def check_orthogoval(c):
+    """every 3 of the chosen columns are linearly independent in G1 (points beta^j) or in G2 (points
+    beta^-j): the 3-sets dependent in G1 are those on a line, enumerated over the q^2+q+1 lines"""
+    sms_ortho(c)
+    q, n3, D3mask, full = c["q"], c["n3"], c["D3mask"], c["full3"]
+    if c["ret3"] != q ** 3 - 1 or len(c["D3"]) != q + 1:
+        return ["not checked: the cubic is not primitive or D3 is not a line (see cubic, lines)"]
+    D3set = set(c["D3"])
+    P1 = [j % n3 for j in c["points"]]
+    M2 = [rot(D3mask, (-j) % n3, n3, full) for j in c["points"]]
+    k = len(P1)
+    for s in range(n3):
+        Y = [i for i in range(k) if (P1[i] + s) % n3 in D3set]
+        for a, b, d in itertools.combinations(Y, 3):
+            if M2[a] & M2[b] & M2[d]:
+                return ["columns %s of the ingredient are dependent in both planes" % ([a, b, d],)]
+    return []
+
+
+def check_r_shape(c):
+    """an array ingredient R has exactly (q^2+1)/2 columns, over 0..q-1"""
+    ing = c["ingredients"]["R"]
+    out = check_array_shape(c)
+    rows = ing["rows"]
+    if rows and rows[0] and len(rows[0]) != c["half"]:
+        out.append("ingredient R has %d columns, Theorem 6.2 needs (q^2+1)/2 = %d" % (len(rows[0]), c["half"]))
+    return out
+
+
+SMS_CHECKS_COMMON = [("field", check_field), ("quartic", check_quartic), ("hyperplanes", check_hyperplanes),
+                     ("actm", check_actm)]
+SMS_CHECKS = {
+    "sms51-1": SMS_CHECKS_COMMON,
+    "sms65-1": SMS_CHECKS_COMMON + [("caps", check_caps), ("pairs", check_pairs)],
+}
+SMS_ORTHO_CHECKS = [("cubic", check_cubic), ("lines", check_lines), ("points", check_points),
+                    ("orthogoval", check_orthogoval)]
+SMS_ARRAY_CHECKS = [("shape", check_r_shape), ("ingredient_hash", check_ingredient_hash),
+                    ("ingredient_ca", check_ingredient_ca)]
+
+
+def sms_checks(c):
+    out = list(SMS_CHECKS[c["kind"]])
+    if c["kind"] == "sms65-1":
+        out += SMS_ORTHO_CHECKS if "recipe" in c["ingredients"]["R"] else SMS_ARRAY_CHECKS
+    return out
+
+
+# --- assembly: rows as bytes of field labels, F_q addition by carry-free integer addition ---
+
+class SmsRows:
+    """F_q-linear combinations of vectors as byte strings of labels. A label a is coded as the integer
+    sum_j d_j B^j of its base-p digits d_j, B = 2p - 1, so the sum of two codes has no carry between
+    digits and between bytes (two codes add to at most 2 (B^m - 1) / 2 < 256 when B^m < 256)."""
+
+    def __init__(self, F):
+        self.F = F
+        p, m, q = F.p, F.m, F.q
+        B = 2 * p - 1
+        if B ** m > 256:
+            raise ValueError("GF(%d) is too large for the byte coding" % q)
+        self.code = [sum(((a // p ** j) % p) * B ** j for j in range(m)) for a in range(q)]
+        dec = [0] * 256
+        for s in range(256):
+            ds = [(s // B ** j) % B for j in range(m)]
+            if all(x <= 2 * (p - 1) for x in ds):
+                dec[s] = sum((x % p) * p ** j for j, x in enumerate(ds))
+        self.to_label = bytes(dec)                  # sum of two codes -> label
+        self.to_code = bytes(self.code + [0] * (256 - q))
+        self.shift = {e: bytes([F.add[a][e] for a in range(q)] + [0] * (256 - q)) for e in range(q)}
+
+    def span_rows(self, G):
+        """the q^m rows of A(G), G a list of m rows (lists of labels), in itertools.product order"""
+        F, q = self.F, self.F.q
+        m = len(G)
+        k = len(G[0])
+        mul = F.mul
+        scaled = [[int.from_bytes(bytes(self.code[mul[a][g]] for g in row), "big") for a in range(q)] for row in G]
+        tl, tc = self.to_label, self.to_code
+
+        def comb2(X, Y):              # all x + y, x in X, y in Y (codes), as codes
+            return [int.from_bytes((x + y).to_bytes(k, "big").translate(tl).translate(tc), "big") for x in X for y in Y]
+        if m == 4:
+            P, Q = comb2(scaled[0], scaled[1]), comb2(scaled[2], scaled[3])
+        elif m == 3:
+            P, Q = comb2(scaled[0], scaled[1]), scaled[2]
+        else:
+            raise ValueError("m must be 3 or 4")
+        for x in P:
+            for y in Q:
+                yield (x + y).to_bytes(k, "big").translate(tl)
+
+
+class TextHash:
+    """the canonical text of rows given as bytes of labels (< 100): hashed, optionally written"""
+
+    def __init__(self, k, write=None, chunk_rows=4096):
+        self.k, self.h, self.N = k, hashlib.sha256(), 0
+        self.buf, self.chunk = [], chunk_rows
+        self.fout = open(write, "wb") if write else None
+        self.tens = bytes([48 + a // 10 if a >= 10 else 255 for a in range(100)] + [255] * 156)
+        self.ones = bytes([48 + a % 10 for a in range(100)] + [48] * 156)
+        self.sep = {}
+        self.has0, self.maxsym = False, 0
+
+    def add(self, row):
+        self.buf.append(row)
+        if len(self.buf) >= self.chunk:
+            self.flush()
+
+    def flush(self):
+        if not self.buf:
+            return
+        r = len(self.buf)
+        b = b"".join(self.buf)
+        self.buf = []
+        if r not in self.sep:
+            self.sep[r] = ((b" " * (self.k - 1)) + b"\n") * r
+        self.maxsym = max(self.maxsym, max(b))
+        self.has0 = self.has0 or 0 in b
+        out = bytearray(3 * len(b))
+        out[0::3] = b.translate(self.tens)
+        out[1::3] = b.translate(self.ones)
+        out[2::3] = self.sep[r]
+        text = out.translate(None, b"\xff")
+        self.h.update(text)
+        if self.fout:
+            self.fout.write(text)
+        self.N += r
+
+    def close(self):
+        self.flush()
+        if self.fout:
+            self.fout.close()
+
+
+def sms_vectors(c, mult, cols):
+    """the columns L(alpha^(mult (q+1) col)) for col in cols, as 4 rows of labels"""
+    L4, q = c["L4"], c["q"]
+    nn = q ** 4 - 1
+    vecs = [L4[(mult * (q + 1) * col) % nn] for col in cols]
+    return [[v[i] for v in vecs] for i in range(4)]
+
+
+def sms_ingredient_rows(c, S):
+    """the rows of the ingredient R as bytes of labels"""
+    ing = c["ingredients"]["R"]
+    if "recipe" not in ing:
+        for row in ing["rows"]:
+            yield bytes(row)
+        return
+    sms_ortho(c)
+    F, q, L3 = c["F"], c["q"], c["L3"]
+    n = q ** 3 - 1
+    inv = [None] + [F.mul[a].index(1) for a in range(1, q)]
+
+    def scaled(j):
+        v = L3[j]
+        s = inv[v[0]]
+        return [F.mul[s][x] for x in v]
+    G1 = [scaled(j % n) for j in c["points"]]
+    G2 = [scaled((-j) % n) for j in c["points"]]
+    G1 = [[v[i] for v in G1] for i in range(3)]
+    G2 = [[v[i] for v in G2] for i in range(3)]
+    for row in S.span_rows(G1):
+        yield row
+    for idx, row in enumerate(S.span_rows(G2)):
+        if idx % (q * q) == 0:          # u = (u0, 0, 0): the constant row u0, also a row of the first part
+            continue
+        yield row
+
+
+def assemble_sms(c, write=None):
+    F, q, half = c["F"], c["q"], c["half"]
+    S = SmsRows(F)
+    l1, l2, l3 = c["mult"]
+    if c["kind"] == "sms51-1":
+        cols = [i + c["p"][i] * half for i in range(half)]
+        T = TextHash(half, write)
+        try:
+            for bi, l in enumerate((l1, l2, l3)):
+                for idx, row in enumerate(S.span_rows(sms_vectors(c, l, cols))):
+                    if bi and idx == 0:     # u = 0: the all-zero row, kept only in the first block
+                        continue
+                    T.add(row)
+        finally:
+            T.close()
+        k = half
+    else:
+        K = q * q + 1
+        T = TextHash(K, write)
+        try:
+            for row in S.span_rows(sms_vectors(c, l1, range(K))):
+                T.add(row)
+            for row in S.span_rows(sms_vectors(c, l2, range(half))):
+                T.add(row + row)
+            sh = S.shift[1]
+            for row in S.span_rows(sms_vectors(c, l3, range(half))):
+                T.add(row + row.translate(sh))
+            R = list(sms_ingredient_rows(c, S))
+            for r in range(1, q - 1):
+                sh = S.shift[r + 1]
+                for row in R:
+                    T.add(row + row.translate(sh))
+        finally:
+            T.close()
+        k = K
+    c["N"], c["k"], c["sha256"] = T.N, k, T.h.hexdigest()
+    c["symbols"] = ({0} if T.has0 else set()) | ({T.maxsym} if T.N else set())
+
+
 # order matters only for reporting; every check runs (those after the assembly only if the
 # array could be built)
 CHECKS = [("field", check_field), ("shape", check_shape), ("width", check_width),
@@ -1590,6 +2119,13 @@ def run(path, write=None, log=None, table_dir=None):
         say("certificate %s: %s, t = %d, v = %d, ingredients %s"
             % (path, kind, c["t"], c["v"], ", ".join("%s %d x %d" % (n, len(i["rows"]), len(i["rows"][0]) if i["rows"] else 0)
                                                     for n, i in c["ingredients"].items())))
+    elif kind in SMS_KINDS:
+        checks, post, build = sms_checks(c), POST_CHECKS + KIND_POST_CHECKS, assemble_sms
+        R = c["ingredients"].get("R")
+        say("certificate %s: %s, t = 4, q = %d, multipliers %s, %s" % (
+            path, kind, c["q"], c["mult"], "p = %s" % "".join(map(str, c["p"])) if kind == "sms51-1" else
+            "ingredient R %s" % ("built from orthogoval planes (cubic %r)" % (c["cubic"],) if "recipe" in R else
+                                 "%d x %d" % (len(R["rows"]), len(R["rows"][0]) if R["rows"] else 0))))
     elif kind == "powercz-2":
         build_family(c)
         apply_relabel(c)
@@ -1647,7 +2183,9 @@ def run(path, write=None, log=None, table_dir=None):
                 say("pass [%s]" % name)
     ings = []
     for name, i in c["ingredients"].items():
-        if "table" in i:
+        if "recipe" in i:
+            ings.append(dict(name=name, source="recipe", recipe=i["recipe"]))
+        elif "table" in i:
             ings.append(dict(name=name, source="table", sha256=i["table"]["sha256"], file=i["table"]["file"]))
         elif "file" in i:
             ings.append(dict(name=name, source="file", sha256=i["sha_actual"], file=i["file"]))

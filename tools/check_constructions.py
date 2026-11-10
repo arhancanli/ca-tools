@@ -50,6 +50,9 @@ import provenance  # noqa: E402
 HEADER = ["t", "v", "k", "N", "file", "source_detail", "construction", "builds_on", "credit", "notes"]
 LIST_HEADER = ["file", "t", "v", "k", "N", "construction", "sha256", "array_sha256", "check", "stored"]
 MAX_ENTRIES = 10 ** 9            # N * k rebuilt here in Python (about a minute per 10^8 entries)
+# the sms kinds rebuild rows as byte strings, about 4 x 10^7 entries a second (CA(1890050; 4, 626, 25),
+# 1.18 x 10^9 entries, in 32 s on the 2-core VM, 2026-11-10), so they get a larger limit
+MAX_ENTRIES_FAST = 2 * 10 ** 9
 MAX_CERT_BYTES = 1024 * 1024     # one certificate file
 CROSS_CHECK_SECONDS = 120        # ca_verify also checks the rebuilt array when predicted below this
 STORE_MAX_BYTES = cs.MAX_FILE_BYTES   # a rebuilt array up to this size as text is stored in table/arrays
@@ -120,8 +123,14 @@ def check_claim(cl, ctx, tmp):
         if fname in ctx["seen_file"]:
             raise ConError("certificate %s is named twice" % fname)
         ctx["seen_file"].add(fname)
-        if N * k > MAX_ENTRIES:
-            raise ConError("N k = %d entries is above the %d this route rebuilds; ask the maintainer" % (N * k, MAX_ENTRIES))
+        try:
+            with open(path, "rb") as f:
+                declared = json.loads(f.read().decode("utf-8")).get("construction")
+        except (OSError, ValueError, AttributeError):
+            declared = None
+        limit = MAX_ENTRIES_FAST if declared in ccert.SMS_KINDS else MAX_ENTRIES
+        if N * k > limit:
+            raise ConError("N k = %d entries is above the %d this route rebuilds; ask the maintainer" % (N * k, limit))
         text_bytes = N * k * (len(str(v - 1)) + 1)
         out_path = os.path.join(tmp, "rebuilt-%d.txt" % cl["line"]) if text_bytes <= STORE_MAX_BYTES else None
         t0 = time.monotonic()
@@ -222,6 +231,8 @@ def manifest_source(fname):
 
 
 def ingredient_text(ing):
+    if ing["source"] == "recipe":
+        return "built by the certificate (%s), its hypotheses checked here" % ing["recipe"]
     if ing["source"] == "table":
         return "the VERIFIED table row of array_sha256 %s (table/arrays/%s), trusted as verified" % (ing["sha256"], ing["file"])
     if ing["source"] == "file":
@@ -234,8 +245,9 @@ def notes_of(cl, ctx, stored_name):
     cmp_txt = {"exceeds_table": "exceeds table: ", "equals_best": "equals table: ",
                "above_table": "above table best, not an improvement: "}[cl["comparison"]] + cs.previous_text(cl)
     ings = "; ".join("%s %s" % (i["name"], "table row %s" % i["sha256"][:16] if i["source"] == "table" else
-                                 "file %s" % i["file"] if i["source"] == "file" else "inline")
-                     for i in cl["res"]["ingredients"])
+                                 "file %s" % i["file"] if i["source"] == "file" else
+                                 "built by the certificate (%s)" % i["recipe"] if i["source"] == "recipe" else "inline")
+                     for i in cl["res"]["ingredients"]) or "none"
     parts = ["credit: " + raw["credit"].strip(), cmp_txt,
              "construction certificate table/constructions/%s/%s (%s), ingredients: %s" % (
                  ctx["slug"], raw["file"].strip(), cl["kind"], ings)]

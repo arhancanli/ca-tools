@@ -1,11 +1,13 @@
 # Construction certificates
 
 A construction certificate proves a covering array by its recipe instead of by checking every
-t-set of the array. Five constructions are known to the checker, each with its theorem stated
+t-set of the array. Seven constructions are known to the checker, each with its theorem stated
 and proved below. They are Power CZ (`powercz-1`, Colbourn and Zhou 2012), Power CZ with relabelled
 blocks and constant tuples proved by enumeration (`powercz-2`, since 2026-11-03), fusing one symbol
 (`fuse-1`, Colbourn, Keri, Rivas Soriano and Schlage-Puchta 2010, Lemma 3.1), the derived array of
-a lower strength (`derive-1`) and the direct product of two strength-2 arrays (`product-1`). Since
+a lower strength (`derive-1`), the direct product of two strength-2 arrays (`product-1`), and the
+two strength-4 constructions of Shokri, Moura and Stevens from truncated Moebius planes (`sms51-1`
+and `sms65-1`, since 2026-11-10). Since
 2026-11-02 a certificate is also a submission route (`constructions.csv`, section "The submission
 route" below), and an ingredient may be an array of the table named by its hash (section
 "Ingredients from the table").
@@ -630,6 +632,255 @@ product-1, and a certificate that uses them needs a construction id of its own.
      "first": {"rows": [[0, 0, 0, 0], ...]}, "second": {"table": "<array_sha256>"},
      "constant_rows": [0, null],                      (optional, default [null, null])
      "expected": {"N": 17, "k": 16, "array_sha256": "..."}}
+
+## Shokri, Moura and Stevens: sms51-1 and sms65-1
+
+Source: K. Shokri, L. Moura and B. Stevens, Existence of 3 anti-cocircular truncated Moebius planes
+and constructions of strength-4 covering arrays, arXiv:2510.13122v3 (16 Oct 2026), `mobius-sms2025`
+in `table/references.csv` (added to `builds_on` when it is missing). `sms51-1` is their Theorem 5.1,
+CA(3q^4 - 2; 4, (q^2+1)/2, q). `sms65-1` is their Theorem 6.2, CA(3q^4 + (q - 2)N; 4, q^2 + 1, q)
+from a CA(N; 3, (q^2+1)/2, q), with N = 2q^3 - q as in their Corollary 6.5. Both are for odd prime
+powers q. Their proof rests on Theorem 4.25 (three truncated Moebius planes are anti-cocircular),
+which they prove with pencils of quadrics and a quartic surface. The checker does not use that
+proof. It checks the property itself for the given q, exactly, by listing circles, and then uses
+only the linear algebra written out below. Since 2026-11-10.
+
+### Setting
+
+* q = p^m is odd, the field elements are the labels 0..q-1 of Power CZ (base-p digits, a monic
+  `modulus` for m > 1). half = (q^2+1)/2, and n = (q^4-1)/(q-1) = (q^2+1)(q+1).
+* A monic quartic f over F_q (`quartic`, five labels, constant term first). alpha is the class of
+  x in F_q[x]/(f), and L(y) is the coordinate vector of y in the basis 1, alpha, alpha^2, alpha^3.
+  The checker lists L(alpha^e) for e = 0..q^4-2 by multiplying by x and reducing.
+* A(G), for a matrix G with r rows, is the array of the q^r rows u G, u in F_q^r, in the order of
+  `itertools.product(range(q), repeat=r)` (u_0 most significant), row = sum of u_i times row i of G.
+* Three multipliers l1, l2, l3 (`multipliers`, default [1, 2, 4], the paper's). Column c of the full
+  ovoid (0 <= c < q^2+1) has, in labeling j, the exponent E_j(c) = l_j (q+1) c mod n. Its x is
+  c mod half.
+
+### The arrays
+
+sms51-1, with a choice p in {0,1}^half (`p`, a string): the columns are c_i = i + p_i half,
+0 <= i < half. Block j (j = 1, 2, 3) is A(G_j), with column i of G_j equal to
+L(alpha^(l_j (q+1) c_i mod (q^4-1))). The array is block 1, block 2 without its first row (u = 0),
+and block 3 without its first row: 3q^4 - 2 rows, half columns. This is `tools/sms_theorem51.py`.
+
+sms65-1: with G0 the 4 x (q^2+1) matrix of columns L(alpha^(l1 (q+1) c mod (q^4-1))), H2 and H4 the
+4 x half matrices of columns L(alpha^(l2 (q+1) x)) and L(alpha^(l3 (q+1) x)), and R the ingredient
+(N rows, half columns), the array is, in this order,
+
+    A(G0)
+    A(H2) | A(H2)
+    A(H4) | A(H4) + e_0
+    R | R + e_1, ..., R | R + e_(q-2)
+
+where e_r is the label r + 1 (so e_0 = 1 and the e_r are all the nonzero elements), and + adds a
+field element to every entry. It has 3q^4 + (q-2)N rows and q^2 + 1 columns. This is
+`tools/sms_theorem62.py`.
+
+### Three lemmas
+
+Lemma 1 (independent columns). If the columns of G at a set T are linearly independent, the
+map u -> (u G restricted to T) is onto F_q^T, so A(G) shows every tuple on T, and so does
+A(G) + d for every fixed vector d (a translate of an onto map is onto).
+
+Lemma 2 (hyperplanes). Let D0 = {e : 0 <= e < n, the first coordinate of alpha^e is 0}. Suppose
+alpha has order q^4 - 1 and D0 has no period mod n. Then nonzero vectors L(alpha^(e_1)), ...,
+L(alpha^(e_r)) lie in a common hyperplane exactly when some s in Z_n has e_i + s mod n in D0 for
+every i, and the hyperplanes containing them correspond one to one to these s.
+Proof. Let phi_s be the first coordinate of alpha^s y, a linear functional of y (multiplication by
+alpha^s is F_q-linear and invertible, so phi_s is not zero). alpha^n has order q - 1, so it lies in
+F_q^* (the q - 1 roots of y^(q-1) = 1 in the field F_(q^4) are F_q^*), and so the first coordinate
+of alpha^(e+s) is 0 exactly when (e + s) mod n is in D0. The points alpha^e, 0 <= e < n, are n
+pairwise non-proportional vectors (alpha^d is not in F_q for 0 < d < n), so they are all the
+points of PG(3, q). If phi_s and phi_s' were proportional for s != s' mod n, their zero sets among
+these points would agree, D0 - s = D0 - s', and D0 would have the period s - s'. So the n
+functionals are pairwise non-proportional; there are n classes of nonzero functionals in all, so
+every hyperplane is the kernel of exactly one phi_s.
+Consequences: 4 vectors are linearly dependent exactly when some s contains them (they span at
+most 3 dimensions); 3 vectors are independent exactly when exactly one s contains them (a
+3-dimensional span lies in one hyperplane, a span of 2 or fewer in q + 1 or more).
+
+Lemma 3 (the shift). E_j(c + 1) = E_j(c) + l_j (q+1) mod n, and E_j is well defined on c mod
+q^2 + 1 because l_j (q+1)(q^2+1) = l_j n. So a set T of columns lies in hyperplane s of labeling
+j exactly when T + 1 lies in hyperplane s - l_j (q+1). Any property "some s contains T" is the
+same for T and every translate of T. The same holds for the exponents l (q+1) x with x mod half
+when l is even, since l (q+1) half is then a multiple of n.
+
+### Theorem 5.1 as checked (sms51-1)
+
+Hypotheses: (Q) alpha has order q^4 - 1 (`quartic`); (P) |D0| = q^2+q+1 and D0 has no period
+(`hyperplanes`, tested for the divisors of n); (ACTM) no 4-set of columns of the full ovoid with
+pairwise distinct x lies in a common hyperplane in all three labelings (`actm`).
+
+Claim: the sms51-1 array is a CA(3q^4 - 2; 4, half, q).
+
+Proof. Take 4 distinct columns i, j, k, l and the columns c_i, c_j, c_k, c_l of the full ovoid;
+their x are i, j, k, l, distinct. By (ACTM) there is a labeling j' in which no hyperplane contains
+them; by Lemma 2 (with (Q) and (P)) the 4 columns of G_j' are then linearly independent (the
+vectors L(alpha^(l (q+1) c)) and the exponents E_j'(c) differ only by a factor in F_q^*), and by
+Lemma 1 block j' shows every tuple on them. The two rows removed are all-zero rows (u = 0), equal
+to the first row of block 1, which is kept. []
+
+(ACTM) is Theorem 4.25 of the paper for every p at once. The checker tests it by Lemma 3 only for
+the 4-sets containing column 0 (a bad 4-set T stays bad when moved by -c for c in T, and x stays
+distinct because half divides q^2+1). For each of the q^2+q+1 hyperplanes s1 of labeling 1
+through column 0, it lists the other columns Y in s1 with x != 0. For each pair b, c of Y with
+distinct x it intersects the masks of hyperplanes of labelings 2 and 3 through 0, b, c (each mask
+the set {s : E + s in D0}, a rotation of D0), and tests every further d in Y with x different from
+the three. A bad 4-set {0, b, c, d} lies in some hyperplane of labeling 1 (Lemma 2), so b, c, d are
+in Y for that s1 and the test meets it. Nothing is sampled. At q = 25 the test meets
+1,480,648 triples (b, c, d), in about a second.
+
+### Theorem 6.2 as checked (sms65-1)
+
+Hypotheses: (Q), (P), (ACTM) as above, with l2 and l3 even (a certificate with an odd l2 or l3 is
+malformed); (C3) any 3 columns of H2 are linearly independent, and any 3 of H4 (`caps`: exactly one
+common hyperplane, by Lemma 3 tested for the 3-sets with column 0); (C2) for x != x', the columns
+x, x + half, x', x' + half of G0 are linearly independent (`pairs`: no common hyperplane, tested
+for x = 0); (R) the ingredient is a CA(N; 3, half, q) (`cubic`, `lines`, `points`, `orthogoval`
+below, or the checks of an array ingredient).
+
+Claim: the sms65-1 array X is a CA(3q^4 + (q-2)N; 4, q^2+1, q).
+
+Proof. Take 4 distinct columns of X and a tuple. Write each column as c = x + p half. The x occur
+at most twice (p is 0 or 1).
+1. The four x are distinct. By (ACTM) some labeling has no common hyperplane. If it is labeling 1,
+   G0 is independent on the 4 columns (Lemma 2) and block 0 shows the tuple (Lemma 1). If it is
+   labeling 2 or 3: since l2 and l3 are even, E_2(c) = l2 (q+1) x mod n, so the vectors of H2 (of
+   H4) at the four x are independent, and block 1 (block 2, a translate by e_0 on the right half)
+   shows every tuple on the 4 columns (Lemma 1).
+2. Exactly one x repeats: columns (x, 0) and (x, 1), and two more columns with distinct x' and x''.
+   Let the tuple have a at (x, 0) and a + d at (x, 1). If d = 0: by (C3) the vectors of H2 at
+   x, x', x'' are independent, so some u gives the tuple's values at x, x', x'' in A(H2), and block 1
+   repeats the left half on the right half, so its row shows a at both (x, 0) and (x, 1) and the
+   wanted values elsewhere. If d = e_0: the same with H4 and block 2, where the right half carries
+   + e_0 (the wanted values at columns with p = 1 are taken minus e_0 first). If d = e_r, r >= 1:
+   R covers 3 columns (R) so some row of R has a at x and the wanted values at x', x'' (minus e_r
+   where p = 1), and block 2 + r shows the tuple. The e_r with 0 cover every d.
+3. Two x repeat: columns x, x + half, x', x' + half. By (C2) they are independent in G0 and block 0
+   shows every tuple. []
+
+The proof is the paper's (its cases 1, 2, 3), with the geometry replaced by the checked (ACTM),
+(C2), (C3). The paper gets (C2) from its Corollary 4.6 and (C3) from the ovoid (no three points
+collinear).
+
+### The ingredient R
+
+`"ingredient": {"orthogoval": {"cubic": [b0, b1, b2, 1], "points": [j_0, ..., j_(half-1)]}}` builds
+R as `tools/sms_theorem62.py` does. beta is the class of x modulo the cubic, L3 the coordinates in
+1, beta, beta^2. G1 has the columns L3(beta^(j_i)) and G2 the columns L3(beta^(-j_i)), each column
+divided by its first coordinate. R is A(G1) followed by A(G2) without its rows u = (u0, 0, 0), so
+2q^3 - q rows. These are the two planes of their Theorem 3.3 (an orthogoval pair, Colbourn, Ingalls,
+Jedwab, Saaltink, Smith and Stevens 2024, `orthogoval-cijsss2024`), truncated and with the q
+repeated constant rows removed, which is the idea of their Theorem 3.4 (Torres-Jimenez and
+Izquierdo-Marquez 2018, `epv-ti2018`) and gives the size of Remark 6.4. It is not checked to be the
+same array as theirs; Theorem 6.2 takes any CA(N; 3, half, q).
+
+Hypotheses: (Q3) beta has order q^3 - 1 (`cubic`); (P3) D3 = {e < q^2+q+1 : the first coordinate of
+beta^e is 0} has q + 1 elements and no period (`lines`); `points`: every beta^(j_i) and beta^(-j_i)
+has a nonzero first coordinate; (O) every 3 of the columns are independent in G1 or in G2
+(`orthogoval`).
+
+Claim: R is a CA(2q^3 - q; 3, half, q). Proof. Lemma 2 holds in F_q^3 with D3 (the same proof with
+q^2+q+1 points and lines). Scaling a column changes neither its point nor the rank of a set of
+columns, and makes the first row of G1 and of G2 all ones. Take 3 columns and a tuple y. If they are
+independent in G1, A(G1) shows y (Lemma 1). Otherwise, by (O), they are independent in G2 and A(G2)
+shows y in some row u. If that row was removed, u = (u0, 0, 0), so y is constant u0, and the row
+u = (u0, 0, 0) of A(G1) is constant u0 too (its first row is all ones). []
+
+(O) is checked over the q^2+q+1 lines of plane 1: the 3-sets dependent in G1 are exactly those on a
+line (Lemma 2), and for each the masks of plane 2 are intersected. At q = 25 there are 187,223 such 3-sets.
+The two planes are orthogoval on all their points (their Theorem 3.3), so (O) can fail only when a point is
+repeated or the cubic is not primitive; the check does not rely on that.
+
+An array ingredient (`{"table": ...}`, `{"file": ..., "sha256": ...}` or `{"rows": ...}`) is also
+accepted: it must have exactly half columns, and it is checked as in the other constructions
+(`shape`, `ingredient_hash`, `ingredient_ca` at strength 3, or `ingredient_table`).
+
+### Format
+
+    {"format": "construction-cert-1", "construction": "sms51-1", "t": 4, "v": 25,
+     "field": {"q": 25, "p": 5, "m": 2, "modulus": [1, 1, 1]},
+     "quartic": [7, 0, 0, 5, 1],
+     "p": "000...0",                                   (half characters 0 or 1)
+     "multipliers": [1, 2, 4],                         (optional, the default)
+     "expected": {"N": 1171873, "k": 313, "array_sha256": "..."}}
+
+    {"format": "construction-cert-1", "construction": "sms65-1", "t": 4, "v": 17,
+     "field": {"q": 17, "p": 17, "m": 1},
+     "quartic": [...], "multipliers": [1, 2, 4],
+     "ingredient": {"orthogoval": {"cubic": [...], "points": [...]}},
+     "expected": {"N": 397698, "k": 290, "array_sha256": "..."}}
+
+t must be 4 and v = q odd, 3 <= q <= 31 (the q^4 - 1 powers are listed in Python). Unknown and
+duplicate keys are rejected. `python3 tools/sms_theorem51.py q --certificate C.json > A.txt` and
+`python3 tools/sms_theorem62.py q --certificate C.json > A.txt` write the certificate with the N, k
+and sha256 of the array they print, so the checker's rebuild is compared with an independent one.
+
+### The checks
+
+| name | hypothesis |
+|---|---|
+| field | as for Power CZ |
+| quartic | (Q) |
+| hyperplanes | (P) |
+| actm | (ACTM) |
+| caps, pairs | (C3), (C2) (sms65-1) |
+| cubic, lines, points, orthogoval | the orthogoval ingredient (sms65-1) |
+| shape, ingredient_hash, ingredient_ca, ingredient_table | an array ingredient (sms65-1) |
+| symbols, N, k, sha256, alphabet | as for the other constructions |
+
+The rebuild works on rows as byte strings of labels: F_q addition is a carry-free integer addition
+of a digit coding (base 2p - 1 per base-p digit) followed by a byte translation, and the canonical
+text is made by interleaving translated byte strings. The tests compare it with the numpy scripts.
+
+### Cost
+
+The hyperplane checks run only when (Q) holds and D0 has q^2+q+1 elements (otherwise they fail with "not
+checked"), so a degenerate quartic cannot make them slow, and each stops at its first bad set. On the 2-core VM
+the nine certificates of `submissions/smolen-2026-11-sms-certificates/` take 1 to 32 s each, nearly all of it the
+rebuild (CA(1890050; 4, 626, 25), 1.18 x 10^9 entries, 32 s). `tools/check_constructions.py` allows these two
+kinds up to 2 x 10^9 entries (`MAX_ENTRIES_FAST`; 10^9 for the others).
+
+### Tests of sms51-1 and sms65-1
+
+`tools/tests_construction/test_sms.py` has three parts.
+
+1. The scripts and the checker at q = 3, 5, 7, 9: for both constructions the script's certificate is accepted,
+   the array the checker writes is byte for byte the script's, and `ca_verify` verifies it on every 4-set
+   (at q = 9, 19681 x 41 and 29826 x 82). A reducible modulus (y^2 at q = 9) is reported by `field`.
+2. Random certificates over q = 3, 5, 7 with random multipliers, p, quartics (primitive or not), ingredients
+   (the orthogoval recipe with random cubics and points, or an inline array, sometimes changed), planted
+   faults, and targeted cases in which a single hypothesis fails (multipliers found with the oracle for
+   actm, caps and pairs alone, a repeated point, a point with first coordinate 0, a broken or narrowed inline
+   ingredient). An independent oracle decides every hypothesis by its definition with integer determinants
+   mod q (every 4-set and 3-set, no hyperplanes, no shift), rebuilds the array with numpy and checks it with
+   `ca_verify`. Assertions as for the other kinds (A1 to A4), and every check agrees with the oracle on its own
+   hypothesis. Then each check is disabled in turn and three boundary mutants are applied (actm also over
+   4-sets with a repeated x; caps for H2 only; orthogoval without the 3-sets that repeat a point).
+3. The nine real certificates pass with their recorded sha256, and planted faults on the q = 13 and 17
+   certificates (the quartic x^4, multipliers [1, 2, 2], [2, 2, 4] and [1, 2(q^2+1), 4], a repeated point, the
+   cubic x^3, N + 1, p one bit short) are rejected by the intended check.
+
+Results (2026-11-10, seed 20261110, 60 random and 8 targeted certificates, 244 s):
+
+| | |
+|---|---|
+| certificates accepted / satisfying every hypothesis | 16 / 16 |
+| accepted but not covering (A3), hypotheses true but not covering (A4) | 0, 0 |
+| checks compared with the oracle, disagreements | 270, 0 |
+| mutants killed | 15 of 15 that a certificate here can reach, with the 3 boundary mutants |
+| mutants that accept a non-covering array | disable actm 3, caps 2, pairs 1, orthogoval 1, ingredient_ca 1; caps for H2 only 2; orthogoval without repeated points 1 |
+
+Six checks cannot fail alone on these cases and are reported, not counted as survivors: `hyperplanes` and
+`lines` (implied by `quartic` and `cubic`, Singer's theorem; kept because the proof above uses them and not that
+theorem), `field` (the random fields are prime; part 1 plants a reducible modulus), `symbols` and `alphabet`
+(every sms array has a zero row and only field labels), and `ingredient_hash` (no file ingredient here; it is the
+shared code of `test_kinds.py`).
+
+    python3 tools/tests_construction/test_sms.py --cases 60 --seed 20261110
+    python3 tools/tests_construction/test_sms.py --cases 40 --quick --skip-real     (about 2 minutes)
 
 ## The submission route
 

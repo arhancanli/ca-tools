@@ -97,6 +97,12 @@ jobs:
             run: python3 tools/tests_construction/test_construction_cert.py
           - name: stored construction certificates
             run: python3 tools/tests_construction/test_real_certs.py
+          - name: Shokri-Moura-Stevens certificates and mutants
+            # test_sms.py and the sms scripts use numpy (update first: the runner's package index can be stale)
+            run: |
+              sudo apt-get update -q > /dev/null
+              sudo apt-get install -y -q python3-numpy > /dev/null
+              python3 tools/tests_construction/test_sms.py
           - name: CPHF certificates
             run: python3 tools/cphf/tests/test_certificates.py
           - name: CPHF shards
