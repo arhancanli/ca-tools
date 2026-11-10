@@ -1,0 +1,28 @@
+{
+ "format": "construction-cert-1",
+ "construction": "sms51-1",
+ "notes": [
+  "Shokri, Moura and Stevens, arXiv:2510.13122v3, Theorem 5.1 with p = 0 (Table 4, q = 23).",
+  "Written by tools/sms_theorem51.py 23 --certificate; the expected sha256 is that of the script's own output."
+ ],
+ "t": 4,
+ "v": 23,
+ "field": {
+  "q": 23,
+  "p": 23,
+  "m": 1
+ },
+ "quartic": [
+  5,
+  0,
+  0,
+  9,
+  1
+ ],
+ "p": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+ "expected": {
+  "N": 839521,
+  "k": 265,
+  "array_sha256": "0e8aa317a2b938be3868c4cf6f3e4c4d122d6eb179d8b7d194ce8c35c54415f1"
+ }
+}
